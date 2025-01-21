@@ -19,6 +19,8 @@ import Combine
 
 class NetworkManager {
     static let shared = NetworkManager()
+    let session = URLSession(configuration: .default, delegate: CustomSessionDelegate(), delegateQueue: nil)
+
     
     private init() {}
 
@@ -55,9 +57,7 @@ class NetworkManager {
                     .eraseToAnyPublisher()
             }
         }
-
-        // Create the publisher
-        return URLSession.shared.dataTaskPublisher(for: request)
+        return session.dataTaskPublisher(for: request)
             .tryMap { output in
                 // Ensure a valid HTTP response
                 guard let response = output.response as? HTTPURLResponse,
@@ -70,3 +70,22 @@ class NetworkManager {
             .eraseToAnyPublisher()
     }
 }
+
+class CustomSessionDelegate: NSObject, URLSessionDelegate {
+    func urlSession(
+        _ session: URLSession,
+        didReceive challenge: URLAuthenticationChallenge,
+        completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+    ) {
+        // Trust all certificates during development
+        if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+           let serverTrust = challenge.protectionSpace.serverTrust {
+            let credential = URLCredential(trust: serverTrust)
+            completionHandler(.useCredential, credential)
+        } else {
+            completionHandler(.cancelAuthenticationChallenge, nil)
+        }
+    }
+}
+
+let session = URLSession(configuration: .default, delegate: CustomSessionDelegate(), delegateQueue: nil)

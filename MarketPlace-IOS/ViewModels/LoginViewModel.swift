@@ -7,19 +7,13 @@
 
 import Foundation
 import Combine
+import SwiftUI
 
 public extension String {
     static let GET = "get"
     static let POST = "post"
-}
-
-struct User: Codable {
-    let user_id: String
-    let name: String
-    let email: String
-    let userType: String
-    let mobileNumber: String
-    let store_id: String
+    static let storeOwner = "storeOwner"
+    static let customer = "customer"
 }
 
 struct LoginResponse: Codable {
@@ -27,19 +21,39 @@ struct LoginResponse: Codable {
     let token: String
     let user: User
 }
+
+struct User: Codable {
+    let userId: String
+    let userType: String
+    let mobileNumber: String
+    let storeId: String?
+    
+    // CodingKeys to map JSON keys to Swift property names if needed
+    enum CodingKeys: String, CodingKey {
+        case userId = "user_id"
+        case userType
+        case mobileNumber
+        case storeId = "store_id"
+    }
+}
+
 struct LoginRequest: Codable {
-    let email: String
-    let password: String
+    let mobileNumber: String
     let userType: String
 }
 
 
 
 class LoginViewModel: ObservableObject {
+    @Published  var mobile: String = ""
+    @Published  var mobileError: Bool = false
     @Published var loginResponse: LoginResponse?
     @Published var isLoading: Bool = false
+    @AppStorage("userToken") var userToken: String?
+    private var cancellables = Set<AnyCancellable>()
+
     func loginUser(loginRequest: LoginRequest) {
-        let cancellable = NetworkManager.shared.performRequest(
+        NetworkManager.shared.performRequest(
             url: .login(),
             method: .POST,
             payload: loginRequest,
@@ -55,9 +69,38 @@ class LoginViewModel: ObservableObject {
                 }
             },
             receiveValue: { response in
-                self.loginResponse = response
+                DispatchQueue.main.async { [weak self] in
+                    guard let self else { return }
+                    self.loginResponse = response
+                    self.userToken = response.token
+                    UserDetails.shared.mobileNumber = response.user.mobileNumber
+                    UserDetails.shared.token = response.token
+                    UserDetails.shared.userType = response.user.userType
+                }
             }
-        )
+            
+        ).store(in: &cancellables)
+        
     }
+    
+    func isValidMobileNumber(_ number: String) -> Bool {
+        // Remove non-numeric characters (like spaces, parentheses, or dashes)
+        let cleanedNumber = number.filter { $0.isNumber }
+        
+        // Check if the cleaned number has exactly 10 digits
+        let regex = "^[0-9]{10}$"
+        let predicate = NSPredicate(format: "SELF MATCHES %@", regex)
+        return predicate.evaluate(with: cleanedNumber)
+    }
+    
+    func continueAction() {
+        if isValidMobileNumber(mobile)  {
+            let request = LoginRequest(mobileNumber: mobile, userType: .storeOwner)
+            loginUser(loginRequest: request)
+        } else {
+            mobileError = true
+        }
+    }
+
     
 }

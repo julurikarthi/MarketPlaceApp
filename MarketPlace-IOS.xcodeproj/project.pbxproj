@@ -29,9 +29,22 @@
 		258B97582D3D481C00A6458D /* MarketPlace-IOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MarketPlace-IOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2596180D2D3FC3A4009B8160 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 258B973C2D3D481A00A6458D /* MarketPlace-IOS */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		258B973F2D3D481A00A6458D /* MarketPlace-IOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2596180D2D3FC3A4009B8160 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS" target */,
+			);
 			path = "MarketPlace-IOS";
 			sourceTree = "<group>";
 		};
@@ -394,6 +407,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MarketPlace-IOS/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -431,6 +446,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"MarketPlace-IOS/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
