@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 extension String {
     static let signupText = "By tapping creating Store"
@@ -19,7 +20,9 @@ extension String {
     static let firstName = "First Name"
     static let lastName = "Last Name"
     static let emailRequired = "Email is required"
+    static let storeNameError = "Store name required"
     static let pincodeRequired = "Pincode is required"
+    static let taxPercentageRequired = "Tax Percentage"
     static let addressRequired = "Address Required"
     static let cityRequired = "city is Required"
     static let email = "Email"
@@ -32,10 +35,11 @@ extension String {
     static let city = "City"
     static let pincode = "Pincode"
     static let mobileNumberRequired = "Mobile Number Required"
+    static let storeName = "Store Name"
 }
 
 struct CreateStoreView: View {
-    @StateObject var viewModel = SignUPModel()
+    @StateObject var viewModel = CreateStoreViewModel()
     var storeTypes = ["Select Store type","Grocery", "Grocery", "Grocery"]
     @State private var dropdownselecton: String = "Select Store type"
     @State private var dropdownServiceSelection: String = "Select Service type"
@@ -47,70 +51,54 @@ struct CreateStoreView: View {
         NavigationStack {
             ScrollView {
                 VStack {
+                    UploadImageView(selectedImage: $viewModel.selectedImage, imageUploadError: $viewModel.imageUploadError)
                     VStack {
-                        HStack(spacing: 10) {
-                            CustomTextField(text: $viewModel.firstName, placeholder: .empty, isError: $viewModel.firstNameError, errorMessage: .firstNameRequired, title: .firstName)
-                                .frame(width: UIScreen.main.bounds.width * 0.45)
-                            CustomTextField(text: $viewModel.lastName, placeholder: .empty, isError: $viewModel.lastNameError, errorMessage: .lastNameRequired, title: .lastName)
-                                .frame(width: UIScreen.main.bounds.width * 0.45)
-                        }.padding([.trailing, .leading], 10)
-                        
-                        CustomTextField(text: $viewModel.email, placeholder: .empty, isError: $viewModel.emailError, errorMessage: .emailRequired, title: .email)
-                            .frame(width: .infinity)
-                            .padding([.trailing, .leading], 20)
+                        CustomTextField(text: $viewModel.storeName, placeholder: .empty, isError: $viewModel.storeNameError, errorMessage: .storeNameError, title: .storeName)
+                            .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         CustomTextField(text: $viewModel.address, placeholder: .empty, isError: $viewModel.addressError, errorMessage: .addressRequired, title: .address)
-                            .frame(width: .infinity)
-                            .padding([.trailing, .leading], 20)
+                            .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         CustomTextField(text: $viewModel.city, placeholder: .empty, isError: $viewModel.cityError, errorMessage: .cityRequired, title: .city)
-                            .frame(width: .infinity)
-                            .padding([.trailing, .leading], 20)
+                            .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         CustomTextField(text: $viewModel.pincode, placeholder: .empty, isError: $viewModel.pincodeError, errorMessage: .pincodeRequired, title: .pincode)
-                            .frame(width: .infinity)
-                            .padding([.trailing, .leading], 20)
-                        
-                        CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStateTextError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: storeTypes).padding([.trailing, .leading], 20)
+                            .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         
                         HStack(spacing: 10) {
-                            DropdownPicker()
-                                .frame(width: UIScreen.main.bounds.width * 0.25)
-                                .padding(.bottom, 14)
-                            CustomTextField(text: $viewModel.mobile, placeholder: .empty, isError: $viewModel.mobileError, errorMessage: .mobileNumberRequired, title: .mobile, erroriconrequired: false)
-                                .frame(width: UIScreen.main.bounds.width * 0.65)
-                        }.padding([.trailing, .leading], 10)
+                            CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: storeTypes).frame(width:100)
+                            CustomTextField(text: $dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
+                        }.padding([.trailing, .leading], 20)
+                        
+                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .pincodeRequired, title: .taxPercentageRequired)
+                            .frame(width: .infinity).padding([.trailing, .leading], 20)
+                        
                         
                         VStack(alignment: .leading, spacing: 10) {
-                            CustomTextField(text: $dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTextError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
                             Text(String.selectSericeText).font(.system(size: 15)).bold()
                             CheckboxView(isChecked: $isPickup, label: String.pickup)
                             CheckboxView(isChecked: $isPayAtPickup, label: String.payAtPickup)
                             CheckboxView(isChecked: $isDelivery, label: String.delivery)
-
-                        }.padding([.leading, .trailing])
-                        
-                        Text(String.signupText)
-                            .foregroundColor(.gray)
-                            .font(.system(size: 10))
-                            .lineLimit(3)
-                            .padding([.top], 5)
-                            .padding([.leading, .trailing], 15)
+                            Text(String.signupText)
+                                .foregroundColor(.gray)
+                                .font(.system(size: 10))
+                                .lineLimit(3)
+                                .padding([.top], 5)
+                        }.frame(maxWidth: .infinity, alignment: .leading).padding([.trailing, .leading], 20)
                         
                         signupButton
                     }
                 }
-            }
-            
+            }.navigationTitle("Create Store")
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
     
     var signupButton: some View {
         Button(action: {
             // Add your button action here
             print("Create Store")
+            viewModel.createStore()
         }) {
             Text(String.createStoreText) // Correct placement of the text
                 .font(.system(size: 16, weight: .semibold))
@@ -147,7 +135,7 @@ struct CustomTextField: View {
             if isDropdown {
                 Picker(selection: $text, label: Text(String.selectSericeText)) {
                     ForEach(dropdownOptions, id: \.self) { option in
-                        Text(option).font(.system(size: 10)).tag(option)
+                        Text(option).font(.system(size: 10)).tag(option).lineLimit(1)
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -172,7 +160,7 @@ struct CustomTextField: View {
                         }
                 }
                 .padding()
-                .frame(height: 35)
+                .frame(height: 40)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
                         .fill(isFocused ? Color.white : Color(hex: "#F7F7F7"))
@@ -309,5 +297,91 @@ struct CheckboxView: View {
             }
         }
         .buttonStyle(PlainButtonStyle()) // Prevents button styling from affecting appearance
+    }
+}
+
+struct UploadImageView: View {
+    @Binding var selectedImage: UIImage?
+    @State private var isPickerPresented = false
+    @Binding var imageUploadError: Bool
+    var body: some View {
+        VStack(spacing: 20) {
+            Text("Upload Image")
+                .font(.headline)
+
+            // Display selected image or placeholder
+            if let image = selectedImage {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+            } else {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(height: 200)
+                    .overlay(
+                           RoundedRectangle(cornerRadius: 10)
+                            .stroke(imageUploadError ? .red : Color.clear, lineWidth: 2)
+                       )
+                    .overlay(
+                        Text("No Image Selected")
+                            .foregroundColor(.gray)
+                    )
+            }
+
+            // Upload button
+            Button(action: {
+                isPickerPresented = true
+            }) {
+                Text("Select Image")
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+        }
+        .padding()
+        .sheet(isPresented: $isPickerPresented) {
+            ImagePicker(image: $selectedImage)
+        }
+    }
+}
+
+struct ImagePicker: UIViewControllerRepresentable {
+    @Binding var image: UIImage?
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.allowsEditing = true
+        picker.sourceType = .photoLibrary
+        return picker
+    }
+
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+
+    class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+        let parent: ImagePicker
+
+        init(_ parent: ImagePicker) {
+            self.parent = parent
+        }
+
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+            if let uiImage = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+                parent.image = uiImage
+            }
+            picker.dismiss(animated: true)
+        }
+
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            picker.dismiss(animated: true)
+        }
     }
 }
