@@ -53,7 +53,7 @@ class LoginViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @AppStorage("userToken") var userToken: String?
     private var cancellables = Set<AnyCancellable>()
-
+    @Published var movetoDashboard: Bool = false
     func loginUser(loginRequest: LoginRequest) {
         NetworkManager.shared.performRequest(
             url: .login(),
@@ -75,9 +75,10 @@ class LoginViewModel: ObservableObject {
                     guard let self else { return }
                     self.loginResponse = response
                     self.userToken = response.token
-                    UserDetails.shared.mobileNumber = response.user.mobileNumber
-                    UserDetails.shared.token = response.token
-                    UserDetails.shared.userType = response.user.userType
+                    UserDetails.mobileNumber = response.user.mobileNumber
+                    UserDetails.token = response.token
+                    UserDetails.userType = response.user.userType
+                    movetoDashboard = true
                 }
             }
             
