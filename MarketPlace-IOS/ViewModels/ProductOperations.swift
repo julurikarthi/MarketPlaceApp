@@ -7,7 +7,9 @@
 
 import Foundation
 import Combine
-struct CreateProductRequest: Codable {
+struct CreateProductRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let productName: String
     let description: String
     let price: Double
@@ -27,7 +29,9 @@ struct CreateProductRequest: Codable {
     }
 }
 
-struct GetAllProductByStoreRequest: Codable {
+struct GetAllProductByStoreRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let store_id: String
     enum CodingKeys: String, CodingKey {
         case store_id = "store_id"
@@ -77,7 +81,9 @@ struct GetAllStoreProductsResponse: Codable {
 }
 
 
-struct DeleteProductRequest: Codable {
+struct DeleteProductRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let productId: String
 
     enum CodingKeys: String, CodingKey {
@@ -85,7 +91,9 @@ struct DeleteProductRequest: Codable {
     }
 }
 
-struct DeleteOfferRequest: Codable {
+struct DeleteOfferRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let offer_id: String
 
     enum CodingKeys: String, CodingKey {

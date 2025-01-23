@@ -20,7 +20,7 @@ import Combine
 class NetworkManager {
     static let shared = NetworkManager()
     let session = URLSession(configuration: .default, delegate: CustomSessionDelegate(), delegateQueue: nil)
-
+    var cancellables = Set<AnyCancellable>()
     
     private init() {}
 
@@ -31,7 +31,7 @@ class NetworkManager {
     ///   - payload: Request body as a generic type conforming to `Encodable`
     ///   - responseType: Expected response type conforming to `Decodable`
     /// - Returns: A publisher that emits the decoded response or an error
-    func performRequest<T: Encodable, U: Decodable>(
+    func performRequest<T: RequestBody, U: Decodable>(
         url: String,
         method: String,
         payload: T?,
@@ -49,8 +49,9 @@ class NetworkManager {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
         // Encode the payload if provided
-        if let payload = payload {
+        if var payload = payload {
             do {
+                payload.user_id = UserDetails.userId
                 request.httpBody = try JSONEncoder().encode(payload)
             } catch {
                 return Fail(error: error)
@@ -69,7 +70,98 @@ class NetworkManager {
             .decode(type: U.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
+    
+
+    func uploadImage<U: Decodable>(
+        url: String,
+        imageData: Data,
+        fileName: String,
+        mimeType: String = "image/jpeg",
+        responseType: U.Type
+    ) -> AnyPublisher<U, Error> {
+        // Ensure the URL is valid
+        guard let url = URL(string: url) else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+
+        // Prepare the boundary
+        let boundary = UUID().uuidString
+        let contentType = "multipart/form-data; boundary=\(boundary)"
+        
+        // Create the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(contentType, forHTTPHeaderField: "Content-Type")
+        
+        // Build multipart form data
+        var body = Data()
+        
+        // Add the image file with the key `image`
+        body.append("--\(boundary)\r\n".data(using: .utf8)!)
+        body.append("Content-Disposition: form-data; name=\"image\"; filename=\"\(fileName)\"\r\n".data(using: .utf8)!)
+        body.append("Content-Type: \(mimeType)\r\n\r\n".data(using: .utf8)!)
+        body.append(imageData)
+        body.append("\r\n".data(using: .utf8)!)
+        
+        // Finalize the body with the closing boundary
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        request.httpBody = body
+        
+        // Use Combine to perform the request
+        return session.dataTaskPublisher(for: request)
+            .tryMap { output in
+                guard let response = output.response as? HTTPURLResponse,
+                      200..<300 ~= response.statusCode else {
+                    throw URLError(.badServerResponse)
+                }
+                return output.data
+            }
+            .decode(type: U.self, decoder: JSONDecoder())
+            .eraseToAnyPublisher()
+    }
+
 }
+
+extension NetworkManager {
+    
+    func uploadImageToServer(imageData: Data, fileName: String, completionHandler: @escaping (UploadResponse?) -> Void) {
+       
+        let uploadPublisher: AnyPublisher<UploadResponse, Error> = uploadImage(
+            url: .uploadImage(),
+            imageData: imageData,
+            fileName: fileName,
+            responseType: UploadResponse.self
+        )
+        
+        uploadPublisher
+            .sink(receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("Upload successful")
+                case .failure(let error):
+                    print("Upload failed with error: \(error)")
+                    completionHandler(nil)
+                }
+            }, receiveValue: { response in
+                completionHandler(response)
+                print("Server response: \(response)")
+            })
+            .store(in: &cancellables)
+    }
+    
+}
+
+struct UploadResponse: Decodable {
+    let message: String
+    let fileName: String
+
+    enum CodingKeys: String, CodingKey {
+        case message
+        case fileName = "file_name"
+    }
+}
+
 
 class CustomSessionDelegate: NSObject, URLSessionDelegate {
     func urlSession(

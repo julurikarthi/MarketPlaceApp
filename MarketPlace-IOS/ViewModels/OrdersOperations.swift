@@ -7,7 +7,9 @@
 
 import Foundation
 import Combine
-struct FetchStoreOrderRequest: Codable {
+struct FetchStoreOrderRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let store_id: String
     enum CodingKeys: String, CodingKey {
         case store_id = "store_id"
@@ -44,7 +46,9 @@ struct OrderResponse: Codable {
     }
 }
 
-struct UpdateOrderStatusRequest: Codable {
+struct UpdateOrderStatusRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let status: String
     let order_id: String
 }

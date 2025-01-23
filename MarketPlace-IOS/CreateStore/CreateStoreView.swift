@@ -380,6 +380,23 @@ struct ImagePicker: UIViewControllerRepresentable {
                 parent.image = uiImage
             }
             picker.dismiss(animated: true)
+            
+            guard let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage else {
+                print("No image found")
+                return
+            }
+            
+            // Convert UIImage to Data for upload
+            guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                print("Failed to convert image to JPEG")
+                return
+            }
+            let originalFileName = "appicon.png"
+            let uniqueFileName = String.generateUniqueFileName(originalFileName: originalFileName)
+            NetworkManager.shared.uploadImageToServer(imageData: imageData,
+                                                      fileName: uniqueFileName) { responce in
+                
+            }
         }
 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

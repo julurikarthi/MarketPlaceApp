@@ -10,17 +10,56 @@ import Foundation
 class UserDetails {
     static let shared = UserDetails() // Singleton instance
     
-    // Properties to store user details
-    var userId: String?
-    var userType: String?
-    var mobileNumber: String?
-    var storeId: String?
-    var token: String?
+    // Static properties to store user details
+    static var userId: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "userId")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "userId")
+        }
+    }
     
+    static var userType: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "userType")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "userType")
+        }
+    }
+    
+    static var mobileNumber: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "mobileNumber")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "mobileNumber")
+        }
+    }
+    
+    static var storeId: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "storeId")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "storeId")
+        }
+    }
+    
+    static var token: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "token")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "token")
+        }
+    }
+
     private init() {} // Private initializer to prevent external instantiation
     
     // Method to populate user details
-    func setUserDetails(from user: User, token: String) {
+    static func setUserDetails(from user: User, token: String) {
         self.userId = user.userId
         self.userType = user.userType
         self.mobileNumber = user.mobileNumber
@@ -29,11 +68,19 @@ class UserDetails {
     }
     
     // Clear user details (e.g., on logout)
-    func clearUserDetails() {
+    static func clearUserDetails() {
         self.userId = nil
         self.userType = nil
         self.mobileNumber = nil
         self.storeId = nil
         self.token = nil
+        
+        // Remove from UserDefaults
+        UserDefaults.standard.removeObject(forKey: "userId")
+        UserDefaults.standard.removeObject(forKey: "userType")
+        UserDefaults.standard.removeObject(forKey: "mobileNumber")
+        UserDefaults.standard.removeObject(forKey: "storeId")
+        UserDefaults.standard.removeObject(forKey: "token")
     }
 }
+

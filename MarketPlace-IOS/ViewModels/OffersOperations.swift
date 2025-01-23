@@ -8,7 +8,9 @@
 
 import Foundation
 
-struct CreateOfferRequest: Codable {
+struct CreateOfferRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let storeId: String
     let imageId: String
     let offerDescription: [String]
@@ -36,7 +38,9 @@ struct CreateOfferResponse: Codable {
     }
 }
 
-struct GetAllStrorequest: Codable {
+struct GetAllStrorequest: Codable, RequestBody {
+    var user_id: String?
+    
     let storeId: String
    
     enum CodingKeys: String, CodingKey {

@@ -37,7 +37,9 @@ struct User: Codable {
     }
 }
 
-struct LoginRequest: Codable {
+struct LoginRequest: Codable, RequestBody {
+    var user_id: String?
+    
     let mobileNumber: String
     let userType: String
 }

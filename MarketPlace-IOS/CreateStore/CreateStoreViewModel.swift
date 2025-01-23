@@ -33,33 +33,44 @@ class CreateStoreViewModel: ObservableObject {
     @Published  var selectStoreTypeError: Bool = false
     @Published  var selectStatError: Bool = false
     @Published  var taxPercentageRequiredError: Bool = false
+    
+    @Published var storeResponse: CreateStoreResponse?
+    @Published var storeCreateRequest: CreateStoreRequest?
+    @Published var isLoading: Bool = false
+    
     var counties: [String] = ["NC"]
     
     init() {
         loadCountries()
     }
     func createStore() {
-        validateInputs()
+        if validateInputs() {
+            
+        }
     }
-    func validateInputs() {
-        imageUploadError = true ? selectedImage == nil : false
-        emailError = email.isEmpty || !isValidEmail(email)
-        storeNameError = storeName.isEmpty
-        cityError = city.isEmpty
-        pincodeError = pincode.isEmpty || !isValidPincode(pincode)
-        addressError = address.isEmpty
-        countyError = county.isEmpty
-        taxPercentageRequiredError = taxPercentageRequired.isEmpty
+    
+    func validateInputs() -> Bool {
+        let imageUploadValid = selectedImage != nil
+        let emailValid = !email.isEmpty && isValidEmail(email)
+        let storeNameValid = !storeName.isEmpty
+        let cityValid = !city.isEmpty
+        let pincodeValid = !pincode.isEmpty && isValidPincode(pincode)
+        let addressValid = !address.isEmpty
+        let countyValid = !county.isEmpty
+        let taxPercentageValid = !taxPercentageRequired.isEmpty
+        
+        // Return true if all conditions are valid, otherwise false
+        return imageUploadValid && emailValid && storeNameValid && cityValid &&
+               pincodeValid && addressValid && countyValid && taxPercentageValid
     }
 
-    // Helper method to validate email format
+
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
         let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
         return emailPredicate.evaluate(with: email)
     }
 
-    // Helper method to validate pincode length
     private func isValidPincode(_ pincode: String) -> Bool {
         return pincode.count >= 5 // Replace 5 with your required minimum length
     }
@@ -81,6 +92,30 @@ class CreateStoreViewModel: ObservableObject {
             print("Error decoding countries.json: \(error)")
             return 
         }
+    }
+
+    func sendCreateStoreRequest(storeRequest: CreateStoreRequest) {
+        guard URL(string: String.createStore()) != nil else { return }
+
+        _ = NetworkManager.shared.performRequest(
+            url: .login(),
+            method: .POST,
+            payload: storeRequest,
+            responseType: CreateStoreResponse.self
+        )
+        .sink(
+            receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("Request completed successfully.")
+                case .failure(let error):
+                    print("Request failed: \(error.localizedDescription)")
+                }
+            },
+            receiveValue: { response in
+                self.storeResponse = response
+            }
+        )
     }
 
 }

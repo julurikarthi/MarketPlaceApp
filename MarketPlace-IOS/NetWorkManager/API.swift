@@ -5,6 +5,8 @@
 //  Created by karthik on 1/18/25.
 //
 
+import Foundation
+
 extension String {
     static let baseURL = "https://18.188.42.21/api"
     
@@ -122,5 +124,11 @@ extension String {
 
     static func downloadImage() -> String {
         return "\(baseURL)/downloadImage/"
+    }
+    
+    static func generateUniqueFileName(originalFileName: String) -> String {
+        let uuid = UUID().uuidString
+        let fileExtension = (originalFileName as NSString).pathExtension
+        return fileExtension.isEmpty ? uuid : "\(uuid).\(fileExtension)"
     }
 }
