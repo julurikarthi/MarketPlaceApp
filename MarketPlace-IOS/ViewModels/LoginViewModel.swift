@@ -51,7 +51,9 @@ class LoginViewModel: ObservableObject {
     @Published  var mobileError: Bool = false
     @Published var loginResponse: LoginResponse?
     @Published var isLoading: Bool = false
+    @Published var showProgressIndicator: Bool = true
     @AppStorage("userToken") var userToken: String?
+    
     private var cancellables = Set<AnyCancellable>()
     @Published var movetoDashboard: Bool = false
     func loginUser(loginRequest: LoginRequest) {
