@@ -41,8 +41,10 @@ extension String {
 struct CreateStoreView: View {
     @StateObject var viewModel = CreateStoreViewModel()
     var storeTypes = ["Select Store type","Grocery", "Grocery", "Grocery"]
+    var selectStore = ["Select State","US", "IN", "Grocery"]
     @State private var dropdownselecton: String = "Select Store type"
     @State private var dropdownServiceSelection: String = "Select Service type"
+    @State private var dropdownSelectState: String = "Select State"
     @State private var isPickup = false
     @State private var isPayAtPickup = false
     @State private var isDelivery = false
@@ -67,11 +69,11 @@ struct CreateStoreView: View {
                         
                         
                         HStack(spacing: 10) {
-                            CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: storeTypes).frame(width:100)
+                            CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: viewModel.counties).frame(width:100)
                             CustomTextField(text: $dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
                         }.padding([.trailing, .leading], 20)
                         
-                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .pincodeRequired, title: .taxPercentageRequired)
+                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         
