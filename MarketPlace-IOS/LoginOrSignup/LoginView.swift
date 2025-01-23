@@ -36,7 +36,7 @@ struct LoginView: View {
                             )
                             .frame(width: UIScreen.main.bounds.width * 0.65)
                         }
-                    }
+                    }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                     .padding(.top, 15)
                     .padding([.leading, .trailing], 15) // Added padding
                     .background(Color.white)
@@ -47,7 +47,6 @@ struct LoginView: View {
                         .lineLimit(3)
                         .padding(.top, 5)
                         .padding([.leading, .trailing], 28)
-                    
                     
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -87,5 +86,33 @@ struct LoginView: View {
 extension View {
     func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+
+struct LoadingViewModifier: ViewModifier {
+    @Binding var isLoading: Bool
+    var indicatorSize: CGFloat = 50.0
+
+    func body(content: Content) -> some View {
+        ZStack {
+            content
+            if isLoading {
+                DefaultIndicatorView(count: 8) // Your custom loader
+                    .frame(width: indicatorSize, height: indicatorSize)
+                    .foregroundColor(.red)
+                    .padding()
+                    .background(Color.white.opacity(0.7)) // Optional: Background dim
+                    .cornerRadius(10)
+                    .scaleEffect(1.5) // Optional: Scale the loader
+                    .frame(maxWidth: .infinity, maxHeight: .infinity) // Fill the screen
+            }
+        }
+    }
+}
+
+extension View {
+    func loadingIndicator(isLoading: Binding<Bool>, indicatorSize: CGFloat = 20.0) -> some View {
+        self.modifier(LoadingViewModifier(isLoading: isLoading, indicatorSize: indicatorSize))
     }
 }

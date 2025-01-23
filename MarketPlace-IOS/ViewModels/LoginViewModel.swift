@@ -51,12 +51,13 @@ class LoginViewModel: ObservableObject {
     @Published  var mobileError: Bool = false
     @Published var loginResponse: LoginResponse?
     @Published var isLoading: Bool = false
-    @Published var showProgressIndicator: Bool = true
+    @MainThreadPublished var showProgressIndicator: Bool = false
     @AppStorage("userToken") var userToken: String?
     
     private var cancellables = Set<AnyCancellable>()
     @Published var movetoDashboard: Bool = false
     func loginUser(loginRequest: LoginRequest) {
+        showProgressIndicator = true
         NetworkManager.shared.performRequest(
             url: .login(),
             method: .POST,
@@ -70,6 +71,7 @@ class LoginViewModel: ObservableObject {
                     print("Request completed successfully.")
                 case .failure(let error):
                     print("Request failed: \(error.localizedDescription)")
+                    self.showProgressIndicator = false
                 }
             },
             receiveValue: { response in
@@ -81,6 +83,7 @@ class LoginViewModel: ObservableObject {
                     UserDetails.token = response.token
                     UserDetails.userType = response.user.userType
                     movetoDashboard = true
+                    showProgressIndicator = false
                 }
             }
             
@@ -108,4 +111,30 @@ class LoginViewModel: ObservableObject {
     }
 
     
+}
+
+
+@propertyWrapper
+class MainThreadPublished<T>: ObservableObject {
+    @Published private var value: T
+    private var cancellables = Set<AnyCancellable>()
+    
+    // Publisher to expose the wrapped value
+    var projectedValue: Published<T>.Publisher {
+        return $value
+    }
+
+    var wrappedValue: T {
+        get { value }
+        set {
+            // Ensure updates are made on the main thread
+            DispatchQueue.main.async {
+                self.value = newValue
+            }
+        }
+    }
+
+    init(wrappedValue: T) {
+        self.value = wrappedValue
+    }
 }
