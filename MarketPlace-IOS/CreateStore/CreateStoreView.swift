@@ -73,7 +73,7 @@ struct CreateStoreView: View {
                             CustomTextField(text: $dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
                         }.padding([.trailing, .leading], 20)
                         
-                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired)
+                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired, keyPadType: .numbersAndPunctuation)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         
