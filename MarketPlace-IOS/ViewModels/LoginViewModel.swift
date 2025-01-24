@@ -88,17 +88,19 @@ class LoginViewModel: ObservableObject {
                     UserDetails.userType = response.user.userType
                     UserDetails.storeId = response.user.storeId
                     UserDetails.mobileNumber = response.user.mobileNumber
-                    
-                    if response.user.userType == "storeOwner" {
-                        if response.user.storeId == nil {
-                            self.movetoStore = true
-                        } else {
-                            movetoProducts = true
+                    DispatchQueue.main.async {
+                        showProgressIndicator = false
+                        if response.user.userType == "storeOwner" {
+                            if response.user.storeId == nil {
+                                self.movetoStore = true
+                            } else {
+                                movetoProducts = true
+                            }
+                        } else if response.user.userType == "customer" {
+                            self.movetoDashboard = true
                         }
-                    } else if response.user.userType == "customer" {
-                        self.movetoDashboard = true
                     }
-                    showProgressIndicator = false
+                    
                 }
             }
             

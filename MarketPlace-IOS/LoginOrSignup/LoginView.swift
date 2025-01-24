@@ -55,10 +55,11 @@ struct LoginView: View {
                 }
             }
             .ignoresSafeArea(edges: .all)
-            .navigationDestination(isPresented: $viewModel.movetoStore) {
-                CreateStoreView()
+            .navigationDestination(isPresented: $viewModel.movetoDashboard) {
+               
             }.navigationDestination(isPresented: $viewModel.movetoStore) {
-                
+                CreateStoreView()
+            }.navigationDestination(isPresented: $viewModel.movetoProducts) {
             }
         }
     }
