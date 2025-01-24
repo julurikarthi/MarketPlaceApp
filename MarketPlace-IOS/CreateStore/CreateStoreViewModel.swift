@@ -55,7 +55,7 @@ class CreateStoreViewModel: ObservableObject {
     }
     func createStore() {
         if validateInputs() {
-            var request = CreateStoreRequest(storeName: storeName,
+            let request = CreateStoreRequest(storeName: storeName,
                                              storeType: selectedStoreType,
                                              imageId: image_id ?? "",
                                              taxPercentage: taxPercentageRequired.doubleValue,
@@ -143,7 +143,7 @@ class CreateStoreViewModel: ObservableObject {
     func sendCreateStoreRequest(storeRequest: CreateStoreRequest) {
         guard URL(string: String.createStore()) != nil else { return }
         showProgressIndicator = true
-        _ = NetworkManager.shared.performRequest(
+         NetworkManager.shared.performRequest(
             url: .createStore(),
             method: .POST,
             payload: storeRequest,
@@ -161,7 +161,7 @@ class CreateStoreViewModel: ObservableObject {
                         let errorDescription = error as NSError
                         let error = errorDescription.userInfo["error"] as? String
                         self.showProgressIndicator = false
-                        print("Request failed: \(error)")
+                        print("Request failed: \(String(describing: error))")
                     }
                     
                 }
