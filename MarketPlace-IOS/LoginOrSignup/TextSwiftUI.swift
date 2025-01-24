@@ -103,7 +103,7 @@ struct CreateStoreViewCopy: View {
             }
             .navigationTitle("Create Store")
             .sheet(isPresented: $isImagePickerPresented) {
-                ImagePicker(image: $storeImage)
+                //ImagePicker(image: $storeImage, image_id: $viewModel.image_id)
             }
         }
     }

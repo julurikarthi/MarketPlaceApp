@@ -47,7 +47,9 @@ class NetworkManager {
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
+        if let token = UserDetails.token {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
         // Encode the payload if provided
         if var payload = payload {
             do {
@@ -63,6 +65,11 @@ class NetworkManager {
                 // Ensure a valid HTTP response
                 guard let response = output.response as? HTTPURLResponse,
                       200..<300 ~= response.statusCode else {
+                    if let data = output.response as? HTTPURLResponse , data.statusCode == 400 {
+                        if let jsonData = try? JSONSerialization.jsonObject(with: output.data) as? [String: Any] {
+                            throw URLError(.badServerResponse, userInfo: jsonData)
+                        }
+                    }
                     throw URLError(.badServerResponse)
                 }
                 return output.data

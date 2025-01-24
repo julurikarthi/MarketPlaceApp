@@ -31,7 +31,7 @@ extension String {
     static let state = "State"
     static let singnUP = "Continue"
     static let createStoreText = "Create Store"
-    static let address = "Enter Address"
+    static let address = "Store Address"
     static let city = "City"
     static let pincode = "Pincode"
     static let mobileNumberRequired = "Mobile Number Required"
@@ -40,16 +40,14 @@ extension String {
 
 struct CreateStoreView: View {
     @StateObject var viewModel = CreateStoreViewModel()
-    var storeTypes = ["Select Store type","Grocery", "Grocery", "Grocery"]
     @State private var dropdownServiceSelection: String = "Select Service type"
     @State private var dropdownSelectState: String = "Select State"
-   
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    UploadImageView(selectedImage: $viewModel.selectedImage, imageUploadError: $viewModel.imageUploadError)
+                    UploadImageView(selectedImage: $viewModel.selectedImage, image_id: $viewModel.image_id, imageUploadError: $viewModel.imageUploadError)
                     VStack {
                         CustomTextField(text: $viewModel.storeName, placeholder: .empty, isError: $viewModel.storeNameError, errorMessage: .storeNameError, title: .storeName)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
@@ -66,10 +64,10 @@ struct CreateStoreView: View {
                         
                         HStack(spacing: 10) {
                             CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: viewModel.counties).frame(width:100)
-                            CustomTextField(text: $viewModel.dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
+                            CustomTextField(text: $viewModel.selectedStoreType, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: $viewModel.storeTypes.wrappedValue)
                         }.padding([.trailing, .leading], 20)
                         
-                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired, keyPadType: .numbersAndPunctuation )
+                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired, keyPadType: .numberPad)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         
@@ -102,7 +100,7 @@ struct CreateStoreView: View {
                 }
             }.navigationTitle("Create Store").task {
                 viewModel.getStoreDetailsData()
-            }
+            }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
         }
     }
     
@@ -314,6 +312,7 @@ struct CheckboxView: View {
 
 struct UploadImageView: View {
     @Binding var selectedImage: UIImage?
+    @Binding var image_id: String?
     @State private var isPickerPresented = false
     @Binding var imageUploadError: Bool
     var body: some View {
@@ -356,13 +355,15 @@ struct UploadImageView: View {
         }
         .padding()
         .sheet(isPresented: $isPickerPresented) {
-            ImagePicker(image: $selectedImage)
+            ImagePicker(image: $selectedImage,
+                        image_id: $image_id)
         }
     }
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var image: UIImage?
+    @Binding var image_id: String?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -405,7 +406,7 @@ struct ImagePicker: UIViewControllerRepresentable {
             let uniqueFileName = String.generateUniqueFileName(originalFileName: originalFileName)
             NetworkManager.shared.uploadImageToServer(imageData: imageData,
                                                       fileName: uniqueFileName) { responce in
-                
+                self.parent.image_id = responce?.fileName ?? ""
             }
         }
 

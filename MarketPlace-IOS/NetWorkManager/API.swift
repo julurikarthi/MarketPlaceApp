@@ -19,7 +19,7 @@ extension String {
     }
 
     static func createStore() -> String {
-        return "\(baseURL)/createStore"
+        return "\(baseURL)/createStore/"
     }
 
     static func getAllStores() -> String {

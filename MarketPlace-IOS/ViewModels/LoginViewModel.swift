@@ -81,6 +81,7 @@ class LoginViewModel: ObservableObject {
                     self.userToken = response.token
                     UserDetails.mobileNumber = response.user.mobileNumber
                     UserDetails.token = response.token
+                    UserDetails.userId = response.user.userId
                     UserDetails.userType = response.user.userType
                     movetoDashboard = true
                     showProgressIndicator = false
