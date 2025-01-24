@@ -41,13 +41,9 @@ extension String {
 struct CreateStoreView: View {
     @StateObject var viewModel = CreateStoreViewModel()
     var storeTypes = ["Select Store type","Grocery", "Grocery", "Grocery"]
-    var selectStore = ["Select State","US", "IN", "Grocery"]
-    @State private var dropdownselecton: String = "Select Store type"
     @State private var dropdownServiceSelection: String = "Select Service type"
     @State private var dropdownSelectState: String = "Select State"
-    @State private var isPickup = false
-    @State private var isPayAtPickup = false
-    @State private var isDelivery = false
+   
 
     var body: some View {
         NavigationStack {
@@ -70,29 +66,43 @@ struct CreateStoreView: View {
                         
                         HStack(spacing: 10) {
                             CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: viewModel.counties).frame(width:100)
-                            CustomTextField(text: $dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
+                            CustomTextField(text: $viewModel.dropdownselecton, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: storeTypes)
                         }.padding([.trailing, .leading], 20)
                         
-                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired, keyPadType: .numbersAndPunctuation)
+                        CustomTextField(text: $viewModel.taxPercentageRequired, placeholder: .empty, isError: $viewModel.taxPercentageRequiredError, errorMessage: .taxPercentageRequired, title: .taxPercentageRequired, keyPadType: .numbersAndPunctuation )
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
                         
                         VStack(alignment: .leading, spacing: 10) {
                             Text(String.selectSericeText).font(.system(size: 15)).bold()
-                            CheckboxView(isChecked: $isPickup, label: String.pickup)
-                            CheckboxView(isChecked: $isPayAtPickup, label: String.payAtPickup)
-                            CheckboxView(isChecked: $isDelivery, label: String.delivery)
+                            CheckboxView(isChecked: $viewModel.isPickup, label: String.pickup)
+                            CheckboxView(isChecked: $viewModel.isPayAtPickup, label: String.payAtPickup)
+                            CheckboxView(isChecked: $viewModel.isDelivery, label: String.delivery)
+                            if $viewModel.selectServiceTypeError.wrappedValue {
+                                HStack {
+                                    Image(systemName: "exclamationmark.circle.fill")
+                                        .foregroundColor(Color(hex: "#B70F01"))
+                                    Text("Select at least one Service Type")
+                                        .font(.footnote)
+                                        .foregroundColor(Color(hex: "#BB1B0D"))
+                                }
+                                .transition(.opacity)
+                            }
+                        
                             Text(String.signupText)
                                 .foregroundColor(.gray)
                                 .font(.system(size: 10))
                                 .lineLimit(3)
                                 .padding([.top], 5)
+                           
                         }.frame(maxWidth: .infinity, alignment: .leading).padding([.trailing, .leading], 20)
                         
                         signupButton
                     }
                 }
-            }.navigationTitle("Create Store")
+            }.navigationTitle("Create Store").task {
+                viewModel.getStoreDetailsData()
+            }
         }
     }
     

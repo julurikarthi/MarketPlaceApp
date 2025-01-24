@@ -27,7 +27,7 @@ extension String {
     }
 
     static func getStoreDetails() -> String {
-        return "\(baseURL)/getstoreDetails/"
+        return "\(baseURL)/storeDetails/"
     }
 
     static func getStoreCategories() -> String {

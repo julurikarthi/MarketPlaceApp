@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 class CreateStoreViewModel: ObservableObject {
     
@@ -18,7 +19,8 @@ class CreateStoreViewModel: ObservableObject {
     @Published  var county: String = ""
     
     @Published  var selectStateText: String = "NC"
-    
+    @Published  var dropdownselecton: String = "Select Store type"
+
     @Published  var imageUploadError: Bool = false
     @Published  var selectedImage: UIImage?
     
@@ -37,9 +39,13 @@ class CreateStoreViewModel: ObservableObject {
     @Published var storeResponse: CreateStoreResponse?
     @Published var storeCreateRequest: CreateStoreRequest?
     @Published var isLoading: Bool = false
-    
+    @Published var isPickup = false
+    @Published var isPayAtPickup = false
+    @Published var isDelivery = false
+    @Published var selectServiceTypeError = false
     var counties: [String] = ["NC"]
-    
+    var storeDetails: StoreServiceData?
+    var cancellables = Set<AnyCancellable>()
     init() {
         loadCountries()
     }
@@ -48,8 +54,16 @@ class CreateStoreViewModel: ObservableObject {
             
         }
     }
-    
     func validateInputs() -> Bool {
+        imageUploadError = true ? selectedImage == nil : false
+        emailError = email.isEmpty || !isValidEmail(email)
+        storeNameError = storeName.isEmpty
+        cityError = city.isEmpty
+        pincodeError = pincode.isEmpty || !isValidPincode(pincode)
+        addressError = address.isEmpty
+        countyError = county.isEmpty
+        taxPercentageRequiredError = taxPercentageRequired.isEmpty
+        // Check for each condition and return false if any error occurs
         let imageUploadValid = selectedImage != nil
         let emailValid = !email.isEmpty && isValidEmail(email)
         let storeNameValid = !storeName.isEmpty
@@ -58,12 +72,20 @@ class CreateStoreViewModel: ObservableObject {
         let addressValid = !address.isEmpty
         let countyValid = !county.isEmpty
         let taxPercentageValid = !taxPercentageRequired.isEmpty
-        
-        // Return true if all conditions are valid, otherwise false
+        if dropdownselecton == "Select Store type" {
+            selectStoreTypeError = false
+        } else {
+            selectStoreTypeError = false
+        }
+        if isPickup || isPayAtPickup || isDelivery {
+            selectServiceTypeError = false
+        } else {
+            selectServiceTypeError = true
+        }
         return imageUploadValid && emailValid && storeNameValid && cityValid &&
-               pincodeValid && addressValid && countyValid && taxPercentageValid
+        pincodeValid && addressValid && countyValid && taxPercentageValid
+        && !selectStoreTypeError && !selectServiceTypeError
     }
-
 
     private func isValidEmail(_ email: String) -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
@@ -117,6 +139,12 @@ class CreateStoreViewModel: ObservableObject {
             }
         )
     }
+    
+    func getStoreDetailsData() {
+        guard URL(string: String.getStoreDetails()) != nil else { return }
+
+      
+    }
 
 }
 
@@ -134,4 +162,12 @@ struct Country: Codable {
         case emoji
         case code
     }
+}
+
+struct StoreServiceData: Codable {
+    let storeTypes: [String]
+    let serviceTypes: [String]
+}
+struct EmptyRequestBody: RequestBody {
+    var user_id: String?
 }
