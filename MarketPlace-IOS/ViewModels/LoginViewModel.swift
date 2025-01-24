@@ -56,6 +56,9 @@ class LoginViewModel: ObservableObject {
     
     private var cancellables = Set<AnyCancellable>()
     @Published var movetoDashboard: Bool = false
+    @Published var movetoStore: Bool = false
+    @Published var movetoProducts: Bool = false
+    @Published var createStore: Bool = false
     func loginUser(loginRequest: LoginRequest) {
         showProgressIndicator = true
         NetworkManager.shared.performRequest(
@@ -83,7 +86,18 @@ class LoginViewModel: ObservableObject {
                     UserDetails.token = response.token
                     UserDetails.userId = response.user.userId
                     UserDetails.userType = response.user.userType
-                    movetoDashboard = true
+                    UserDetails.storeId = response.user.storeId
+                    UserDetails.mobileNumber = response.user.mobileNumber
+                    
+                    if response.user.userType == "storeOwner" {
+                        if response.user.storeId == nil {
+                            self.movetoStore = true
+                        } else {
+                            movetoProducts = true
+                        }
+                    } else if response.user.userType == "customer" {
+                        self.movetoDashboard = true
+                    }
                     showProgressIndicator = false
                 }
             }
@@ -104,7 +118,8 @@ class LoginViewModel: ObservableObject {
     
     func continueAction() {
         if isValidMobileNumber(mobile)  {
-            let request = LoginRequest(mobileNumber: mobile, userType: .storeOwner)
+            let digitsOnly = mobile.filter { $0.isNumber }
+            let request = LoginRequest(mobileNumber: digitsOnly, userType: .storeOwner)
             loginUser(loginRequest: request)
         } else {
             mobileError = true

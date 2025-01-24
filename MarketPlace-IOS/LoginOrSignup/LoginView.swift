@@ -54,8 +54,11 @@ struct LoginView: View {
                     dismissKeyboard()
                 }
             }
-            .ignoresSafeArea(edges: .all).navigationDestination(isPresented: $viewModel.movetoDashboard) {
+            .ignoresSafeArea(edges: .all)
+            .navigationDestination(isPresented: $viewModel.movetoStore) {
                 CreateStoreView()
+            }.navigationDestination(isPresented: $viewModel.movetoStore) {
+                
             }
         }
     }
