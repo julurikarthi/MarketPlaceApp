@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import Combine
 
 extension String {
     static let signupText = "By tapping creating Store"
@@ -42,12 +43,14 @@ struct CreateStoreView: View {
     @StateObject var viewModel = CreateStoreViewModel()
     @State private var dropdownServiceSelection: String = "Select Service type"
     @State private var dropdownSelectState: String = "Select State"
-
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    UploadImageView(selectedImage: $viewModel.selectedImage, image_id: $viewModel.image_id, imageUploadError: $viewModel.imageUploadError)
+                    UploadImageView(selectedImage: $viewModel.selectedImage,
+                                    image_id: $viewModel.image_id,
+                                    imageUploadError: $viewModel.imageUploadError,
+                                    isProgress: $viewModel.showProgressIndicator)
                     VStack {
                         CustomTextField(text: $viewModel.storeName, placeholder: .empty, isError: $viewModel.storeNameError, errorMessage: .storeNameError, title: .storeName)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
@@ -311,17 +314,19 @@ struct CheckboxView: View {
 }
 
 struct UploadImageView: View {
-    @Binding var selectedImage: UIImage?
-    @Binding var image_id: String?
+    @Binding var selectedImage: [UIImage]
+    @Binding var image_id: [String]
     @State private var isPickerPresented = false
     @Binding var imageUploadError: Bool
+    @Binding var isProgress: Bool
+    
     var body: some View {
         VStack(spacing: 20) {
             Text("Upload Image")
                 .font(.headline)
 
             // Display selected image or placeholder
-            if let image = selectedImage {
+            if let image = selectedImage.first {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
@@ -356,15 +361,15 @@ struct UploadImageView: View {
         .padding()
         .sheet(isPresented: $isPickerPresented) {
             ImagePicker(image: $selectedImage,
-                        image_id: $image_id)
+                        image_id: $image_id, isProgress: $isProgress)
         }
     }
 }
 
 struct ImagePicker: UIViewControllerRepresentable {
-    @Binding var image: UIImage?
-    @Binding var image_id: String?
-
+    @Binding var image: [UIImage]
+    @Binding var image_id: [String]
+    @Binding var isProgress: Bool
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
@@ -381,6 +386,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     class Coordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
         let parent: ImagePicker
+        var cancellables = Set<AnyCancellable>()
 
         init(_ parent: ImagePicker) {
             self.parent = parent
@@ -388,7 +394,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let uiImage = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
-                parent.image = uiImage
+                parent.image.append(uiImage)
             }
             picker.dismiss(animated: true)
             
@@ -404,10 +410,30 @@ struct ImagePicker: UIViewControllerRepresentable {
             }
             let originalFileName = "appicon.png"
             let uniqueFileName = String.generateUniqueFileName(originalFileName: originalFileName)
-            NetworkManager.shared.uploadImageToServer(imageData: imageData,
-                                                      fileName: uniqueFileName) { responce in
-                self.parent.image_id = responce?.fileName ?? ""
-            }
+            self.parent.isProgress = true
+            
+            let uploadPublisher: AnyPublisher<UploadResponse, Error> = NetworkManager.shared.uploadImage(
+                url: .uploadImage(),
+                imageData: imageData,
+                fileName: uniqueFileName,
+                responseType: UploadResponse.self
+            )
+            
+            uploadPublisher
+                .sink(receiveCompletion: { completion in
+                    switch completion {
+                    case .finished:
+                        print("Upload successful")
+                    case .failure(let error):
+                        print("Upload failed with error: \(error)")
+                    }
+                }, receiveValue: { response in
+                    print("Server response: \(response)")
+                    self.parent.isProgress = false
+                    self.parent.image_id.append(response.fileName)
+                })
+                .store(in: &cancellables)
+            
         }
 
         func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

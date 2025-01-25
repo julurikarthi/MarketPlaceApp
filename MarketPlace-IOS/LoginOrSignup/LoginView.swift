@@ -9,7 +9,8 @@ import SwiftUI
 
 struct LoginView: View {
     @StateObject var viewModel = LoginViewModel()
-    
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -53,15 +54,19 @@ struct LoginView: View {
                 .onTapGesture {
                     dismissKeyboard()
                 }
+                NavigationLink(
+                    "", destination: ProductListView()
+                        .navigationBarBackButtonHidden(true),
+                    isActive: $viewModel.movetoProducts)
+                 
+                
+                NavigationLink(
+                    "", destination: CreateStoreView()
+                        .navigationBarBackButtonHidden(true),
+                    isActive: $viewModel.movetoStore)
             }
             .ignoresSafeArea(edges: .all)
-            .navigationDestination(isPresented: $viewModel.movetoDashboard) {
-               
-            }.navigationDestination(isPresented: $viewModel.movetoStore) {
-                CreateStoreView()
-            }.navigationDestination(isPresented: $viewModel.movetoProducts) {
-                
-            }
+            
         }
     }
 

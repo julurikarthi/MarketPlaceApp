@@ -10,9 +10,10 @@ import SwiftUI
 struct ProductListView: View {
     @State private var products: [String] = [] // List of products
     @State private var showAddProductView: Bool = false
+    @Environment(\.presentationMode) var presentationMode // For manual back action
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if products.isEmpty {
                     // When there are no products
@@ -48,13 +49,12 @@ struct ProductListView: View {
                         }
                     }
                 }
+                NavigationLink(
+                    "", destination: CreateProductView()
+                        .navigationBarBackButtonHidden(true),
+                    isActive: $showAddProductView)
             }
             .navigationTitle("Products")
-            .sheet(isPresented: $showAddProductView) {
-//                AddProductView { newProduct in
-//                    products.append(newProduct)
-//                }
-            }
         }
     }
 }

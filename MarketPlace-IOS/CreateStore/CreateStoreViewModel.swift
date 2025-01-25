@@ -21,7 +21,7 @@ class CreateStoreViewModel: ObservableObject {
     @Published  var selectedStoreType: String = "Select Store type"
 
     @Published  var imageUploadError: Bool = false
-    @Published  var selectedImage: UIImage?
+    @Published  var selectedImage: [UIImage] = []
     
 
     @Published  var emailError: Bool = false
@@ -46,7 +46,7 @@ class CreateStoreViewModel: ObservableObject {
     @Published var showProgressIndicator = false
     @Published var storeTypes = ["Select Store type"]
     @Published var serviceTypes = [String]()
-    @Published var image_id: String?
+    @Published var image_id: [String] = []
     var counties: [String] = ["NC"]
     var storeDetails: StoreServiceData?
     var cancellables = Set<AnyCancellable>()
@@ -57,7 +57,7 @@ class CreateStoreViewModel: ObservableObject {
         if validateInputs() {
             let request = CreateStoreRequest(storeName: storeName,
                                              storeType: selectedStoreType,
-                                             imageId: image_id ?? "",
+                                             imageId: image_id.first ?? "",
                                              taxPercentage: taxPercentageRequired.doubleValue,
                                              pincode: pincode.intValue,
                                              state: selectStateText,

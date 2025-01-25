@@ -5,15 +5,16 @@ struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
 
     let columns = [GridItem(.adaptive(minimum: 100))]
+    @Environment(\.presentationMode) var presentationMode // For manual back action
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(spacing: 24) {
                     // Add Image Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Product Images")
-                            .font(.headline)
+                            .font(.headline).padding(.top, 10)
 
                         Button(action: {
                             viewModel.showPhotoPicker = true
@@ -31,7 +32,9 @@ struct CreateProductView: View {
                             .cornerRadius(8)
                         }
                         .sheet(isPresented: $viewModel.showPhotoPicker) {
-                            PhotoPicker(selectedImages: $viewModel.selectedPhotos)
+                            ImagePicker(image: $viewModel.selectedPhotos,
+                                        image_id: $viewModel.selectedImages_ids,
+                                        isProgress: $viewModel.showProgressIndicator)
                         }
 
                         if !viewModel.selectedPhotos.isEmpty {
@@ -115,8 +118,10 @@ struct CreateProductView: View {
                     // Publish Toggle
                     Toggle("Publish", isOn: $viewModel.isPublished)
                         .padding(.horizontal)
-                }
+                }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                 .padding(.bottom)
+            }.task {
+                viewModel.getstoreCategories()
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Create Product")
@@ -125,17 +130,21 @@ struct CreateProductView: View {
                 // Add "Create Product" button to the navigation bar
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: viewModel.submitProduct) {
-                        if viewModel.isSubmitting {
-                            ProgressView()
-                                .padding(.vertical, 4)
-                        } else {
-                            Text("Save")
-                                .fontWeight(.bold).foregroundColor(Color.themeRed)
-                        }
+                       
                     }
                     .disabled(viewModel.isSubmitting)
                 }
-            }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss() // Custom back action
+                    }) {
+                        Image(systemName: "chevron.left") // Back arrow
+                            .foregroundColor(Color.themeRed) // Custom back button color
+                            .font(.title2) // Customize size
+                    }
+                }
+            }.navigationBarBackButtonHidden(true)
         }
     }
 }
@@ -195,45 +204,6 @@ struct TextFieldWithError: View {
     }
 }
 
-struct PhotoPicker: UIViewControllerRepresentable {
-    @Binding var selectedImages: [UIImage]
-
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var config = PHPickerConfiguration()
-        config.selectionLimit = 0
-        config.filter = .images
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = context.coordinator
-        return picker
-    }
-
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: PhotoPicker
-
-        init(_ parent: PhotoPicker) {
-            self.parent = parent
-        }
-
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            picker.dismiss(animated: true)
-            for result in results {
-                result.itemProvider.loadObject(ofClass: UIImage.self) { (object, error) in
-                    if let image = object as? UIImage {
-                        DispatchQueue.main.async {
-                            self.parent.selectedImages.append(image)
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 struct CategorySelectionView: View {
     @Binding var selectedCategory: String
     @State private var showAddCategorySheet = false
@@ -248,8 +218,8 @@ struct CategorySelectionView: View {
                 Spacer()
                 Menu {
                     ForEach(viewModel.categories, id: \.self) { category in
-                        Button(category) {
-                            selectedCategory = category
+                        Button(category.categoryName) {
+                            selectedCategory = category.categoryName
                         }
                     }
                     Button(action: {
@@ -266,7 +236,6 @@ struct CategorySelectionView: View {
                 .padding()
                 .background(.green).cornerRadius(10)
             }
-
             // Add New Category Sheet
             .sheet(isPresented: $showAddCategorySheet) {
                 NavigationView {
@@ -297,7 +266,7 @@ struct CategorySelectionView: View {
                         .padding(.top)
 
                         Spacer()
-                    }
+                    }.loadingIndicator(isLoading: $viewModel.showCetegoryProgressIndicator)
                     .padding()
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {

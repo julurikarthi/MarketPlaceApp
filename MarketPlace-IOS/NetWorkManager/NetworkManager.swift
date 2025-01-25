@@ -53,7 +53,6 @@ class NetworkManager {
         // Encode the payload if provided
         if var payload = payload {
             do {
-                payload.user_id = UserDetails.userId
                 request.httpBody = try JSONEncoder().encode(payload)
             } catch {
                 return Fail(error: error)
