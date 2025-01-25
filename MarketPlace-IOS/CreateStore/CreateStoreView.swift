@@ -116,7 +116,7 @@ struct CreateStoreView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 3)
                 .padding()
-                .background(Color.red)
+                .background(Color.themeRed)
                 .cornerRadius(20)
         }.padding(15)
     }
@@ -280,7 +280,7 @@ struct RoundedButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.red)
+                .background(Color.themeRed)
                 .cornerRadius(10)
         }
         .frame(maxWidth: 200) // Set a fixed width if needed

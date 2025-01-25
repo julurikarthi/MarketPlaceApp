@@ -60,6 +60,7 @@ struct LoginView: View {
             }.navigationDestination(isPresented: $viewModel.movetoStore) {
                 CreateStoreView()
             }.navigationDestination(isPresented: $viewModel.movetoProducts) {
+                
             }
         }
     }
@@ -75,7 +76,7 @@ struct LoginView: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: 3)
                 .padding()
-                .background(Color.red)
+                .background(Color.themeRed)
                 .cornerRadius(20)
         }.padding(15)
     }
