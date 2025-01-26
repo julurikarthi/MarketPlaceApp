@@ -10,23 +10,13 @@ import Combine
 struct CreateProductRequest: Codable, RequestBody {
     var user_id: String?
     
-    let productName: String
+    let product_name: String
     let description: String
     let price: Double
     let stock: Int
-    let categoryId: String
-    let storeId: String
-    let taxPercentage: Double
-
-    enum CodingKeys: String, CodingKey {
-        case productName = "product_name"
-        case description
-        case price
-        case stock
-        case categoryId = "category_id"
-        case storeId = "store_id"
-        case taxPercentage = "tax_percentage"
-    }
+    let category_id: String
+    let imageids: [String]
+    let isPublish: Bool
 }
 
 struct GetAllProductByStoreRequest: Codable, RequestBody {

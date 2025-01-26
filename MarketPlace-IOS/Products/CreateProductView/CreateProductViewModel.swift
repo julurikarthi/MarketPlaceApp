@@ -18,7 +18,7 @@ class CreateProductViewModel: ObservableObject {
     @Published var description: String = ""
     @Published var price: String = ""
     @Published var stock: String = ""
-    @Published var categoryID: String = ""
+    @Published var categoryID: Category = .init(categoryID: "", categoryName: "", createdAt: "", updatedAt: "")
     @Published var storeID: String = ""
     @Published var taxPercentage: String = ""
     @Published var selectedPhotos: [UIImage] = []
@@ -38,7 +38,7 @@ class CreateProductViewModel: ObservableObject {
 
     
     func validateFields() -> Bool {
-        if productName.isEmpty || description.isEmpty || price.isEmpty || stock.isEmpty || categoryID.isEmpty || selectedPhotos.isEmpty {
+        if productName.isEmpty || description.isEmpty || price.isEmpty || stock.isEmpty || categoryID.categoryName.isEmpty || selectedPhotos.isEmpty {
             errorMessage = "All fields are required"
             showErrorMessage = true
             return false
@@ -48,7 +48,14 @@ class CreateProductViewModel: ObservableObject {
     
     func submitProduct() {
         guard validateFields() else { return }
-       
+        let request = CreateProductRequest(product_name: productName,
+                                           description: description,
+                                           price: Double(price)!,
+                                           stock: Int(stock)!,
+                                           category_id: categoryID.categoryID,
+                                           imageids: selectedImages_ids,
+                                           isPublish: isPublished)
+        sendCreateProductRequest(request: request, isUpdateProduct: false)
         
     }
     func addNewCategory() {
@@ -59,7 +66,7 @@ class CreateProductViewModel: ObservableObject {
     
     func sendCreateProductRequest(request: CreateProductRequest, isUpdateProduct: Bool) {
         let url = isUpdateProduct ? String.updateProduct() : String.createProduct()
-        
+        showProgressIndicator = true
         NetworkManager.shared.performRequest(
             url: url,
             method: .POST,
@@ -67,6 +74,7 @@ class CreateProductViewModel: ObservableObject {
             responseType: CreateProductResponse.self
         ).sink(
             receiveCompletion: { completion in
+                self.showProgressIndicator = false
                 switch completion {
                 case .finished:
                     print("Request completed successfully.")
@@ -75,7 +83,7 @@ class CreateProductViewModel: ObservableObject {
                 }
             },
             receiveValue: { response in
-                self.createProductResponse = response
+                self.showProgressIndicator = false
             }
         ).store(in: &cancellables)
     }

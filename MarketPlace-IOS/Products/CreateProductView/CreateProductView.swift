@@ -130,7 +130,7 @@ struct CreateProductView: View {
                 // Add "Create Product" button to the navigation bar
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: viewModel.submitProduct) {
-                       
+                        Text("Save").foregroundColor(Color.themeRed)
                     }
                     .disabled(viewModel.isSubmitting)
                 }
@@ -205,7 +205,7 @@ struct TextFieldWithError: View {
 }
 
 struct CategorySelectionView: View {
-    @Binding var selectedCategory: String
+    @Binding var selectedCategory: Category
     @State private var showAddCategorySheet = false
     @ObservedObject var viewModel: CreateProductViewModel
 
@@ -219,7 +219,7 @@ struct CategorySelectionView: View {
                 Menu {
                     ForEach(viewModel.categories, id: \.self) { category in
                         Button(category.categoryName) {
-                            selectedCategory = category.categoryName
+                            selectedCategory = category
                         }
                     }
                     Button(action: {
@@ -229,7 +229,7 @@ struct CategorySelectionView: View {
                             .foregroundColor(.blue)
                     }
                 } label: {
-                    Text(selectedCategory.isEmpty ? "Select Category" : selectedCategory).bold()
+                    Text(selectedCategory.categoryName.isEmpty ? "Select Category" : selectedCategory.categoryName).bold()
                         .foregroundColor(.white)
                         .font(.subheadline)
                 }
