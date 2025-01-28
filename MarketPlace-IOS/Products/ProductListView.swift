@@ -14,6 +14,7 @@ struct ProductListView: View {
     @State private var test: Bool = false
     @Environment(\.presentationMode) var presentationMode // For manual back action
     @StateObject private var viewModel = ProductListViewModel()
+   
     let columns = [
           GridItem(.flexible()),
           GridItem(.flexible())
@@ -24,6 +25,7 @@ struct ProductListView: View {
                 if !viewModel.categories.isEmpty  {
                     ScrollView {
                         CategoriesTabBarView(tabs: viewModel.categories, onTabSelection: { category in
+                            viewModel.selectedCategory = category
                             Task {
                                 await viewModel.getAllProductbyStore(category_id: category.categoryID)
                             }
@@ -64,7 +66,8 @@ struct ProductListView: View {
         }.task {
             let isCategoriesFetched = await viewModel.getstoreCategories()
                if isCategoriesFetched {
-                   await viewModel.getAllProductbyStore()
+                   let categoryID = viewModel.selectedCategory?.categoryID ?? ""
+                   await viewModel.getAllProductbyStore(category_id: categoryID)
                }
         }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
     }

@@ -12,7 +12,7 @@ class ProductListViewModel: ObservableObject {
     @Published var categories: [Category] = []
     private var cancellables = Set<AnyCancellable>()
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
-
+    var selectedCategory: Category?
     func getstoreCategories() async -> Bool {
         return await withCheckedContinuation { continuation in
             showProgressIndicator = true
