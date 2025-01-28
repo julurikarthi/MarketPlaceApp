@@ -19,7 +19,8 @@ class ProductCellItemViewModel: ObservableObject {
     var imageIds: [String]
     var cancellables = Set<AnyCancellable>()
     @Published var product: GetAllStoreProductsResponse.Product
-    init(product: GetAllStoreProductsResponse.Product) {
+    var delegate: ProductListViewModelDelegate
+    init(product: GetAllStoreProductsResponse.Product, delegate: ProductListViewModelDelegate) {
         self.product = product
         self.productTitle = product.productName
         self.productPrice = product.price
@@ -27,6 +28,7 @@ class ProductCellItemViewModel: ObservableObject {
         self.stock = "\(product.stock)"
         self.stockCount = product.stock
         imageIds = product.imageids
+        self.delegate = delegate
     }
     
    
@@ -83,7 +85,14 @@ class ProductCellItemViewModel: ObservableObject {
             .collect()
             .eraseToAnyPublisher()
     }
+    
+    func editProduct() {
+        delegate.didtapOnEditButton(for: product)
+    }
 
+    func deleteProduct() {
+        delegate.didtapOnDeleteButton(for: product)
+    }
 
 }
 

@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ProductListView: View {
   
-    @State private var showAddProductView: Bool = false
     @State private var showCreateProductView: Bool = false
     @State private var test: Bool = false
     @Environment(\.presentationMode) var presentationMode // For manual back action
@@ -45,7 +44,7 @@ struct ProductListView: View {
                 NavigationLink(
                     "", destination: CreateProductView()
                         .navigationBarBackButtonHidden(true),
-                    isActive: $showAddProductView)
+                    isActive: $viewModel.showAddProductView)
                 
                 NavigationLink(
                     "", destination: CreateStoreView()
@@ -56,7 +55,7 @@ struct ProductListView: View {
                     ToolbarItem(placement: .navigationBarTrailing) { // Add a button on the right side
                         Button(action: {
                             // Action to add a product
-                            self.showAddProductView = true
+                            viewModel.showAddProductView = true
                         }) {
                             Image(systemName: "plus")
                                 .foregroundColor(Color.themeRed)
@@ -85,7 +84,7 @@ struct ProductListView: View {
                 .foregroundColor(.gray)
             
             Button(action: {
-                showAddProductView = true
+                viewModel.showAddProductView = true
             }) {
                 Text("Add Product")
                     .frame(maxWidth: .infinity)
@@ -102,7 +101,7 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue))
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel))
             }
         }
         .padding()

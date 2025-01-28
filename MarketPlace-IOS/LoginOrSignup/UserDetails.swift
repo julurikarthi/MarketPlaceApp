@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 class UserDetails {
     static let shared = UserDetails() // Singleton instance
     

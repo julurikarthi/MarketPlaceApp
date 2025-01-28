@@ -18,13 +18,22 @@ struct ProductCellItem: View {
                 }
                 .tabViewStyle(PageTabViewStyle())
                 .frame(height: 200)
-
-                AddToCartView().padding(EdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
+                if UserDetails.userType != .storeOwner {
+                    AddToCartView().padding(EdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
+                }
             }
             
-            PriceView(price: viewModel.productPrice)
-                .padding(EdgeInsets(top: 0, leading: -5, bottom: 0, trailing: 0))
-
+            HStack {
+                PriceView(price: viewModel.productPrice)
+                    .padding(EdgeInsets(top: 0, leading: -2, bottom: 0, trailing: 0))
+                if UserDetails.userType == .storeOwner {
+                    menuOptions()
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 30))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        
+                }
+            }
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(viewModel.productTitle)
                     .font(.subheadline)
@@ -61,6 +70,21 @@ struct ProductCellItem: View {
             await viewModel.downloadproductImages()
         }
     }
+    
+    func menuOptions() -> some View {
+        Menu {
+            Button("Edit", action: viewModel.editProduct)
+            Button("Delete", action: viewModel.deleteProduct)
+        } label: {
+            Image(systemName: "ellipsis")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                .foregroundColor(.black)
+        }
+    }
+    
+  
 }
 
 

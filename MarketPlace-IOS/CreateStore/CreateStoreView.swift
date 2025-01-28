@@ -10,6 +10,7 @@ import PhotosUI
 import Combine
 
 extension String {
+    
     static let signupText = "By tapping creating Store"
     static let selectSericeText = "Select Service Type"
     static let selectStoreText = "Select Store Type"

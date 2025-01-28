@@ -7,7 +7,15 @@
 
 import SwiftUI
 import Combine
+
+protocol ProductListViewModelDelegate: AnyObject {
+    func didtapOnEditButton(for product: GetAllStoreProductsResponse.Product)
+    func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product)
+}
+
+
 class ProductListViewModel: ObservableObject {
+    @Published var showAddProductView: Bool = false
     @MainThreadPublished var showProgressIndicator = false
     @Published var categories: [Category] = []
     private var cancellables = Set<AnyCancellable>()
@@ -69,4 +77,15 @@ class ProductListViewModel: ObservableObject {
             ).store(in: &cancellables)
     }
     
+}
+
+extension ProductListViewModel: ProductListViewModelDelegate {
+    
+    func didtapOnEditButton(for product: GetAllStoreProductsResponse.Product) {
+        showAddProductView = true
+    }
+    
+    func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product) {
+        
+    }
 }
