@@ -79,10 +79,10 @@ struct GetAllStoreProductsResponse: Codable {
 struct DeleteProductRequest: Codable, RequestBody {
     var user_id: String?
     
-    let productId: String
+    let product_id: String
 
     enum CodingKeys: String, CodingKey {
-        case productId = "product_id"
+        case product_id = "product_id"
     }
 }
 

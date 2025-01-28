@@ -120,30 +120,6 @@ class CreateProductViewModel: ObservableObject {
         
     }
     
-    
-    func deleteProduct(request: DeleteProductRequest) {
-        guard let url = URL(string: .deleteProduct()) else { return }
-        
-          NetworkManager.shared.performRequest(
-            url: .login(),
-            method: .POST,
-            payload: request,
-            responseType: SuccessResponse.self
-        ).sink(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        print("Request completed successfully.")
-                    case .failure(let error):
-                        print("Request failed: \(error.localizedDescription)")
-                    }
-                },
-                receiveValue: { response in
-                    self.successResponse = true
-                }
-            ).store(in: &cancellables)
-    }
-    
     func getstoreCategories() {
         showProgressIndicator = true
         let fetchcategoryRequest: FetchCategoryRequest = .init()
