@@ -42,7 +42,7 @@ struct ProductListView: View {
                 }
                 
                 NavigationLink(
-                    "", destination: CreateProductView()
+                    "", destination: CreateProductView(editProduct: viewModel.editProduct)
                         .navigationBarBackButtonHidden(true),
                     isActive: $viewModel.showAddProductView)
                 
@@ -63,11 +63,14 @@ struct ProductListView: View {
                     }
                 }
         }.task {
-            let isCategoriesFetched = await viewModel.getstoreCategories()
-               if isCategoriesFetched {
-                   let categoryID = viewModel.selectedCategory?.categoryID ?? ""
-                   await viewModel.getAllProductbyStore(category_id: categoryID)
-               }
+            if viewModel.categories.isEmpty {
+                let isCategoriesFetched = await viewModel.getstoreCategories()
+                if isCategoriesFetched {
+                    let categoryID = viewModel.selectedCategory?.categoryID ?? ""
+                    await viewModel.getAllProductbyStore(category_id: categoryID)
+                }
+            }
+               
         }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
     }
     
@@ -101,7 +104,7 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel))
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory))
             }
         }
         .padding()

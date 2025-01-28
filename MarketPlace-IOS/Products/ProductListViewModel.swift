@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 protocol ProductListViewModelDelegate: AnyObject {
-    func didtapOnEditButton(for product: GetAllStoreProductsResponse.Product)
+    func didtapOnEditButton(for product: EditProduct)
     func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product)
 }
 
@@ -21,6 +21,7 @@ class ProductListViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
     var selectedCategory: Category?
+    var editProduct: EditProduct? = nil
     func getstoreCategories() async -> Bool {
         return await withCheckedContinuation { continuation in
             showProgressIndicator = true
@@ -81,8 +82,9 @@ class ProductListViewModel: ObservableObject {
 
 extension ProductListViewModel: ProductListViewModelDelegate {
     
-    func didtapOnEditButton(for product: GetAllStoreProductsResponse.Product) {
+    func didtapOnEditButton(for product: EditProduct) {
         showAddProductView = true
+        self.editProduct = product
     }
     
     func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product) {

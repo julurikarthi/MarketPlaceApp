@@ -3,7 +3,7 @@ import PhotosUI
 
 struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
-
+    var editProduct: EditProduct? = nil
     let columns = [GridItem(.adaptive(minimum: 100))]
     @Environment(\.presentationMode) var presentationMode // For manual back action
 
@@ -124,6 +124,10 @@ struct CreateProductView: View {
                 viewModel.getstoreCategories()
             }.onTapGesture {
                 dismissKeyboard()
+            }.onAppear {
+                if let product = editProduct {
+                    viewModel.updateProduct(product: product)
+                }
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Create Product")

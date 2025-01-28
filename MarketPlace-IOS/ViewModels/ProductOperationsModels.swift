@@ -52,6 +52,7 @@ struct GetAllStoreProductsResponse: Codable {
         let price: Double
         let stock: Int
         let description: String
+        let category_id: String
         let createdAt: String
         let updatedAt: String?
         let imageids: [String]
@@ -66,6 +67,7 @@ struct GetAllStoreProductsResponse: Codable {
             case createdAt = "created_at"
             case updatedAt = "updated_at"
             case imageids
+            case category_id
         }
     }
 }

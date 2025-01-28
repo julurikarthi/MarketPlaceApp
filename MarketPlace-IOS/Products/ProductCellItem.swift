@@ -4,6 +4,7 @@ import SwiftUI
 struct ProductCellItem: View {
   
     @StateObject var viewModel: ProductCellItemViewModel
+        
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             // Image Carousel

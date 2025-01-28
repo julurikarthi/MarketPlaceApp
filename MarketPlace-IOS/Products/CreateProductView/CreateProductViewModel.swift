@@ -35,7 +35,7 @@ class CreateProductViewModel: ObservableObject {
     @MainThreadPublished var showCetegoryProgressIndicator = false
     @MainThreadPublished var showProgressIndicator = false
     private var cancellables = Set<AnyCancellable>()
-
+    private var isUpdateProduct: Bool = false
     
     func validateFields() -> Bool {
         if productName.isEmpty || description.isEmpty || price.isEmpty || stock.isEmpty || categoryID.categoryName.isEmpty || selectedPhotos.isEmpty {
@@ -56,7 +56,7 @@ class CreateProductViewModel: ObservableObject {
                                            category_id: categoryID.categoryID,
                                            imageids: selectedImages_ids,
                                            isPublish: isPublished)
-        sendCreateProductRequest(request: request, isUpdateProduct: false)
+        sendCreateProductRequest(request: request)
         
     }
     func addNewCategory() {
@@ -65,7 +65,7 @@ class CreateProductViewModel: ObservableObject {
         
     }
     
-    func sendCreateProductRequest(request: CreateProductRequest, isUpdateProduct: Bool) {
+    func sendCreateProductRequest(request: CreateProductRequest) {
         let url = isUpdateProduct ? String.updateProduct() : String.createProduct()
         showProgressIndicator = true
         NetworkManager.shared.performRequest(
@@ -159,6 +159,29 @@ class CreateProductViewModel: ObservableObject {
                                              ).store(in: &cancellables)
     }
     
+    func updateProduct(product: EditProduct) {
+        productName = product.product_name
+        description = product.description
+        price = "\(product.price)"
+        stock = "\(product.stock)"
+        selectedPhotos = product.selectedPhotos
+        selectedImages_ids = product.imageids
+        isPublished = product.isPublish
+        categoryID = product.categoryID
+        isUpdateProduct = true
+    }
+    
+}
+
+struct EditProduct: RequestBody {
+    let product_name: String
+    let description: String
+    let price: Double
+    let stock: Int
+    let imageids: [String]
+    let isPublish: Bool
+    let selectedPhotos: [UIImage]
+    let categoryID: Category
 }
 
 struct FetchCategoryRequest: Codable, RequestBody {
