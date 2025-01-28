@@ -12,7 +12,7 @@ class CreateProductViewModel: ObservableObject {
     @Published var createProductResponse: CreateProductResponse?
     @Published var isLoading: Bool = false
     @Published var allStoreProducts: GetAllStoreProductsResponse?
-    @Published var successResponse: SuccessResponse?
+    @Published var successResponse: Bool = false
     
     @Published var productName: String = ""
     @Published var description: String = ""
@@ -36,7 +36,8 @@ class CreateProductViewModel: ObservableObject {
     @MainThreadPublished var showProgressIndicator = false
     private var cancellables = Set<AnyCancellable>()
     private var isUpdateProduct: Bool = false
-    
+    private var product_id: String?
+
     func validateFields() -> Bool {
         if productName.isEmpty || description.isEmpty || price.isEmpty || stock.isEmpty || categoryID.categoryName.isEmpty || selectedPhotos.isEmpty {
             errorMessage = "All fields are required"
@@ -48,7 +49,8 @@ class CreateProductViewModel: ObservableObject {
     
     func submitProduct() {
         guard validateFields() else { return }
-        let request = CreateProductRequest(store_type: UserDetails.store_type,
+        let request = CreateProductRequest(product_id: product_id,
+                                           store_type: UserDetails.store_type,
                                            product_name: productName,
                                            description: description,
                                            price: Double(price)!,
@@ -68,25 +70,54 @@ class CreateProductViewModel: ObservableObject {
     func sendCreateProductRequest(request: CreateProductRequest) {
         let url = isUpdateProduct ? String.updateProduct() : String.createProduct()
         showProgressIndicator = true
-        NetworkManager.shared.performRequest(
-            url: url,
-            method: .POST,
-            payload: request,
-            responseType: CreateProductResponse.self
-        ).sink(
-            receiveCompletion: { completion in
-                self.showProgressIndicator = false
-                switch completion {
-                case .finished:
-                    print("Request completed successfully.")
-                case .failure(let error):
-                    print("Request failed: \(error.localizedDescription)")
+        if isUpdateProduct {
+            NetworkManager.shared.performRequest(
+                url: url,
+                method: .POST,
+                payload: request,
+                responseType: SuccessResponse.self
+            ).sink(
+                receiveCompletion: { completion in
+                    self.showProgressIndicator = false
+                    switch completion {
+                    case .finished:
+                        print("Request completed successfully.")
+                    case .failure(let error):
+                        print("Request failed: \(error.localizedDescription)")
+                    }
+                },
+                receiveValue: { response in
+                    DispatchQueue.main.async {
+                        self.showProgressIndicator = false
+                        self.successResponse = true
+                    }
                 }
-            },
-            receiveValue: { response in
-                self.showProgressIndicator = false
-            }
-        ).store(in: &cancellables)
+            ).store(in: &cancellables)
+        } else {
+            NetworkManager.shared.performRequest(
+                url: url,
+                method: .POST,
+                payload: request,
+                responseType: CreateProductResponse.self
+            ).sink(
+                receiveCompletion: { completion in
+                    self.showProgressIndicator = false
+                    switch completion {
+                    case .finished:
+                        print("Request completed successfully.")
+                    case .failure(let error):
+                        print("Request failed: \(error.localizedDescription)")
+                    }
+                },
+                receiveValue: { response in
+                    DispatchQueue.main.async {
+                        self.showProgressIndicator = false
+                        self.successResponse = true
+                    }
+                }
+            ).store(in: &cancellables)
+        }
+        
     }
     
     
@@ -108,7 +139,7 @@ class CreateProductViewModel: ObservableObject {
                     }
                 },
                 receiveValue: { response in
-                    self.successResponse = response
+                    self.successResponse = true
                 }
             ).store(in: &cancellables)
     }
@@ -155,6 +186,7 @@ class CreateProductViewModel: ObservableObject {
                                                     self.newCategoryName = ""
                                                     self.isAddingCategory = false
                                                     self.showCetegoryProgressIndicator = false
+                                                    
                                                 }
                                              ).store(in: &cancellables)
     }
@@ -168,12 +200,14 @@ class CreateProductViewModel: ObservableObject {
         selectedImages_ids = product.imageids
         isPublished = product.isPublish
         categoryID = product.categoryID
+        product_id = product.product_id
         isUpdateProduct = true
     }
     
 }
 
 struct EditProduct: RequestBody {
+    let product_id: String
     let product_name: String
     let description: String
     let price: Double

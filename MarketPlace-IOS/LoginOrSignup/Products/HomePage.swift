@@ -18,23 +18,17 @@ struct HomePage: View {
                        Text("Home")
                    }.tag(0)
 
-            SearchView()
-                .tabItem {
-                    Image(selectedTab == 1 ? "categoryselected" : "category-1")
-                    Text("Search")
-                }.tag(1)
-            
             ProfileView()
                 .tabItem {
                     Image(selectedTab == 2 ? "orderselected" : "orders")
                     Text("Profile")
-                }.tag(2)
+                }.tag(1)
 
             ProfileView()
                 .tabItem {
                     Image(selectedTab == 3 ? "profileselected" : "profile")
                     Text("Profile")
-                }.tag(3)
+                }.tag(2)
         }
         .accentColor(.red) // Change active tab color
     }

@@ -37,7 +37,7 @@ struct ProductListView: View {
                     }
                 } else {
                     if viewModel.categories.isEmpty {
-                        addtoProductView()
+                        addtoProductView().offset(y: 150)
                     }
                 }
                 

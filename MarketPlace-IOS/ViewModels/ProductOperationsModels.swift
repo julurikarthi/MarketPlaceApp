@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 struct CreateProductRequest: Codable, RequestBody {
+    var product_id: String?
     var store_type: String?
     var user_id: String?
     let product_name: String
@@ -41,6 +42,8 @@ struct CreateProductResponse: Codable {
         case categoryName = "category_name"
     }
 }
+
+
 
 struct GetAllStoreProductsResponse: Codable {
     var products: [Product]

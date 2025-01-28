@@ -91,7 +91,7 @@ class ProductCellItemViewModel: ObservableObject {
     
     func editProduct() {
         if let selectedCategory = selectedCategory {
-            let ediProduct = EditProduct(product_name: product.productName, description: product.description, price: product.price, stock: product.stock,  imageids: product.imageids, isPublish: true, selectedPhotos: self.productImages, categoryID: selectedCategory)
+            let ediProduct = EditProduct(product_id: product.productId, product_name: product.productName, description: product.description, price: product.price, stock: product.stock,  imageids: product.imageids, isPublish: true, selectedPhotos: self.productImages, categoryID: selectedCategory)
             delegate.didtapOnEditButton(for: ediProduct)
         }
       

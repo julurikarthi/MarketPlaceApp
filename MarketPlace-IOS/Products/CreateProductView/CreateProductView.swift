@@ -5,8 +5,8 @@ struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
     var editProduct: EditProduct? = nil
     let columns = [GridItem(.adaptive(minimum: 100))]
-    @Environment(\.presentationMode) var presentationMode // For manual back action
-
+    @Environment(\.presentationMode) var presentationMode
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -128,7 +128,9 @@ struct CreateProductView: View {
                 if let product = editProduct {
                     viewModel.updateProduct(product: product)
                 }
-            }
+            }.onChange(of: viewModel.successResponse, { _, _ in
+                presentationMode.wrappedValue.dismiss()
+            })
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Create Product")
             .navigationBarTitleDisplayMode(.inline)
