@@ -27,13 +27,15 @@ struct User: Codable {
     let userType: String
     let mobileNumber: String
     let storeId: String?
-    
+    let store_type: String?
+
     // CodingKeys to map JSON keys to Swift property names if needed
     enum CodingKeys: String, CodingKey {
         case userId = "user_id"
         case userType
         case mobileNumber
         case storeId = "store_id"
+        case store_type
     }
 }
 
@@ -57,7 +59,7 @@ class LoginViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     @Published var movetoDashboard: Bool = false
     @Published var movetoStore: Bool = false
-    @Published var movetoProducts: Bool = false
+    @Published var movetoHome: Bool = false
     @Published var createStore: Bool = false
     func loginUser(loginRequest: LoginRequest) {
         showProgressIndicator = true
@@ -88,13 +90,14 @@ class LoginViewModel: ObservableObject {
                     UserDetails.userType = response.user.userType
                     UserDetails.storeId = response.user.storeId
                     UserDetails.mobileNumber = response.user.mobileNumber
+                    UserDetails.store_type = response.user.store_type
                     DispatchQueue.main.async { [self] in
                         self.showProgressIndicator = false
                         if response.user.userType == "storeOwner" {
                             if response.user.storeId == nil {
                                 self.movetoStore = true
                             } else {
-                                self.movetoProducts = true
+                                self.movetoHome = true
                             }
                         } else if response.user.userType == "customer" {
                             self.movetoDashboard = true
@@ -145,12 +148,17 @@ class MainThreadPublished<T>: ObservableObject {
     var wrappedValue: T {
         get { value }
         set {
-            // Ensure updates are made on the main thread
-            DispatchQueue.main.async {
+            // Check if we're already on the main thread
+            if Thread.isMainThread {
                 self.value = newValue
+            } else {
+                DispatchQueue.main.async {
+                    self.value = newValue
+                }
             }
         }
     }
+
 
     init(wrappedValue: T) {
         self.value = wrappedValue

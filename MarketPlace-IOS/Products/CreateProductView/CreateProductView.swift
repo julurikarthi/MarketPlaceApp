@@ -122,6 +122,8 @@ struct CreateProductView: View {
                 .padding(.bottom)
             }.task {
                 viewModel.getstoreCategories()
+            }.onTapGesture {
+                dismissKeyboard()
             }
             .background(Color(.systemGroupedBackground))
             .navigationTitle("Create Product")

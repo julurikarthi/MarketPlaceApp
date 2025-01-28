@@ -122,8 +122,8 @@ extension String {
         return "\(baseURL)/uploadImage/"
     }
 
-    static func downloadImage() -> String {
-        return "\(baseURL)/downloadImage/"
+    static func downloadImage(imageid: String) -> String {
+        return "\(baseURL)/downloadImage/?file_name=\(imageid)"
     }
     
     static func generateUniqueFileName(originalFileName: String) -> String {

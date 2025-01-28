@@ -12,7 +12,7 @@ struct HomePage: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            ProductListView()
                    .tabItem {
                        Image(selectedTab == 0 ? "homeselected" : "home").resizable()
                        Text("Home")

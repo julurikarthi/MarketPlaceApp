@@ -53,6 +53,8 @@ class NetworkManager {
         // Encode the payload if provided
         if var payload = payload {
             do {
+                payload.store_id = UserDetails.storeId
+                payload.user_id = UserDetails.userId
                 request.httpBody = try JSONEncoder().encode(payload)
             } catch {
                 return Fail(error: error)
@@ -126,6 +128,32 @@ class NetworkManager {
             .decode(type: U.self, decoder: JSONDecoder())
             .eraseToAnyPublisher()
     }
+    
+    func downloadImage(
+        from url: String
+    ) -> AnyPublisher<Data, Error> {
+        // Ensure the URL is valid
+        guard let url = URL(string: url) else {
+            return Fail(error: URLError(.badURL))
+                .eraseToAnyPublisher()
+        }
+
+        // Create the request
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        // Use Combine to perform the request
+        return session.dataTaskPublisher(for: request)
+            .tryMap { output in
+                guard let response = output.response as? HTTPURLResponse,
+                      200..<300 ~= response.statusCode else {
+                    throw URLError(.badServerResponse)
+                }
+                return output.data
+            }
+            .eraseToAnyPublisher()
+    }
+
 
 }
 

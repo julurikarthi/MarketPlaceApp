@@ -55,9 +55,9 @@ struct LoginView: View {
                     dismissKeyboard()
                 }
                 NavigationLink(
-                    "", destination: ProductListView()
+                    "", destination: HomePage()
                         .navigationBarBackButtonHidden(true),
-                    isActive: $viewModel.movetoProducts)
+                    isActive: $viewModel.movetoHome)
                  
                 
                 NavigationLink(
@@ -92,13 +92,6 @@ struct LoginView: View {
 #Preview {
     LoginView()
 }
-
-extension View {
-    func dismissKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
-
 
 struct LoadingViewModifier: ViewModifier {
     @Binding var isLoading: Bool

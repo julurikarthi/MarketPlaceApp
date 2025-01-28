@@ -29,6 +29,15 @@ class UserDetails {
         }
     }
     
+    static var store_type: String? {
+        get {
+            return UserDefaults.standard.string(forKey: "store_type")
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "store_type")
+        }
+    }
+    
     static var mobileNumber: String? {
         get {
             return UserDefaults.standard.string(forKey: "mobileNumber")
@@ -53,7 +62,26 @@ class UserDetails {
         }
         set {
             UserDefaults.standard.set(newValue, forKey: "token")
+            UserDefaults.standard.set(Date(), forKey: "tokenCreationTime")
         }
+    }
+    
+    func shouldRenewToken() -> Bool {
+        if let tokenCreationTime = UserDefaults.standard.object(forKey: "tokenCreationTime") as? Date {
+            let timeElapsed = Date().timeIntervalSince(tokenCreationTime)
+            // If 30 hours have passed, renew the token
+            return timeElapsed >= 30 * 60 * 60
+        }
+        return false
+    }
+    
+    func renewToken() {
+        
+        
+    }
+    
+    static var isLoggedIn: Bool {
+        return token != nil
     }
 
     private init() {} // Private initializer to prevent external instantiation

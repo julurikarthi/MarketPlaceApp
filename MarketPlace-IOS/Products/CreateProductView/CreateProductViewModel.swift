@@ -48,7 +48,8 @@ class CreateProductViewModel: ObservableObject {
     
     func submitProduct() {
         guard validateFields() else { return }
-        let request = CreateProductRequest(product_name: productName,
+        let request = CreateProductRequest(store_type: UserDetails.store_type,
+                                           product_name: productName,
                                            description: description,
                                            price: Double(price)!,
                                            stock: Int(stock)!,
@@ -88,29 +89,6 @@ class CreateProductViewModel: ObservableObject {
         ).store(in: &cancellables)
     }
     
-    func getAllProductbyStore(request: GetAllProductByStoreRequest) {
-        guard let url = URL(string: .getAllProductbyStore()) else { return }
-        
-        let cancellable = NetworkManager.shared.performRequest(
-            url: .login(),
-            method: .POST,
-            payload: request,
-            responseType: GetAllStoreProductsResponse.self
-        )
-            .sink(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        print("Request completed successfully.")
-                    case .failure(let error):
-                        print("Request failed: \(error.localizedDescription)")
-                    }
-                },
-                receiveValue: { response in
-                    self.allStoreProducts = response
-                }
-            )
-    }
     
     func deleteProduct(request: DeleteProductRequest) {
         guard let url = URL(string: .deleteProduct()) else { return }
@@ -137,7 +115,7 @@ class CreateProductViewModel: ObservableObject {
     
     func getstoreCategories() {
         showProgressIndicator = true
-        let fetchcategoryRequest: FetchCategoryRequest = .init(store_id: UserDetails.storeId ?? "")
+        let fetchcategoryRequest: FetchCategoryRequest = .init()
         NetworkManager.shared.performRequest(url: .getStoreCategories(),
                                              method: .POST,
                                              payload: fetchcategoryRequest,
@@ -184,8 +162,7 @@ class CreateProductViewModel: ObservableObject {
 }
 
 struct FetchCategoryRequest: Codable, RequestBody {
-    var user_id: String?
-    let store_id: String
+
 }
 
 struct CategoriesResponse: Codable {

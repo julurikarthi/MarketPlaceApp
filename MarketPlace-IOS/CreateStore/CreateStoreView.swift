@@ -104,6 +104,9 @@ struct CreateStoreView: View {
             }.navigationTitle("Create Store").task {
                 viewModel.getStoreDetailsData()
             }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+                .onTapGesture {
+                dismissKeyboard()
+            }
         }
     }
     

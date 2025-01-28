@@ -8,8 +8,8 @@
 import Foundation
 import Combine
 struct CreateProductRequest: Codable, RequestBody {
+    var store_type: String?
     var user_id: String?
-    
     let product_name: String
     let description: String
     let price: Double
@@ -20,12 +20,10 @@ struct CreateProductRequest: Codable, RequestBody {
 }
 
 struct GetAllProductByStoreRequest: Codable, RequestBody {
-    var user_id: String?
-    
-    let store_id: String
-    enum CodingKeys: String, CodingKey {
-        case store_id = "store_id"
-    }
+    var category_id: String?
+    var store_id: String?
+    var isPublish: Bool?
+    var page: Int = 1
 }
 
 struct CreateProductResponse: Codable {
@@ -45,7 +43,7 @@ struct CreateProductResponse: Codable {
 }
 
 struct GetAllStoreProductsResponse: Codable {
-    let products: [Product]
+    var products: [Product]
 
     struct Product: Codable {
         let productId: String
@@ -56,6 +54,7 @@ struct GetAllStoreProductsResponse: Codable {
         let description: String
         let createdAt: String
         let updatedAt: String?
+        let imageids: [String]
 
         enum CodingKeys: String, CodingKey {
             case productId = "product_id"
@@ -66,6 +65,7 @@ struct GetAllStoreProductsResponse: Codable {
             case description
             case createdAt = "created_at"
             case updatedAt = "updated_at"
+            case imageids
         }
     }
 }
