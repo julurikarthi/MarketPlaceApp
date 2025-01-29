@@ -6,19 +6,19 @@
 //
 
 import SwiftUI
+//import GooglePlaces
 
 @main
 struct MarketPlace_IOSApp: App {
     var body: some Scene {
         WindowGroup {
             if UserDetails.isAppOwners {
-                if UserDetails.isLoggedIn {
-                    // If the user is logged in, show the HomePage
-                    HomePage()
-                } else {
-                    // If the user is not logged in, show the LoginView
-                    LoginView()
-                }
+                LocationSearchView()
+//                if UserDetails.isLoggedIn {
+//                    HomePage()
+//                } else {
+//                    LoginView()
+//                }
             }
         }
     }

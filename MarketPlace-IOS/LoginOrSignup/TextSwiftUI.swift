@@ -1,38 +1,143 @@
 import SwiftUI
+//import GoogleMapsUtils
 
-struct ProductCellItemTest: View {
+struct DashBoardViewTest: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Spacer() // Pushes the Menu to the right
-                Menu {
-                    Button("Order Now", action: placeOrder)
-                    Button("Adjust Order", action: adjustOrder)
-                    Menu("Advanced") {
-                        Button("Rename", action: rename)
-                        Button("Delay", action: delay)
+        NavigationStack {
+            VStack {
+                SearchBarView()
+                Text("Hello, World!h")
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    // Add a button on the right side
+                    Button(action: {
+                        // Action to add a product
+                    }) {
+                        Image("shopping-cart").resizable().frame(width: 20, height: 20).padding(.trailing, 4)
                     }
-                    Button("Cancel", action: cancelOrder)
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 30, height: 30) // Adjust the size of the icon
-                        .foregroundColor(.black)  // Set the icon color
+                }
+                
+                ToolbarItem(placement: .navigationBarLeading) {
+                    // Add a button on the right side
+                    Button(action: {
+                        // Action to add a product
+                    }) {
+                        Image("pin").resizable().frame(width: 20, height: 20)
+                            .foregroundColor(Color.black)
+                        Text("1231 Lilles Way").bold().foregroundColor(.black)
+                        Image("arrow-down").resizable()
+                            .frame(width: 10, height: 10)
+                            .foregroundColor(Color.black)
+                    }
                 }
             }
-            .padding() // Adds padding to ensure the button isn't hidden
-        }
-        .padding() // Adds extra padding around the whole VStack
+        }.tint(.black)
     }
-    
-    func placeOrder() { print("Order Now") }
-    func adjustOrder() { print("Adjust Order") }
-    func rename() { print("Rename") }
-    func delay() { print("Delay") }
-    func cancelOrder() { print("Cancel Order") }
+}
+
+//#Preview {
+//    DashBoardViewTest()
+//}
+
+
+
+
+struct SearchBarView: View {
+    @State private var searchText = ""
+    @State private var isSearching = false
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                Text("Dashboard Content")
+                    .font(.largeTitle)
+                    .padding()
+            }
+            .searchable(
+                text: $searchText,
+                isPresented: $isSearching,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search products"
+            )
+        }
+    }
+}
+
+
+
+
+import MapKit
+
+struct LocationSearchView: View {
+    @StateObject private var viewModel = LocationSearchViewModel()
+
+    var body: some View {
+        NavigationStack {
+            VStack {
+                HStack {
+                    VStack {
+                    
+                    }
+                    .searchable(
+                        text: $viewModel.searchText,
+                        placement: .automatic,
+                        prompt: "Search products"
+                    )
+                }
+                .padding()
+
+                List(viewModel.suggestions, id: \.self) { suggestion in
+                    Button(action: {
+                        viewModel.selectLocation(suggestion)
+                    }) {
+                        Text(suggestion.title)
+                    }
+                }
+                .listStyle(.plain)
+            }
+        }
+    }
 }
 
 #Preview {
-    ProductCellItemTest()
+    LocationSearchView()
+}
+import Foundation
+import MapKit
+import Combine
+
+class LocationSearchViewModel: NSObject, ObservableObject {
+    @Published var searchText = ""
+    @Published var suggestions: [MKLocalSearchCompletion] = []
+
+    private var searchCompleter = MKLocalSearchCompleter()
+    private var cancellables = Set<AnyCancellable>()
+
+    override init() {
+        super.init()
+        searchCompleter.resultTypes = .address
+        searchCompleter.delegate = self
+    }
+
+    func performSearch() {
+        searchCompleter.queryFragment = searchText
+    }
+
+    func selectLocation(_ suggestion: MKLocalSearchCompletion) {
+        searchText = suggestion.title
+        suggestions.removeAll()
+    }
+}
+
+extension LocationSearchViewModel: MKLocalSearchCompleterDelegate {
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        DispatchQueue.main.async {
+            self.suggestions = completer.results
+        }
+    }
+
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        print("Error: \(error.localizedDescription)")
+    }
 }

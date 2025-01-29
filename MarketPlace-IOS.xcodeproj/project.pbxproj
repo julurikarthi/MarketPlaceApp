@@ -122,6 +122,7 @@
 				258B97512D3D481C00A6458D /* MarketPlace-IOSTests */,
 				258B975B2D3D481C00A6458D /* MarketPlace-IOSUITests */,
 				25F607462D4A78E000057F16 /* MarketPlace-IOS-Customers-Info.plist */,
+				25F6B77F2D4ABAD2002ADB49 /* Frameworks */,
 				258B973E2D3D481A00A6458D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -135,6 +136,13 @@
 				25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		25F6B77F2D4ABAD2002ADB49 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
