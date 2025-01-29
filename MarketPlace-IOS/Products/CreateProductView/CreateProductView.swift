@@ -3,9 +3,11 @@ import PhotosUI
 
 struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
-    var editProduct: EditProduct? = nil
+    @Binding var editProduct: EditProduct?
     let columns = [GridItem(.adaptive(minimum: 100))]
     @Environment(\.presentationMode) var presentationMode
+    
+
     
     var body: some View {
         NavigationStack {
@@ -292,8 +294,8 @@ struct CategorySelectionView: View {
 
 
 
-struct CreateProduct_Previews: PreviewProvider {
-    static var previews: some View {
-        CreateProductView()
-    }
-}
+//struct CreateProduct_Previews: PreviewProvider {
+//    static var previews: some View {
+////        CreateProductView()
+//    }
+//}

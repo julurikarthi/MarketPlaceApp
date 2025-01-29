@@ -42,7 +42,7 @@ struct ProductListView: View {
                 }
                 
                 NavigationLink(
-                    "", destination: CreateProductView(editProduct: viewModel.editProduct)
+                    "", destination: CreateProductView(editProduct: $viewModel.editProduct)
                         .navigationBarBackButtonHidden(true),
                     isActive: $viewModel.showAddProductView)
                 

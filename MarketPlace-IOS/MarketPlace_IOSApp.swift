@@ -11,16 +11,19 @@ import SwiftUI
 struct MarketPlace_IOSApp: App {
     var body: some Scene {
         WindowGroup {
-            if UserDetails.isLoggedIn {
-                // If the user is logged in, show the HomePage
-                HomePage()
-            } else {
-                // If the user is not logged in, show the LoginView
-                LoginView()
+            if UserDetails.isAppOwners {
+                if UserDetails.isLoggedIn {
+                    // If the user is logged in, show the HomePage
+                    HomePage()
+                } else {
+                    // If the user is not logged in, show the LoginView
+                    LoginView()
+                }
             }
         }
     }
 }
+
 
 
 extension View {

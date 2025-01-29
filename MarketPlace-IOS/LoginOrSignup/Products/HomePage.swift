@@ -30,7 +30,7 @@ struct HomePage: View {
                     Text("Profile")
                 }.tag(2)
         }
-        .accentColor(.red) // Change active tab color
+     
     }
 }
 

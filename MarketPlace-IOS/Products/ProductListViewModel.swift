@@ -21,7 +21,7 @@ class ProductListViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
     var selectedCategory: Category?
-    var editProduct: EditProduct? = nil
+    @Published var editProduct: EditProduct?
     func getstoreCategories() async -> Bool {
         return await withCheckedContinuation { continuation in
             showProgressIndicator = true
@@ -83,8 +83,8 @@ class ProductListViewModel: ObservableObject {
 extension ProductListViewModel: ProductListViewModelDelegate {
     
     func didtapOnEditButton(for product: EditProduct) {
-        showAddProductView = true
         self.editProduct = product
+        showAddProductView = true
     }
     
     func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product) {

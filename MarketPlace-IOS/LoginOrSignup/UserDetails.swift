@@ -111,5 +111,13 @@ class UserDetails {
         UserDefaults.standard.removeObject(forKey: "storeId")
         UserDefaults.standard.removeObject(forKey: "token")
     }
+    
+    static var isAppOwners: Bool {
+        guard let target = Bundle.main.infoDictionary?["CFBundleName"] as? String else {
+            return false
+        }
+        return target != "MarketPlace-IOS-Customers"
+    }
+
 }
 
