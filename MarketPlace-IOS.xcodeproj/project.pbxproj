@@ -27,6 +27,8 @@
 		258B973D2D3D481A00A6458D /* MarketPlace-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MarketPlace-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		258B974E2D3D481C00A6458D /* MarketPlace-IOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MarketPlace-IOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		258B97582D3D481C00A6458D /* MarketPlace-IOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MarketPlace-IOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MarketPlace-IOS-Customers.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25F607462D4A78E000057F16 /* MarketPlace-IOS-Customers-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "MarketPlace-IOS-Customers-Info.plist"; path = "/Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS-Customers-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -37,13 +39,34 @@
 			);
 			target = 258B973C2D3D481A00A6458D /* MarketPlace-IOS */;
 		};
+		25F607452D4A78E000057F16 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS-Customers" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				countries.json,
+				Info.plist,
+				"Preview Content/Preview Assets.xcassets",
+			);
+			target = 25F6073D2D4A78E000057F16 /* MarketPlace-IOS-Customers */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		25F607612D4A79F800057F16 /* Exceptions for "MarketPlace-IOS" folder in "Compile Sources" phase from "MarketPlace-IOS-Customers" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 25F6073E2D4A78E000057F16 /* Sources */;
+			membershipExceptions = (
+				countries.json,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		258B973F2D3D481A00A6458D /* MarketPlace-IOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				2596180D2D3FC3A4009B8160 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS" target */,
+				25F607452D4A78E000057F16 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS-Customers" target */,
+				25F607612D4A79F800057F16 /* Exceptions for "MarketPlace-IOS" folder in "Compile Sources" phase from "MarketPlace-IOS-Customers" target */,
 			);
 			path = "MarketPlace-IOS";
 			sourceTree = "<group>";
@@ -82,6 +105,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25F6073F2D4A78E000057F16 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -91,6 +121,7 @@
 				258B973F2D3D481A00A6458D /* MarketPlace-IOS */,
 				258B97512D3D481C00A6458D /* MarketPlace-IOSTests */,
 				258B975B2D3D481C00A6458D /* MarketPlace-IOSUITests */,
+				25F607462D4A78E000057F16 /* MarketPlace-IOS-Customers-Info.plist */,
 				258B973E2D3D481A00A6458D /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +132,7 @@
 				258B973D2D3D481A00A6458D /* MarketPlace-IOS.app */,
 				258B974E2D3D481C00A6458D /* MarketPlace-IOSTests.xctest */,
 				258B97582D3D481C00A6458D /* MarketPlace-IOSUITests.xctest */,
+				25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -176,6 +208,28 @@
 			productReference = 258B97582D3D481C00A6458D /* MarketPlace-IOSUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
+		25F6073D2D4A78E000057F16 /* MarketPlace-IOS-Customers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 25F607412D4A78E000057F16 /* Build configuration list for PBXNativeTarget "MarketPlace-IOS-Customers" */;
+			buildPhases = (
+				25F6073E2D4A78E000057F16 /* Sources */,
+				25F6073F2D4A78E000057F16 /* Frameworks */,
+				25F607402D4A78E000057F16 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				258B973F2D3D481A00A6458D /* MarketPlace-IOS */,
+			);
+			name = "MarketPlace-IOS-Customers";
+			packageProductDependencies = (
+			);
+			productName = "MarketPlace-IOS";
+			productReference = 25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -218,6 +272,7 @@
 				258B973C2D3D481A00A6458D /* MarketPlace-IOS */,
 				258B974D2D3D481C00A6458D /* MarketPlace-IOSTests */,
 				258B97572D3D481C00A6458D /* MarketPlace-IOSUITests */,
+				25F6073D2D4A78E000057F16 /* MarketPlace-IOS-Customers */,
 			);
 		};
 /* End PBXProject section */
@@ -244,6 +299,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		25F607402D4A78E000057F16 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -262,6 +324,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		258B97542D3D481C00A6458D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		25F6073E2D4A78E000057F16 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -410,7 +479,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				INFOPLIST_KEY_CFBundleDisplayName = "MartketPlace-Owners";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -426,7 +495,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.app.marketplace.MarketPlace-IOS";
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.marketplace.owners;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -449,7 +519,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				INFOPLIST_KEY_CFBundleDisplayName = "MartketPlace-Owners";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -465,7 +535,8 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.app.marketplace.MarketPlace-IOS";
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.marketplace.owners;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = auto;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
@@ -562,6 +633,86 @@
 			};
 			name = Release;
 		};
+		25F607422D4A78E000057F16 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MarketPlace-IOS/MarketPlace_IOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MarketPlace-IOS/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MarketPlace-IOS-Customers-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.marketplace.customer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Debug;
+		};
+		25F607432D4A78E000057F16 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "MarketPlace-IOS/MarketPlace_IOS.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"MarketPlace-IOS/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MarketPlace-IOS-Customers-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				OTHER_SWIFT_FLAGS = "";
+				PRODUCT_BUNDLE_IDENTIFIER = com.app.marketplace.customer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 2.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -597,6 +748,15 @@
 			buildConfigurations = (
 				258B97692D3D481C00A6458D /* Debug */,
 				258B976A2D3D481C00A6458D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		25F607412D4A78E000057F16 /* Build configuration list for PBXNativeTarget "MarketPlace-IOS-Customers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				25F607422D4A78E000057F16 /* Debug */,
+				25F607432D4A78E000057F16 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

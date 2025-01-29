@@ -4,10 +4,43 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>MarketPlace-IOS.xcscheme_^#shared#^_</key>
+		<key>MarketPlace-IOS-Customers.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+		<key>MarketPlace-IOS.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>258B973C2D3D481A00A6458D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>258B974D2D3D481C00A6458D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>258B97572D3D481C00A6458D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>25F607332D4A745500057F16</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>25F6073D2D4A78E000057F16</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
