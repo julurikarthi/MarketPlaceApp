@@ -6,19 +6,24 @@
 //
 
 import SwiftUI
-//import GooglePlaces
+import GooglePlaces
 
 @main
 struct MarketPlace_IOSApp: App {
+    
+    init() {
+            GMSPlacesClient.provideAPIKey("AIzaSyCilh2e-XLRrdwSM0hHfcGMewbYbZfcmHU")
+        }
+    
     var body: some Scene {
         WindowGroup {
+
             if UserDetails.isAppOwners {
-                LocationSearchView()
-//                if UserDetails.isLoggedIn {
-//                    HomePage()
-//                } else {
-//                    LoginView()
-//                }
+                if UserDetails.isLoggedIn {
+                    HomePage()
+                } else {
+                    LoginView()
+                }
             }
         }
     }

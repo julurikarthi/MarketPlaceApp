@@ -6,6 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		25AAAA202D4AC5D20074CF4A /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */; };
+		25AAAA222D4AC5D20074CF4A /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA212D4AC5D20074CF4A /* GooglePlacesSwift */; };
+		25AAAA242D4AC5E60074CF4A /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA232D4AC5E60074CF4A /* GooglePlaces */; };
+		25AAAA262D4AC5E90074CF4A /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA252D4AC5E90074CF4A /* GooglePlacesSwift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		258B974F2D3D481C00A6458D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +34,7 @@
 		258B973D2D3D481A00A6458D /* MarketPlace-IOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MarketPlace-IOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		258B974E2D3D481C00A6458D /* MarketPlace-IOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MarketPlace-IOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		258B97582D3D481C00A6458D /* MarketPlace-IOSUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "MarketPlace-IOSUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		25CCBE032D4AC30D0041B317 /* GooglePlaces.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = GooglePlaces.xcframework; path = Pods/GooglePlaces/Frameworks/GooglePlaces.xcframework; sourceTree = "<group>"; };
 		25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MarketPlace-IOS-Customers.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		25F607462D4A78E000057F16 /* MarketPlace-IOS-Customers-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "MarketPlace-IOS-Customers-Info.plist"; path = "/Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS-Customers-Info.plist"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -88,6 +96,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25AAAA202D4AC5D20074CF4A /* GooglePlaces in Frameworks */,
+				25AAAA222D4AC5D20074CF4A /* GooglePlacesSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +119,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25AAAA242D4AC5E60074CF4A /* GooglePlaces in Frameworks */,
+				25AAAA262D4AC5E90074CF4A /* GooglePlacesSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,6 +153,7 @@
 		25F6B77F2D4ABAD2002ADB49 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				25CCBE032D4AC30D0041B317 /* GooglePlaces.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -165,6 +178,8 @@
 			);
 			name = "MarketPlace-IOS";
 			packageProductDependencies = (
+				25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */,
+				25AAAA212D4AC5D20074CF4A /* GooglePlacesSwift */,
 			);
 			productName = "MarketPlace-IOS";
 			productReference = 258B973D2D3D481A00A6458D /* MarketPlace-IOS.app */;
@@ -233,6 +248,8 @@
 			);
 			name = "MarketPlace-IOS-Customers";
 			packageProductDependencies = (
+				25AAAA232D4AC5E60074CF4A /* GooglePlaces */,
+				25AAAA252D4AC5E90074CF4A /* GooglePlacesSwift */,
 			);
 			productName = "MarketPlace-IOS";
 			productReference = 25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */;
@@ -271,6 +288,7 @@
 			mainGroup = 258B97342D3D481A00A6458D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 258B973E2D3D481A00A6458D /* Products */;
@@ -488,6 +506,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "MartketPlace-Owners";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide location-based services.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos to upload images";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -528,6 +549,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "MartketPlace-Owners";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide location-based services.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos to upload images";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -654,6 +678,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS-Customers-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide location-based services.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos to upload images.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -694,6 +722,10 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "MarketPlace-IOS-Customers-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = MartketPlace;
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to your camera to take photos.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We need your location to provide location-based services.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photos to upload images.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -770,6 +802,40 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		25AAAA212D4AC5D20074CF4A /* GooglePlacesSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlacesSwift;
+		};
+		25AAAA232D4AC5E60074CF4A /* GooglePlaces */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlaces;
+		};
+		25AAAA252D4AC5E90074CF4A /* GooglePlacesSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */;
+			productName = GooglePlacesSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 258B97352D3D481A00A6458D /* Project object */;
 }

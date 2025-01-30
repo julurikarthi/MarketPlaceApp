@@ -1,0 +1,15 @@
+{
+  "originHash" : "79dce5428caa1405ac606b31abf83743efd0ac04437577c389c94171977200ce",
+  "pins" : [
+    {
+      "identity" : "ios-places-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/googlemaps/ios-places-sdk",
+      "state" : {
+        "revision" : "d4f4b9b3b6c45452f94cee45d64cf60f2fa174dc",
+        "version" : "9.3.0"
+      }
+    }
+  ],
+  "version" : 3
+}

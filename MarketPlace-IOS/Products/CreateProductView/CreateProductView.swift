@@ -288,6 +288,9 @@ struct CategorySelectionView: View {
                     }
                 }
             }
+        }.onAppear {
+            UserDetails.requestCameraPermission()
+            UserDetails.requestPhotoLibraryPermission()
         }
     }
 }

@@ -6,10 +6,14 @@
 //
 
 import Foundation
-
+import AVFoundation
+import Photos
+import SwiftUICore
+import CoreLocation
 
 class UserDetails {
-    static let shared = UserDetails() // Singleton instance
+    static let shared = UserDetails()
+
     
     // Static properties to store user details
     static var userId: String? {
@@ -121,3 +125,83 @@ class UserDetails {
 
 }
 
+extension UserDetails {
+    
+    class func requestCameraPermission() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        
+        switch status {
+        case .authorized:
+            print("✅ Camera access already granted")
+            UserDetails.requestPhotoLibraryPermission()
+            
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                if granted {
+                    UserDetails.requestPhotoLibraryPermission()
+                    print("✅ Camera access granted")
+                } else {
+                    print("❌ Camera access denied")
+                }
+            }
+            
+        case .denied, .restricted:
+            print("❌ Camera access denied or restricted")
+            
+        @unknown default:
+            break
+        }
+    }
+    
+    class func requestPhotoLibraryPermission() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        
+        switch status {
+        case .authorized, .limited:
+            print("✅ Photo library access already granted")
+            
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization { newStatus in
+                if newStatus == .authorized || newStatus == .limited {
+                    print("✅ Photo library access granted")
+                } else {
+                    print("❌ Photo library access denied")
+                }
+            }
+            
+        case .denied, .restricted:
+            print("❌ Photo library access denied or restricted")
+            
+        @unknown default:
+            break
+        }
+    }
+    
+    class func requestLocationPermission() {
+        LocationManager().requestLocationPermission()
+    }
+}
+
+
+class LocationManager: NSObject, CLLocationManagerDelegate {
+    private let locationManager = CLLocationManager()
+    
+    func requestLocationPermission() {
+        let status = CLLocationManager.authorizationStatus()
+        
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("✅ Location access already granted")
+            
+        case .notDetermined:
+            locationManager.delegate = self
+            locationManager.requestWhenInUseAuthorization()
+            
+        case .denied, .restricted:
+            print("❌ Location access denied or restricted")
+            
+        @unknown default:
+            break
+        }
+    }
+}

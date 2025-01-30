@@ -107,6 +107,10 @@ struct CreateStoreView: View {
             }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                 .onTapGesture {
                 dismissKeyboard()
+            }.onAppear {
+                UserDetails.requestCameraPermission()
+                UserDetails.requestPhotoLibraryPermission()
+                UserDetails.requestLocationPermission()
             }
         }
     }

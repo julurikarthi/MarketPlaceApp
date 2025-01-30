@@ -70,8 +70,12 @@ struct ProductListView: View {
                     await viewModel.getAllProductbyStore(category_id: categoryID)
                 }
             }
-               
+            
         }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+            .onAppear {
+                UserDetails.requestCameraPermission()
+                UserDetails.requestPhotoLibraryPermission()
+            }
     }
     
     func addtoProductView() -> some View {

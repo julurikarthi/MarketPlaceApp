@@ -10,6 +10,7 @@ import SwiftUI
 struct LoginView: View {
     @StateObject var viewModel = LoginViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @State private var showLocationSearch = false
 
     var body: some View {
         NavigationStack {
@@ -50,6 +51,11 @@ struct LoginView: View {
                         .padding([.leading, .trailing], 28)
                     
                 }
+//                .sheet(isPresented: $viewModel.movetoHome, content: {
+//                    LocationSearchView { address in
+//                        
+//                    }
+//                })
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .onTapGesture {
                     dismissKeyboard()
@@ -58,8 +64,8 @@ struct LoginView: View {
                     "", destination: HomePage()
                         .navigationBarBackButtonHidden(true),
                     isActive: $viewModel.movetoHome)
-                 
-                
+//                 
+//                
                 NavigationLink(
                     "", destination: CreateStoreView()
                         .navigationBarBackButtonHidden(true),
