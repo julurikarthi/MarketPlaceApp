@@ -54,7 +54,7 @@ struct ProductDetails: View {
                             Text(product.description)
                                 .font(.body)
                                 .foregroundColor(.subtitleGray)
-                        }
+                        }.frame(width: .infinity)
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(15)
