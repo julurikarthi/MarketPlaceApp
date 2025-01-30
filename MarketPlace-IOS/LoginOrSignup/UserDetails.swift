@@ -204,4 +204,44 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             break
         }
     }
+    var onLocationUpdate: ((String?, String?) -> Void)? // Callback for state & pincode
+    
+    override init() {
+        super.init()
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+    }
+    
+    func requestLocation() {
+        let status = CLLocationManager.authorizationStatus()
+        
+        if status == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
+        } else if status == .authorizedWhenInUse || status == .authorizedAlways {
+            locationManager.startUpdatingLocation()
+        } else {
+            print("❌ Location access denied")
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
+        fetchAddress(from: location)
+        locationManager.stopUpdatingLocation() // Stop updates after getting location
+    }
+    
+    func fetchAddress(from location: CLLocation) {
+        let geocoder = CLGeocoder()
+        geocoder.reverseGeocodeLocation(location) { placemarks, error in
+            if let placemark = placemarks?.first {
+                let state = placemark.administrativeArea // State
+                let postalCode = placemark.postalCode // Pincode
+                self.onLocationUpdate?(state, postalCode)
+            }
+        }
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("❌ Failed to get location: \(error.localizedDescription)")
+    }
 }

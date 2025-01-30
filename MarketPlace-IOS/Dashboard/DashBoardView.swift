@@ -9,6 +9,8 @@ import SwiftUI
 
 struct DashBoardView: View {
     @StateObject var viewModel: DashBoardViewViewModel = .init()
+   
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -31,7 +33,7 @@ struct DashBoardView: View {
                     }) {
                         Image("pin").resizable().frame(width: 20, height: 20)
                             .foregroundColor(Color.black)
-                        Text(viewModel.address?.postalCode ?? "28078").bold().foregroundColor(.black)
+                        Text(viewModel.address?.postalCode ?? viewModel.pincode ?? "").bold().foregroundColor(.black)
                         Image("arrow-down").resizable()
                             .frame(width: 10, height: 10)
                             .foregroundColor(Color.black)
@@ -40,6 +42,7 @@ struct DashBoardView: View {
           
             }.onAppear {
                 UserDetails.requestLocationPermission()
+                viewModel.getCurrentLocation()
             }.sheet(isPresented: $viewModel.movetoSelectLocation) {
                 LocationSearchView(onAddressSelected: { address in
                     viewModel.address = address
