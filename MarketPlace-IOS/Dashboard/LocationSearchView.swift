@@ -18,6 +18,7 @@ struct LocationSearchView: View {
     @State var searchText = ""
     @State private var predictions: [GMSAutocompletePrediction] = []
     @State private var isSearching = false
+    @StateObject private var viewModel: LocationSearchViewModel = .init()
     var onAddressSelected: (Address) -> Void
     
     var body: some View {
@@ -25,7 +26,10 @@ struct LocationSearchView: View {
             VStack {
                 VStack {
                     AddressSearchBarView(searchText: $searchText)
-                    ExploreNearbyView()
+                    ExploreNearbyView(viewModel: viewModel) { address in
+                        onAddressSelected(address)
+                        presentationMode.wrappedValue.dismiss()
+                    }
                 }.onChange(of: searchText) { newValue in
                     fetchAddressPredictions(query: newValue)
                 }
@@ -180,6 +184,9 @@ struct AddressSelectionView: View {
 }
 
 struct ExploreNearbyView: View {
+    var viewModel: LocationSearchViewModel
+    @Environment(\.presentationMode) var presentationMode
+    var onAddressSelected: (Address) -> Void
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Explore Nearby")
@@ -208,7 +215,12 @@ struct ExploreNearbyView: View {
             Divider()
                 .background(Color.gray.opacity(0.4))
         }
-        .padding()
+        .padding().onTapGesture {
+            viewModel.getCurrentLocation {
+                onAddressSelected(.init(street: "", city: "view", state: viewModel.state ?? "", postalCode: viewModel.pincode ?? "", country: "", countryCode: ""))
+            }
+            
+        }
     }
 }
 
