@@ -17,10 +17,13 @@ struct MarketPlace_IOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-
             if UserDetails.isAppOwners {
                 if UserDetails.isLoggedIn {
-                    HomePage()
+                    if UserDetails.storeId != nil {
+                        HomePage()
+                    } else {
+                        CreateStoreView()
+                    }
                 } else {
                     LoginView()
                 }
