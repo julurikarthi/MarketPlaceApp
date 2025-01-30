@@ -50,6 +50,11 @@ struct ProductListView: View {
                     "", destination: CreateStoreView()
                         .navigationBarBackButtonHidden(true),
                     isActive: $showCreateProductView)
+
+                NavigationLink(
+                    "", destination: ProductDetails(product: $viewModel.seletectedProduct),
+                    isActive: $viewModel.moveToProductDetails)
+                
             }.navigationTitle("Products")
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) { // Add a button on the right side
@@ -108,7 +113,10 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory))
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).onTapGesture {
+                    viewModel.seletectedProduct = product.wrappedValue
+                    viewModel.moveToProductDetails = true
+                }
             }
         }
         .padding()

@@ -16,6 +16,9 @@ protocol ProductListViewModelDelegate: AnyObject {
 
 class ProductListViewModel: ObservableObject {
     @Published var showAddProductView: Bool = false
+    @Published var moveToProductDetails: Bool = false
+    @Published var seletectedProduct: GetAllStoreProductsResponse.Product = .init(productId: "", storeId: "", productName: "", price: 0, stock: 0, description: "", category_id: "", createdAt: "", updatedAt: "", imageids: [])
+    
     @MainThreadPublished var showProgressIndicator = false
     @Published var categories: [Category] = []
     private var cancellables = Set<AnyCancellable>()
