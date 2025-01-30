@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DashBoardView: View {
+    @StateObject var viewModel: DashBoardViewViewModel = .init()
     var body: some View {
         NavigationStack {
             VStack {
@@ -26,18 +27,23 @@ struct DashBoardView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     // Add a button on the right side
                     Button(action: {
-                        // Action to add a product
+                        viewModel.movetoSelectLocation = true
                     }) {
                         Image("pin").resizable().frame(width: 20, height: 20)
                             .foregroundColor(Color.black)
-                        Text("1231 Lilles Way").bold().foregroundColor(.black)
+                        Text(viewModel.address?.postalCode ?? "28078").bold().foregroundColor(.black)
                         Image("arrow-down").resizable()
                             .frame(width: 10, height: 10)
                             .foregroundColor(Color.black)
                     }
                 }
+          
             }.onAppear {
                 UserDetails.requestLocationPermission()
+            }.sheet(isPresented: $viewModel.movetoSelectLocation) {
+                LocationSearchView(onAddressSelected: { address in
+                    viewModel.address = address
+                })
             }
         }.tint(.black)
     }

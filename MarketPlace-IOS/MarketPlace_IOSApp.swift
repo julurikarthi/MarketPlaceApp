@@ -27,6 +27,8 @@ struct MarketPlace_IOSApp: App {
                 } else {
                     LoginView()
                 }
+            } else {
+                DashBoardView()
             }
         }
     }
