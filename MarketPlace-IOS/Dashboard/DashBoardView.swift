@@ -33,7 +33,7 @@ struct DashboardView: View {
               .navigationTitle("Stores")
           }
           .task {
-              viewModel.getCurrentLocation()
+              await viewModel.getCurrentLocation()
               viewModel.getDashboardData()
           }
       }
@@ -103,22 +103,26 @@ struct StoreCard: View {
 
 struct ProductCard: View {
     let product: ProductDashBoard
-    
+    @StateObject var viewModel = ProductCardViewModel()
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // Main content (image and details)
             VStack(alignment: .leading, spacing: 4) {
                 // Product Image
-                if let imageId = product.imageIds?.first {
-                    AsyncImage(url: URL(string: "https://your-image-url.com/\(imageId)")) { image in
-                        image.resizable()
+                if (product.imageIds?.first) != nil {
+                    if let image = $viewModel.image.wrappedValue {
+                        Image(uiImage: image)
+                            .resizable()
                             .scaledToFill()
-                    } placeholder: {
+                            .frame(width: 120, height: 120)
+                            .cornerRadius(8)
+                            .clipped()
+                    } else {
                         Color.gray.opacity(0.3)
+                            .frame(width: 120, height: 120)
+                            .cornerRadius(8)
+                            .shimmering() // Add shimmer effect here
                     }
-                    .frame(width: 120, height: 120)
-                    .cornerRadius(8)
-                    .clipped()
                 } else {
                     Color.gray.opacity(0.3)
                         .frame(width: 120, height: 120)
@@ -148,6 +152,11 @@ struct ProductCard: View {
         .background(Color.white)
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+        .onAppear {
+            if let imageId = product.imageIds?.first {
+                viewModel.downloadImage(imageId: imageId)
+            }
+        }
     }
 }
 

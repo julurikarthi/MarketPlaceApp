@@ -12,22 +12,28 @@ class DashBoardViewViewModel: ObservableObject {
     @Published var movetoSelectLocation: Bool = false
     @Published var address: Address?
     let locationManager = LocationManager()
-    
+    var imageIds: [String]?
+
     @Published var state: String?
     @Published var pincode: String?
     private var cancellables = Set<AnyCancellable>()
     @Published var storesResponce: StoresResponse?
-    func getCurrentLocation() {
-        locationManager.requestLocation()
-        locationManager.onLocationUpdate = { newState, newPincode in
-            self.state = newState
-            self.pincode = newPincode
+    
+    func getCurrentLocation() async {
+        await withCheckedContinuation { continuation in
+            locationManager.requestLocation()
+            locationManager.onLocationUpdate = { newState, newPincode in
+                self.state = newState
+                self.pincode = newPincode
+                continuation.resume() // Resume the async task once the location is updated
+            }
         }
     }
+
     
     func getDashboardData() {
         isLoading = false
-        let request = DashboardDataRequest(pincode: self.pincode, state: self.state)
+        let request = DashboardDataRequest(pincode: "28078", state: "NC")
         NetworkManager.shared.performRequest(url: String.getDashboardData(), method: .POST, payload: request, responseType: StoresResponse.self).sink(
             receiveCompletion: { completion in
                 switch completion {
@@ -45,6 +51,9 @@ class DashBoardViewViewModel: ObservableObject {
             }
         ).store(in: &cancellables)
     }
+    
+
+   
 }
 
 struct DashboardDataRequest: Codable, RequestBody {
