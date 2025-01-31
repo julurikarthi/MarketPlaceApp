@@ -149,9 +149,6 @@ struct AddressSearchBarView: View {
 }
 
 
-
-
-
 struct AddressSelectionView: View {
     let street: String
     let cityStateZip: String
