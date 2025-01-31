@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2543D94F2D4D4B54005C15D6 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 2543D94E2D4D4B54005C15D6 /* Shimmer */; };
+		2543D9512D4D4B69005C15D6 /* Shimmer in Frameworks */ = {isa = PBXBuildFile; productRef = 2543D9502D4D4B69005C15D6 /* Shimmer */; };
 		25AAAA202D4AC5D20074CF4A /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */; };
 		25AAAA222D4AC5D20074CF4A /* GooglePlacesSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA212D4AC5D20074CF4A /* GooglePlacesSwift */; };
 		25AAAA242D4AC5E60074CF4A /* GooglePlaces in Frameworks */ = {isa = PBXBuildFile; productRef = 25AAAA232D4AC5E60074CF4A /* GooglePlaces */; };
@@ -96,6 +98,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2543D94F2D4D4B54005C15D6 /* Shimmer in Frameworks */,
 				25AAAA202D4AC5D20074CF4A /* GooglePlaces in Frameworks */,
 				25AAAA222D4AC5D20074CF4A /* GooglePlacesSwift in Frameworks */,
 			);
@@ -119,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2543D9512D4D4B69005C15D6 /* Shimmer in Frameworks */,
 				25AAAA242D4AC5E60074CF4A /* GooglePlaces in Frameworks */,
 				25AAAA262D4AC5E90074CF4A /* GooglePlacesSwift in Frameworks */,
 			);
@@ -180,6 +184,7 @@
 			packageProductDependencies = (
 				25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */,
 				25AAAA212D4AC5D20074CF4A /* GooglePlacesSwift */,
+				2543D94E2D4D4B54005C15D6 /* Shimmer */,
 			);
 			productName = "MarketPlace-IOS";
 			productReference = 258B973D2D3D481A00A6458D /* MarketPlace-IOS.app */;
@@ -250,6 +255,7 @@
 			packageProductDependencies = (
 				25AAAA232D4AC5E60074CF4A /* GooglePlaces */,
 				25AAAA252D4AC5E90074CF4A /* GooglePlacesSwift */,
+				2543D9502D4D4B69005C15D6 /* Shimmer */,
 			);
 			productName = "MarketPlace-IOS";
 			productReference = 25F607442D4A78E000057F16 /* MarketPlace-IOS-Customers.app */;
@@ -289,6 +295,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */,
+				2543D94D2D4D4B54005C15D6 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 258B973E2D3D481A00A6458D /* Products */;
@@ -804,6 +811,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2543D94D2D4D4B54005C15D6 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/markiv/SwiftUI-Shimmer";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.1;
+			};
+		};
 		25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googlemaps/ios-places-sdk";
@@ -815,6 +830,16 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		2543D94E2D4D4B54005C15D6 /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2543D94D2D4D4B54005C15D6 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
+		2543D9502D4D4B69005C15D6 /* Shimmer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2543D94D2D4D4B54005C15D6 /* XCRemoteSwiftPackageReference "SwiftUI-Shimmer" */;
+			productName = Shimmer;
+		};
 		25AAAA1F2D4AC5D20074CF4A /* GooglePlaces */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 25AAAA1E2D4AC5D20074CF4A /* XCRemoteSwiftPackageReference "ios-places-sdk" */;

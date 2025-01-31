@@ -2,23 +2,39 @@
 
 
 import SwiftUI
+import Shimmer
 
 struct DashboardView: View {
-    let stores: [Store]
+    @State private var isLoading = false // Track loading state
+    @State private var stores: [Store] = []
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: 16) {
-                    ForEach(stores) { store in
-                        StoreCard(store: store)
-                    }
-                }
-                .padding()
-            }
-            .navigationTitle("Stores")
-        }
-    }
+          NavigationStack {
+              ScrollView {
+                  if isLoading {
+                      // Show shimmer effect while loading
+                      LazyVStack(spacing: 16) {
+                          ForEach(0..<3, id: \.self) { _ in
+                              ShimmeringStoreCardPlaceholder()
+                          }
+                      }
+                      .padding()
+                  } else {
+                      // Show actual content when data is loaded
+                      LazyVStack(spacing: 16) {
+                          ForEach(stores) { store in
+                              StoreCard(store: store)
+                          }
+                      }
+                      .padding()
+                  }
+              }
+              .navigationTitle("Stores")
+          }
+          .onAppear {
+              stores = mockStores()
+          }
+      }
 }
 
 struct StoreCard: View {
@@ -87,46 +103,56 @@ struct ProductCard: View {
     let product: ProductMock
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Product Image
-            if let imageId = product.imageIds?.first {
-                AsyncImage(url: URL(string: "https://your-image-url.com/\(imageId)")) { image in
-                    image.resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Color.gray.opacity(0.3)
-                }
-                .frame(width: 100, height: 100)
-                .cornerRadius(8)
-                .clipped()
-            } else {
-                Color.gray.opacity(0.3)
-                    .frame(width: 100, height: 100)
+        ZStack(alignment: .bottomTrailing) {
+            // Main content (image and details)
+            VStack(alignment: .leading, spacing: 4) {
+                // Product Image
+                if let imageId = product.imageIds?.first {
+                    AsyncImage(url: URL(string: "https://your-image-url.com/\(imageId)")) { image in
+                        image.resizable()
+                            .scaledToFill()
+                    } placeholder: {
+                        Color.gray.opacity(0.3)
+                    }
+                    .frame(width: 120, height: 120)
                     .cornerRadius(8)
+                    .clipped()
+                } else {
+                    Color.gray.opacity(0.3)
+                        .frame(width: 120, height: 120)
+                        .cornerRadius(8)
+                }
+                
+                // Product Details
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(product.productName)
+                        .font(.caption)
+                        .fontWeight(.bold)
+                    
+                    Text("$\(product.price, specifier: "%.2f")")
+                        .font(.caption2)
+                        .foregroundColor(.green)
+                    
+                    Text("Stock: \(product.stock)")
+                        .font(.caption2)
+                        .foregroundColor(product.stock > 0 ? Color.blue : Color.red.opacity(0.8))
+                }
             }
             
-            // Product Details
-            VStack(alignment: .leading, spacing: 4) {
-                Text(product.productName)
-                    .font(.caption)
-                    .fontWeight(.bold)
-                
-                Text("$\(product.price, specifier: "%.2f")")
-                    .font(.caption2)
-                    .foregroundColor(.green)
-                
-                Text("Stock: \(product.stock)")
-                    .font(.caption2)
-                    .foregroundColor(product.stock > 0 ? Color.blue : Color.red.opacity(0.8))
-            }
+            AddToCartView()
+                .offset(x: 0, y: -50)
         }
-        .frame(width: 120)
+        .frame(width: 140) // Ensure consistent card size
+        .background(Color.white)
+        .cornerRadius(10)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
     }
 }
 
+
 struct DashboardView_Previews: PreviewProvider {
     static var previews: some View {
-        DashboardView(stores: mockStores())
+        DashboardView()
     }
 }
 
@@ -204,4 +230,49 @@ func mockStores() -> [Store] {
             ]
         )
     ]
+}
+struct ShimmeringStoreCardPlaceholder: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            // Placeholder for store image
+            Rectangle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(height: 200)
+                .cornerRadius(10)
+                .shimmering() // Add shimmer effect
+            
+            // Placeholder for text details
+            VStack(alignment: .leading, spacing: 8) {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 20)
+                    .cornerRadius(5)
+                    .shimmering()
+                
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 15)
+                    .cornerRadius(5)
+                    .shimmering()
+                
+                HStack(spacing: 16) {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 100, height: 15)
+                        .cornerRadius(5)
+                        .shimmering()
+                    
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(width: 80, height: 15)
+                        .cornerRadius(5)
+                        .shimmering()
+                }
+            }
+        }
+        .padding()
+        .background(Color.white)
+        .cornerRadius(15)
+        .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
+    }
 }

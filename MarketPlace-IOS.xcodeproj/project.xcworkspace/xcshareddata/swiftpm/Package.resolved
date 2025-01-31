@@ -1,5 +1,5 @@
 {
-  "originHash" : "79dce5428caa1405ac606b31abf83743efd0ac04437577c389c94171977200ce",
+  "originHash" : "e9aa6fa4dcd261a9bb659404a69dc1d7692aa7c41807d2b7903f9e9fbfab87c0",
   "pins" : [
     {
       "identity" : "ios-places-sdk",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "d4f4b9b3b6c45452f94cee45d64cf60f2fa174dc",
         "version" : "9.3.0"
+      }
+    },
+    {
+      "identity" : "swiftui-shimmer",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/markiv/SwiftUI-Shimmer",
+      "state" : {
+        "revision" : "0226e21f9bf355d40e07e5f5e1c33679d50e167f",
+        "version" : "1.5.1"
       }
     }
   ],

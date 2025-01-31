@@ -98,44 +98,56 @@ struct AddToCartView: View {
 
     var body: some View {
         if itemCount == 0 {
-            Button(action: {
-                itemCount += 1
-            }) {
-                Image(systemName: "plus")
-                    .foregroundColor(.black)
-                    .frame(width: 30, height: 30)
-                    .background(Circle().fill(Color.white))
-                    .shadow(color: Color.black.opacity(0.4), radius: 4, x: 0, y: 2)
-            }.padding([.trailing, .bottom], 5)
+            // Initial "Add" button when item count is 0
+            addButton(action: { itemCount += 1 })
         } else {
-            VStack {
-                HStack(spacing: 16) {
-                    Button(action: {
-                        if itemCount > 0 { itemCount -= 1 }
-                    }) {
-                        Image(systemName: "minus")
-                            .foregroundColor(.black)
-                            .frame(width: 20, height: 20)
-                            .background(Circle().fill(Color.white))
-                    }
-                    
-                    Text("\(itemCount)")
-                        .font(.headline)
-                    
-                    Button(action: {
-                        itemCount += 1
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundColor(.black)
-                            .frame(width: 20, height: 20)
-                            .background(Circle().fill(Color.white))
-                    }
-                }
-                .padding(8)
-                .background(Color.white)
-                .cornerRadius(16)
-                .shadow(color: Color.black.opacity(0.4), radius: 4, x: 0, y: 2)
-            }.padding([.trailing, .bottom], 5)
+            // Counter view when items are added
+            HStack(spacing: 12) {
+                // Minus Button
+                counterButton(
+                    systemImage: "minus",
+                    action: { if itemCount > 0 { itemCount -= 1 } }
+                )
+                
+                // Item Count
+                Text("\(itemCount)")
+                    .font(.headline)
+                    .foregroundColor(.black)
+                
+                // Plus Button
+                counterButton(
+                    systemImage: "plus",
+                    action: { itemCount += 1 }
+                )
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+        }
+    }
+
+    // MARK: - Reusable Components
+
+    /// Button for "+" and "-" actions in the counter
+    private func counterButton(systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .foregroundColor(.black)
+                .frame(width: 30, height: 30)
+                .background(Circle().fill(Color.white))
+        }
+    }
+
+    /// Initial "Add to Cart" button
+    private func addButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: "plus")
+                .foregroundColor(.black)
+                .frame(width: 40, height: 40)
+                .background(Circle().fill(Color.white))
+                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
         }
     }
 }
