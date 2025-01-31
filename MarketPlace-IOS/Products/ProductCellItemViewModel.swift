@@ -18,10 +18,10 @@ class ProductCellItemViewModel: ObservableObject {
     var stockCount: Int = 0
     var imageIds: [String]
     var cancellables = Set<AnyCancellable>()
-    @Published var product: GetAllStoreProductsResponse.Product
+    @Published var product: Product
     var delegate: ProductListViewModelDelegate
     var selectedCategory: Category? = nil
-    init(product: GetAllStoreProductsResponse.Product, delegate: ProductListViewModelDelegate,
+    init(product: Product, delegate: ProductListViewModelDelegate,
          selectedCategory: Category? = nil) {
         self.product = product
         self.productTitle = product.productName

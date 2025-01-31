@@ -49,7 +49,7 @@ class CreateStoreViewModel: ObservableObject {
     @Published var image_id: [String] = []
     var counties: [String] = ["NC"]
     var storeDetails: StoreServiceData?
-    var cancellables = Set<AnyCancellable>()
+    private var cancellables = Set<AnyCancellable>()
     init() {
         loadCountries()
     }

@@ -8,7 +8,7 @@ import SwiftUI
 import Combine
 
 struct ProductDetails: View {
-    @Binding var product: GetAllStoreProductsResponse.Product
+    @Binding var product: Product
     @StateObject private var imageLoader = ImageLoader()
     @State private var currentImageIndex = 0
     @State private var quantity = 1
@@ -176,7 +176,7 @@ struct ImageCounter: View {
 // MARK: - Add to Cart Button
 
 struct AddToCartButton: View {
-    let product: GetAllStoreProductsResponse.Product
+    let product: Product
     let quantity: Int
     @Binding var isAddingToCart: Bool
     

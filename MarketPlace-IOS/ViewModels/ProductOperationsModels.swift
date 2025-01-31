@@ -48,33 +48,63 @@ struct CreateProductResponse: Codable {
 struct GetAllStoreProductsResponse: Codable {
     var products: [Product]
 
-    struct Product: Codable {
-        let productId: String
-        let storeId: String
-        let productName: String
-        let price: Double
-        let stock: Int
-        let description: String
-        let category_id: String
-        let createdAt: String
-        let updatedAt: String?
-        let imageids: [String]
+   
+}
 
-        enum CodingKeys: String, CodingKey {
-            case productId = "product_id"
-            case storeId = "store_id"
-            case productName = "product_name"
-            case price
-            case stock
-            case description
-            case createdAt = "created_at"
-            case updatedAt = "updated_at"
-            case imageids
-            case category_id
-        }
+struct Product: Codable {
+    let productId: String
+    let storeId: String
+    let productName: String
+    let price: Double
+    let stock: Int
+    let description: String
+    let category_id: String
+    let createdAt: String
+    let updatedAt: String?
+    let imageids: [String]
+
+    enum CodingKeys: String, CodingKey {
+        case productId = "product_id"
+        case storeId = "store_id"
+        case productName = "product_name"
+        case price
+        case stock
+        case description
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case imageids
+        case category_id
     }
 }
 
+
+struct ProductDashBoard: Codable, Identifiable {
+    let id = UUID()
+    
+    let productId: String?
+    let storeId: String?
+    let productName: String?
+    let price: Double
+    let stock: Int
+    let description: String?
+    let category_id: String?
+    let createdAt: String
+    let updatedAt: String?
+    let imageIds: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case productId = "product_id"
+        case storeId = "store_id"
+        case productName = "name"
+        case price
+        case stock
+        case description
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case imageIds
+        case category_id
+    }
+}
 
 struct DeleteProductRequest: Codable, RequestBody {
     var user_id: String?

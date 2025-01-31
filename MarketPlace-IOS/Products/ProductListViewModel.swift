@@ -10,14 +10,14 @@ import Combine
 
 protocol ProductListViewModelDelegate: AnyObject {
     func didtapOnEditButton(for product: EditProduct)
-    func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product)
+    func didtapOnDeleteButton(for product: Product)
 }
 
 
 class ProductListViewModel: ObservableObject {
     @Published var showAddProductView: Bool = false
     @Published var moveToProductDetails: Bool = false
-    @Published var seletectedProduct: GetAllStoreProductsResponse.Product = .init(productId: "", storeId: "", productName: "", price: 0, stock: 0, description: "", category_id: "", createdAt: "", updatedAt: "", imageids: [])
+    @Published var seletectedProduct: Product = .init(productId: "", storeId: "", productName: "", price: 0, stock: 0, description: "", category_id: "", createdAt: "", updatedAt: "", imageids: [])
     
     @MainThreadPublished var showProgressIndicator = false
     @Published var categories: [Category] = []
@@ -90,7 +90,7 @@ extension ProductListViewModel: ProductListViewModelDelegate {
         showAddProductView = true
     }
     
-    func didtapOnDeleteButton(for product: GetAllStoreProductsResponse.Product) {
+    func didtapOnDeleteButton(for product: Product) {
         deleteProduct(product_id: product.productId,
                       request: DeleteProductRequest(product_id: product.productId))
     }

@@ -87,17 +87,33 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "BB231D40-A38F-468D-A9D8-048FE41DCEA8"
+            uuid = "3A674EF9-EAE7-463F-8487-F17F46D12DF8"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardViewViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "37"
+            endingLineNumber = "37"
+            landmarkName = "getDashboardData()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7D20C7D6-5157-45B8-9877-47BC5C319BB6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardViewViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "getDashboardData()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

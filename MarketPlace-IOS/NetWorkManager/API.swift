@@ -61,6 +61,10 @@ extension String {
     static func getCart() -> String {
         return "\(baseURL)/getCart/"
     }
+    
+    static func getDashboardData() -> String {
+        return "\(baseURL)/getDashboardData/"
+    }
 
     static func updateCart() -> String {
         return "\(baseURL)/updateCart/"
