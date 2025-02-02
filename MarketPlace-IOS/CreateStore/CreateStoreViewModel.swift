@@ -44,12 +44,14 @@ class CreateStoreViewModel: ObservableObject {
     @Published var loadLocationView = false
     @Published var isDelivery = false
     @Published var selectServiceTypeError = false
+    @Published var moveToProducts = false
     @Published var showProgressIndicator = false
     @Published var storeTypes = ["Select Store type"]
     @Published var serviceTypes = [String]()
     @Published var image_id: [String] = []
     var storeDetails: StoreServiceData?
     private var cancellables = Set<AnyCancellable>()
+    
  
     func createStore() {
         if validateInputs() {
@@ -59,7 +61,10 @@ class CreateStoreViewModel: ObservableObject {
                                              tax_percentage: taxPercentageRequired.doubleValue,
                                              pincode: pincode.intValue,
                                              state: selectStateText,
-                                             serviceType: serviceTypes)
+                                             city: city,
+                                             street: address,
+                                             serviceType: serviceTypes,
+                                             currencycode: "USD")
             sendCreateStoreRequest(storeRequest: request)
         }
     }
@@ -148,8 +153,10 @@ class CreateStoreViewModel: ObservableObject {
             },
             receiveValue: { response in
                 self.storeResponse = response
+                UserDetails.storeId = response.storeId
                 DispatchQueue.main.async {
                     self.showProgressIndicator = false
+                    self.moveToProducts = true
                 }
             }
         ).store(in: &cancellables)

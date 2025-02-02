@@ -177,8 +177,9 @@ extension UserDetails {
         }
     }
     
-    class func requestLocationPermission() {
-        LocationManager().requestLocationPermission()
+    class func requestLocationPermission(completion: ((CLAuthorizationStatus) -> Void)? = nil) {
+        let locationManager = LocationManager()
+        locationManager.requestLocationPermission()
     }
         
     func loadCountries() {
@@ -202,28 +203,13 @@ extension UserDetails {
 }
 
 
+
 class LocationManager: NSObject, CLLocationManagerDelegate {
-    private let locationManager = CLLocationManager()
     
-    func requestLocationPermission() {
-        let status = CLLocationManager.authorizationStatus()
-        
-        switch status {
-        case .authorizedWhenInUse, .authorizedAlways:
-            print("✅ Location access already granted")
-            
-        case .notDetermined:
-            locationManager.delegate = self
-            locationManager.requestWhenInUseAuthorization()
-            
-        case .denied, .restricted:
-            print("❌ Location access denied or restricted")
-            
-        @unknown default:
-            break
-        }
-    }
-    var onLocationUpdate: ((String?, String?, String?) -> Void)? // Callback for state & pincode
+    private let locationManager = CLLocationManager()
+    var onPermissionChange: ((CLAuthorizationStatus) -> Void)? // Callback for permission changes
+    var onLocationUpdate: ((String?, String?, String?) -> Void)? // Callback for state, pincode, and country
+    var onError: ((Error) -> Void)? // Callback for errors
     
     override init() {
         super.init()
@@ -231,39 +217,113 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
+    // MARK: - Request Location Permission
+    func requestLocationPermission() {
+        let status = CLLocationManager.authorizationStatus()
+        
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("✅ Location access already granted")
+            onPermissionChange?(status)
+            
+        case .notDetermined:
+            print("⚠️ Requesting location permission")
+            locationManager.requestWhenInUseAuthorization()
+            
+        case .denied, .restricted:
+            print("❌ Location access denied or restricted")
+            onPermissionChange?(status)
+            
+        @unknown default:
+            print("⚠️ Unknown authorization status")
+            break
+        }
+    }
+    
+    // MARK: - Request Current Location
     func requestLocation() {
         let status = CLLocationManager.authorizationStatus()
         
-        if status == .notDetermined {
-            locationManager.requestWhenInUseAuthorization()
-        } else if status == .authorizedWhenInUse || status == .authorizedAlways {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("📍 Starting location updates")
             locationManager.startUpdatingLocation()
-        } else {
-            print("❌ Location access denied")
+            
+        case .notDetermined:
+            print("⚠️ Location permission not determined, requesting permission")
+            locationManager.requestWhenInUseAuthorization()
+            
+        case .denied, .restricted:
+            print("❌ Location access denied or restricted")
+            
+        @unknown default:
+            print("⚠️ Unknown authorization status")
+            break
+        }
+    }
+    
+    // MARK: - CLLocationManagerDelegate Methods
+    
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            print("✅ Location access granted")
+            onPermissionChange?(status)
+            
+        case .denied, .restricted:
+            print("❌ Location access denied or restricted")
+            onPermissionChange?(status)
+            
+        case .notDetermined:
+            print("⚠️ Location permission not determined yet")
+            
+        @unknown default:
+            print("⚠️ Unknown authorization status")
+            break
         }
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.last else { return }
+        
+        // Fetch address using reverse geocoding
         fetchAddress(from: location)
-        locationManager.stopUpdatingLocation() // Stop updates after getting location
-    }
-    
-    func fetchAddress(from location: CLLocation) {
-        let geocoder = CLGeocoder()
-        geocoder.reverseGeocodeLocation(location) { placemarks, error in
-            if let placemark = placemarks?.first {
-                let state = placemark.administrativeArea // State
-                let postalCode = placemark.postalCode // Pincode
-                var country = placemark.isoCountryCode
-                self.onLocationUpdate?(state, postalCode, country)
-            }
-        }
+        
+        // Stop updating location to save battery
+        locationManager.stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("❌ Failed to get location: \(error.localizedDescription)")
+        
+        // Trigger the error callback if provided
+        onError?(error)
     }
-   
+    
+    // MARK: - Reverse Geocoding to Fetch Address
+    private func fetchAddress(from location: CLLocation) {
+        let geocoder = CLGeocoder()
+        
+        geocoder.reverseGeocodeLocation(location) { [weak self] placemarks, error in
+            if let error = error {
+                print("❌ Failed to reverse geocode location: \(error.localizedDescription)")
+                self?.onError?(error)
+                return
+            }
+            
+            guard let placemark = placemarks?.first else {
+                print("❌ No placemarks found")
+                return
+            }
+            
+            let state = placemark.administrativeArea // State
+            let postalCode = placemark.postalCode // Pincode
+            let country = placemark.isoCountryCode // Country
+            
+            print("📍 State: \(state ?? "N/A"), Postal Code: \(postalCode ?? "N/A"), Country: \(country ?? "N/A")")
+            
+            // Trigger the callback with fetched address details
+            self?.onLocationUpdate?(state, postalCode, country)
+        }
+    }
 }
-

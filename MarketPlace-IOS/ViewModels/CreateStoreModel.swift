@@ -83,7 +83,10 @@ struct CreateStoreRequest: Codable, RequestBody {
     let tax_percentage: Double
     let pincode: Int
     let state: String
+    let city: String
+    let street: String
     let serviceType: [String]
+    let currencycode: String
 
     enum CodingKeys: String, CodingKey {
         case store_name = "store_name"
@@ -92,6 +95,9 @@ struct CreateStoreRequest: Codable, RequestBody {
         case tax_percentage = "tax_percentage"
         case pincode
         case state
+        case city
+        case street
+        case currencycode
         case serviceType = "serviceType"
     }
 }

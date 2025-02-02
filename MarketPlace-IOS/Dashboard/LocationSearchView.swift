@@ -83,7 +83,7 @@ struct LocationSearchView: View {
                     address.city = component.name
                 }
                 if component.types.contains("administrative_area_level_1") {
-                    address.state = component.name
+                    address.state = component.shortName ?? ""
                 }
                 if component.types.contains("postal_code") {
                     address.postalCode = component.name

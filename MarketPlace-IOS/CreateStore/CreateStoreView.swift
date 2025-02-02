@@ -133,6 +133,11 @@ struct CreateStoreView: View {
                     viewModel.selectStateText = address.state
                 }
             }
+            
+            NavigationLink(
+                "", destination: ProductListView()
+                    .navigationBarBackButtonHidden(true),
+                isActive: $viewModel.moveToProducts) .ignoresSafeArea(edges: .all)       
         }
     }
     

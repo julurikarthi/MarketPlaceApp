@@ -114,12 +114,44 @@ class LoginViewModel: ObservableObject {
     }
     
     func fetchLocation() {
-        locationManager.requestLocation()
-        
-        locationManager.onLocationUpdate = { newState, newPincode, countryCode in
-           let country =  UserDetails.shared.counties.filter({$0.code == countryCode}).first
-            self.country = country
+
+        let locationManager = LocationManager()
+
+        // Handle permission changes
+        locationManager.onPermissionChange = { status in
+            switch status {
+            case .authorizedWhenInUse, .authorizedAlways:
+                print("✅ Permission granted")
+                print("Requesting location")
+                locationManager.requestLocation()
+                
+            case .denied, .restricted:
+                print("❌ Permission denied or restricted")
+                
+            case .notDetermined:
+                print("⚠️ Permission not determined yet")
+                
+            @unknown default:
+                break
+            }
         }
+
+        // Handle location updates (state, postal code, country)
+        locationManager.onLocationUpdate = { state, postalCode, country in
+            print("📍 State: \(state ?? "N/A"), Postal Code: \(postalCode ?? "N/A"), Country: \(country ?? "N/A")")
+            UserDetails.shared.loadCountries()
+            let country =  UserDetails.shared.counties.filter({$0.code == country}).first
+             self.country = country
+        }
+
+        // Handle errors
+        locationManager.onError = { error in
+            print("❌ Error occurred: \(error.localizedDescription)")
+        }
+
+        // Request permission and fetch location
+        locationManager.requestLocationPermission()
+        
     }
    
     

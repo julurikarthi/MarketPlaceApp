@@ -59,16 +59,15 @@ struct LoginView: View {
                 .onTapGesture {
                     dismissKeyboard()
                 }.onAppear {
-                    UserDetails.shared.loadCountries()
-                    UserDetails.requestLocationPermission()
                     viewModel.fetchLocation()
                 }
+                
+                
                 NavigationLink(
                     "", destination: HomePage()
                         .navigationBarBackButtonHidden(true),
                     isActive: $viewModel.movetoHome)
-//                 
-//                
+               
                 NavigationLink(
                     "", destination: CreateStoreView()
                         .navigationBarBackButtonHidden(true),
