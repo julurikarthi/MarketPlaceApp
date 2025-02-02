@@ -77,21 +77,19 @@ struct DynamicCodingKeys: CodingKey {
 }
 
 struct CreateStoreRequest: Codable, RequestBody {
-    var user_id: String?
-    let storeName: String
-    let storeType: String
-    let imageId: String
-    let taxPercentage: Double
+    let store_name: String
+    let store_type: String
+    let image_id: String
+    let tax_percentage: Double
     let pincode: Int
     let state: String
     let serviceType: [String]
 
     enum CodingKeys: String, CodingKey {
-        case storeName = "store_name"
-        case storeType = "store_type"
-        case imageId = "image_id"
-        case user_id = "user_id"
-        case taxPercentage = "tax_percentage"
+        case store_name = "store_name"
+        case store_type = "store_type"
+        case image_id = "image_id"
+        case tax_percentage = "tax_percentage"
         case pincode
         case state
         case serviceType = "serviceType"

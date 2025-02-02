@@ -53,9 +53,11 @@ class LoginViewModel: ObservableObject {
     @Published  var mobileError: Bool = false
     @Published var loginResponse: LoginResponse?
     @Published var isLoading: Bool = false
+    @Published var country: Country?
     @MainThreadPublished var showProgressIndicator: Bool = false
     @AppStorage("userToken") var userToken: String?
-    
+    let locationManager = LocationManager()
+
     private var cancellables = Set<AnyCancellable>()
     @Published var movetoDashboard: Bool = false
     @Published var movetoStore: Bool = false
@@ -111,6 +113,16 @@ class LoginViewModel: ObservableObject {
         
     }
     
+    func fetchLocation() {
+        locationManager.requestLocation()
+        
+        locationManager.onLocationUpdate = { newState, newPincode, countryCode in
+           let country =  UserDetails.shared.counties.filter({$0.code == countryCode}).first
+            self.country = country
+        }
+    }
+   
+    
     func isValidMobileNumber(_ number: String) -> Bool {
         // Remove non-numeric characters (like spaces, parentheses, or dashes)
         let cleanedNumber = number.filter { $0.isNumber }
@@ -124,7 +136,8 @@ class LoginViewModel: ObservableObject {
     func continueAction() {
         if isValidMobileNumber(mobile)  {
             let digitsOnly = mobile.filter { $0.isNumber }
-            let request = LoginRequest(mobileNumber: digitsOnly, userType: .storeOwner)
+            let numberformat = (country?.dialCode ?? .empty) + digitsOnly
+            let request = LoginRequest(mobileNumber: numberformat, userType: .storeOwner)
             loginUser(loginRequest: request)
         } else {
             mobileError = true

@@ -44,6 +44,7 @@ struct CreateStoreView: View {
     @StateObject var viewModel = CreateStoreViewModel()
     @State private var dropdownServiceSelection: String = "Select Service type"
     @State private var dropdownSelectState: String = "Select State"
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -56,8 +57,21 @@ struct CreateStoreView: View {
                         CustomTextField(text: $viewModel.storeName, placeholder: .empty, isError: $viewModel.storeNameError, errorMessage: .storeNameError, title: .storeName)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
                         
-                        CustomTextField(text: $viewModel.address, placeholder: .empty, isError: $viewModel.addressError, errorMessage: .addressRequired, title: .address)
-                            .frame(width: .infinity).padding([.trailing, .leading], 20)
+                        ZStack {
+                            CustomTextField(
+                                text: $viewModel.address,
+                                placeholder: .empty,
+                                isError: $viewModel.addressError,
+                                errorMessage: .addressRequired,
+                                title: .address
+                            )
+                            .disabled(true)
+                            
+                        }.frame(width: .infinity)
+                            .padding([.trailing, .leading], 20)
+                        .onTapGesture {
+                            viewModel.loadLocationView = true
+                        }
                         
                         CustomTextField(text: $viewModel.city, placeholder: .empty, isError: $viewModel.cityError, errorMessage: .cityRequired, title: .city)
                             .frame(width: .infinity).padding([.trailing, .leading], 20)
@@ -67,7 +81,7 @@ struct CreateStoreView: View {
                         
                         
                         HStack(spacing: 10) {
-                            CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state, isDropdown: true, dropdownOptions: viewModel.counties).frame(width:100)
+                            CustomTextField(text: $viewModel.selectStateText, placeholder: .empty, isError: $viewModel.selectStatError, errorMessage: .selectStoreText, title: .state).frame(width:100)
                             CustomTextField(text: $viewModel.selectedStoreType, placeholder: .empty, isError: $viewModel.selectStoreTypeError, errorMessage: .selectStoreText, title: .storeType, isDropdown: true, dropdownOptions: $viewModel.storeTypes.wrappedValue)
                         }.padding([.trailing, .leading], 20)
                         
@@ -111,6 +125,13 @@ struct CreateStoreView: View {
                 UserDetails.requestCameraPermission()
                 UserDetails.requestPhotoLibraryPermission()
                 UserDetails.requestLocationPermission()
+            }.sheet(isPresented: $viewModel.loadLocationView) {
+                LocationSearchView { address in
+                    viewModel.address = address.street
+                    viewModel.city = address.city
+                    viewModel.pincode = address.postalCode
+                    viewModel.selectStateText = address.state
+                }
             }
         }
     }
@@ -261,24 +282,6 @@ extension String {
     static let empty = ""
 }
 
-
-struct DropdownPicker: View {
-    @State private var selectedOption: String = ""
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text("Country").font(.system(size: 15)).bold()
-            HStack {
-                Text(selectedOption.isEmpty ? "+1 (US)" : selectedOption)
-                    .foregroundColor(.black).font(.subheadline)
-            }
-            .padding()
-            .frame(height: 35)
-            .background(Color(hex: "#F7F7F7"))
-            .cornerRadius(10)
-        }
-    }
-}
 
 struct RoundedButton: View {
     var title: String

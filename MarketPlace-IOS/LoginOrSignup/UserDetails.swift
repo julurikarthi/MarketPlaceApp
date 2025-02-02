@@ -14,7 +14,7 @@ import CoreLocation
 class UserDetails {
     static let shared = UserDetails()
 
-    
+    var counties: [Country] = []
     // Static properties to store user details
     static var userId: String? {
         get {
@@ -180,6 +180,25 @@ extension UserDetails {
     class func requestLocationPermission() {
         LocationManager().requestLocationPermission()
     }
+        
+    func loadCountries() {
+        guard let url = Bundle.main.url(forResource: "countries", withExtension: "json") else {
+            print("Could not find counties.json in the bundle.")
+            return
+        }
+        
+        do {
+            let data = try Data(contentsOf: url)
+            let decoder = JSONDecoder()
+            let countries = try decoder.decode([Country].self, from: data)
+            countries.forEach { countryValue in
+                counties.append(countryValue)
+            }
+        } catch {
+            print("Error decoding countries.json: \(error)")
+            return
+        }
+    }
 }
 
 
@@ -204,7 +223,7 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             break
         }
     }
-    var onLocationUpdate: ((String?, String?) -> Void)? // Callback for state & pincode
+    var onLocationUpdate: ((String?, String?, String?) -> Void)? // Callback for state & pincode
     
     override init() {
         super.init()
@@ -236,7 +255,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
             if let placemark = placemarks?.first {
                 let state = placemark.administrativeArea // State
                 let postalCode = placemark.postalCode // Pincode
-                self.onLocationUpdate?(state, postalCode)
+                var country = placemark.isoCountryCode
+                self.onLocationUpdate?(state, postalCode, country)
             }
         }
     }
@@ -244,4 +264,6 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print("❌ Failed to get location: \(error.localizedDescription)")
     }
+   
 }
+

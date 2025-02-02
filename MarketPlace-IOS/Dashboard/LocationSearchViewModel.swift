@@ -14,7 +14,7 @@ class LocationSearchViewModel: ObservableObject {
     
     func getCurrentLocation(completionHander: @escaping()-> Void) {
         locationManager.requestLocation()
-        locationManager.onLocationUpdate = { newState, newPincode in
+        locationManager.onLocationUpdate = { newState, newPincode, country in
             self.state = newState
             self.pincode = newPincode
             completionHander()

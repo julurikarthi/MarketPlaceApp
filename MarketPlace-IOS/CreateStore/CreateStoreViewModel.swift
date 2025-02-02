@@ -17,7 +17,7 @@ class CreateStoreViewModel: ObservableObject {
     @Published  var taxPercentageRequired: String = ""
     @Published  var address: String = ""
     
-    @Published  var selectStateText: String = "NC"
+    @Published  var selectStateText: String = ""
     @Published  var selectedStoreType: String = "Select Store type"
 
     @Published  var imageUploadError: Bool = false
@@ -41,24 +41,22 @@ class CreateStoreViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var isPickup = false
     @Published var isPayAtPickup = false
+    @Published var loadLocationView = false
     @Published var isDelivery = false
     @Published var selectServiceTypeError = false
     @Published var showProgressIndicator = false
     @Published var storeTypes = ["Select Store type"]
     @Published var serviceTypes = [String]()
     @Published var image_id: [String] = []
-    var counties: [String] = ["NC"]
     var storeDetails: StoreServiceData?
     private var cancellables = Set<AnyCancellable>()
-    init() {
-        loadCountries()
-    }
+ 
     func createStore() {
         if validateInputs() {
-            let request = CreateStoreRequest(storeName: storeName,
-                                             storeType: selectedStoreType,
-                                             imageId: image_id.first ?? "",
-                                             taxPercentage: taxPercentageRequired.doubleValue,
+            let request = CreateStoreRequest(store_name: storeName,
+                                             store_type: selectedStoreType,
+                                             image_id: image_id.first ?? "",
+                                             tax_percentage: taxPercentageRequired.doubleValue,
                                              pincode: pincode.intValue,
                                              state: selectStateText,
                                              serviceType: serviceTypes)
@@ -121,24 +119,6 @@ class CreateStoreViewModel: ObservableObject {
         return pincode.count >= 5 // Replace 5 with your required minimum length
     }
     
-    func loadCountries() {
-        guard let url = Bundle.main.url(forResource: "countries", withExtension: "json") else {
-            print("Could not find counties.json in the bundle.")
-            return
-        }
-        
-        do {
-            let data = try Data(contentsOf: url)
-            let decoder = JSONDecoder()
-            let countries = try decoder.decode([Country].self, from: data)
-            countries.forEach { countryValue in
-                counties.append(countryValue.code)
-            }
-        } catch {
-            print("Error decoding countries.json: \(error)")
-            return 
-        }
-    }
 
     func sendCreateStoreRequest(storeRequest: CreateStoreRequest) {
         guard URL(string: String.createStore()) != nil else { return }

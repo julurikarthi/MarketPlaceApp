@@ -22,7 +22,7 @@ class DashBoardViewViewModel: ObservableObject {
     func getCurrentLocation() async {
         await withCheckedContinuation { continuation in
             locationManager.requestLocation()
-            locationManager.onLocationUpdate = { newState, newPincode in
+            locationManager.onLocationUpdate = { newState, newPincode, country in
                 self.state = newState
                 self.pincode = newPincode
                 continuation.resume() // Resume the async task once the location is updated

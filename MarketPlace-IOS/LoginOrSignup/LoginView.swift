@@ -11,7 +11,6 @@ struct LoginView: View {
     @StateObject var viewModel = LoginViewModel()
     @Environment(\.presentationMode) var presentationMode
     @State private var showLocationSearch = false
-
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -23,7 +22,7 @@ struct LoginView: View {
 
                     VStack(alignment: .leading) {
                         HStack(spacing: 10) {
-                            DropdownPicker()
+                            DropdownPicker(country: $viewModel.country)
                                 .frame(width: UIScreen.main.bounds.width * 0.25)
                                 .padding(.bottom, 14)
                             
@@ -59,6 +58,10 @@ struct LoginView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .onTapGesture {
                     dismissKeyboard()
+                }.onAppear {
+                    UserDetails.shared.loadCountries()
+                    UserDetails.requestLocationPermission()
+                    viewModel.fetchLocation()
                 }
                 NavigationLink(
                     "", destination: HomePage()
@@ -94,6 +97,23 @@ struct LoginView: View {
     
 }
 
+struct DropdownPicker: View {
+    @State private var selectedOption: String = ""
+    @Binding var country: Country?
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("Country").font(.system(size: 15)).bold()
+            HStack {
+                Text(((country?.emoji ?? "") + " ") + (country?.dialCode ?? ""))
+                    .foregroundColor(.black).font(.subheadline)
+            }
+            .padding()
+            .frame(height: 35)
+            .background(Color(hex: "#F7F7F7"))
+            .cornerRadius(10)
+        }
+    }
+}
 
 #Preview {
     LoginView()
