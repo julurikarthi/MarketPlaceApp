@@ -15,7 +15,6 @@ struct ProductListView: View {
     @StateObject private var viewModel = ProductListViewModel()
    
     let columns = [
-          GridItem(.flexible()),
           GridItem(.flexible())
       ]
     var body: some View {

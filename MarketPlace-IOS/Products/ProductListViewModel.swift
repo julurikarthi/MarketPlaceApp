@@ -17,7 +17,7 @@ protocol ProductListViewModelDelegate: AnyObject {
 class ProductListViewModel: ObservableObject {
     @Published var showAddProductView: Bool = false
     @Published var moveToProductDetails: Bool = false
-    @Published var seletectedProduct: Product = .init(productId: "", storeId: "", productName: "", price: 0, stock: 0, description: "", category_id: "", createdAt: "", updatedAt: "", imageids: [])
+    @Published var seletectedProduct: Product = .init(product_id: "", store_id: "", product_name: "", price: 0, stock: 0, description: "", category_id: "", updatedAt: "", imageids: [])
     
     @MainThreadPublished var showProgressIndicator = false
     @Published var categories: [Category] = []
@@ -57,7 +57,9 @@ class ProductListViewModel: ObservableObject {
 
     func getAllProductbyStore(category_id: String = "", page: Int = 1) async {
         showProgressIndicator = true
-        let request = GetAllProductByStoreRequest(category_id: category_id.isEmpty ? categories.first?.categoryID : category_id, page: page)
+        let request = GetAllProductByStoreRequest(category_id: category_id.isEmpty ? categories.first?.categoryID : category_id,
+                                                  isPublish: true,
+                                                  page: 1)
         NetworkManager.shared.performRequest(
             url: .getAllProductbyStore(),
             method: .POST,
@@ -91,8 +93,8 @@ extension ProductListViewModel: ProductListViewModelDelegate {
     }
     
     func didtapOnDeleteButton(for product: Product) {
-        deleteProduct(product_id: product.productId,
-                      request: DeleteProductRequest(product_id: product.productId))
+        deleteProduct(product_id: product.product_id,
+                      request: DeleteProductRequest(product_id: product.product_id))
     }
     
     func deleteProduct(product_id: String, request: DeleteProductRequest) {
@@ -123,7 +125,7 @@ extension ProductListViewModel: ProductListViewModelDelegate {
     
     func deleteItem(product_id: String) {
         // Find the index of the product to delete
-        if let index = storeProductsbyCategories.products.firstIndex(where: { $0.productId == product_id }) {
+        if let index = storeProductsbyCategories.products.firstIndex(where: { $0.product_id == product_id }) {
             // Remove the item at the found index
             storeProductsbyCategories.products.remove(at: index)
         }

@@ -21,15 +21,18 @@ class ProductCellItemViewModel: ObservableObject {
     @Published var product: Product
     var delegate: ProductListViewModelDelegate
     var selectedCategory: Category? = nil
+    let reviewCount: Int = 20
+    let rating: Float = 4
+
     init(product: Product, delegate: ProductListViewModelDelegate,
          selectedCategory: Category? = nil) {
         self.product = product
-        self.productTitle = product.productName
+        self.productTitle = product.product_name
         self.productPrice = product.price
         self.description = product.description
         self.stock = "\(product.stock)"
         self.stockCount = product.stock
-        imageIds = product.imageids
+        imageIds = product.imageids ?? []
         self.delegate = delegate
         self.selectedCategory = selectedCategory
     }
@@ -40,9 +43,11 @@ class ProductCellItemViewModel: ObservableObject {
         var imageURLs = [String]()
         
         // Generate URLs from image IDs
-        imageIds.forEach { str in
-            imageURLs.append(String.downloadImage(imageid: str))
-        }
+//        imageIds.forEach { str in
+//            imageURLs.append(String.downloadImage(imageid: str))
+//        }
+        imageURLs.append(String.downloadImage(imageid: imageIds.first ?? ""))
+
         
         // Start downloading images
         downloadImages(from: imageURLs)
@@ -91,7 +96,7 @@ class ProductCellItemViewModel: ObservableObject {
     
     func editProduct() {
         if let selectedCategory = selectedCategory {
-            let ediProduct = EditProduct(product_id: product.productId, product_name: product.productName, description: product.description, price: product.price, stock: product.stock,  imageids: product.imageids, isPublish: true, selectedPhotos: self.productImages, categoryID: selectedCategory)
+            let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description, price: product.price, stock: product.stock,  imageids: product.imageids ?? [], isPublish: true, selectedPhotos: self.productImages, categoryID: selectedCategory)
             delegate.didtapOnEditButton(for: ediProduct)
         }
       

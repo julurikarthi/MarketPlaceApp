@@ -19,11 +19,11 @@ struct ProductDetails: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Image Gallery
-                    ImageGallery(imageLoader: imageLoader, imageIds: product.imageids, currentIndex: $currentImageIndex, colors: CustomColors())
+                    ImageGallery(imageLoader: imageLoader, imageIds: product.imageids ?? [], currentIndex: $currentImageIndex, colors: CustomColors())
                         .frame(height: 300)
                         .cornerRadius(20)
                         .overlay(
-                            ImageCounter(current: currentImageIndex + 1, total: product.imageids.count)
+                            ImageCounter(current: currentImageIndex + 1, total: product.imageids?.count ?? 0)
                                 .padding(.bottom, 12)
                                 .padding(.trailing, 12),
                             alignment: .bottomTrailing
@@ -32,7 +32,7 @@ struct ProductDetails: View {
                     
                     VStack(alignment: .leading, spacing: 24) {
                         // Product Name
-                        Text(product.productName)
+                        Text(product.product_name)
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(.black)
                         
@@ -68,10 +68,9 @@ struct ProductDetails: View {
                         
                         // Additional Details
                         VStack(alignment: .leading, spacing: 16) {
-                            DetailRow(title: "Product ID", value: product.productId)
-                            DetailRow(title: "Store ID", value: product.storeId)
+                            DetailRow(title: "Product ID", value: product.product_id)
+                            DetailRow(title: "Store ID", value: product.store_id)
                             DetailRow(title: "Category", value: product.category_id)
-                            DetailRow(title: "Created", value: formatDate(product.createdAt))
                             if let updated = product.updatedAt {
                                 DetailRow(title: "Updated", value: formatDate(updated))
                             }
@@ -93,7 +92,7 @@ struct ProductDetails: View {
     }
     
     private func loadImages() {
-        for imageId in product.imageids {
+        for imageId in product.imageids ?? [] {
             imageLoader.loadImage(for: imageId)
         }
     }
@@ -208,7 +207,7 @@ struct AddToCartButton: View {
         
         // Simulate cart addition (replace with your actual cart logic here!)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            print("Added \(quantity) of \(product.productName) to cart.")
+            print("Added \(quantity) of \(product.product_name) to cart.")
             isAddingToCart = false
             
             // Optional success alert or toast can be added here.

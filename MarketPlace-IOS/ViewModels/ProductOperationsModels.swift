@@ -52,32 +52,16 @@ struct GetAllStoreProductsResponse: Codable {
 }
 
 struct Product: Codable {
-    let productId: String
-    let storeId: String
-    let productName: String
+    let product_id: String
+    let store_id: String
+    let product_name: String
     let price: Double
     let stock: Int
     let description: String
     let category_id: String
-    let createdAt: String
     let updatedAt: String?
-    let imageids: [String]
-
-    enum CodingKeys: String, CodingKey {
-        case productId = "product_id"
-        case storeId = "store_id"
-        case productName = "product_name"
-        case price
-        case stock
-        case description
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case imageids
-        case category_id
-    }
+    let imageids: [String]?
 }
-
-
 struct ProductDashBoard: Codable, Identifiable {
     let id = UUID()
     
