@@ -169,7 +169,8 @@ class LoginViewModel: ObservableObject {
         if isValidMobileNumber(mobile)  {
             let digitsOnly = mobile.filter { $0.isNumber }
             let numberformat = (country?.dialCode ?? .empty) + digitsOnly
-            let request = LoginRequest(mobileNumber: numberformat, userType: .storeOwner)
+            let number = numberformat.filter{ $0.isNumber }
+            let request = LoginRequest(mobileNumber: number, userType: .storeOwner)
             loginUser(loginRequest: request)
         } else {
             mobileError = true

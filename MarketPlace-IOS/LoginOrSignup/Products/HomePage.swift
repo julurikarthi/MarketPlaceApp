@@ -10,6 +10,12 @@ import SwiftUI
 struct HomePage: View {
     @State private var selectedTab = 0
 
+
+    init() {
+        UITabBar.appearance().tintColor = UIColor(Color.themeRed)
+        UITabBar.appearance().unselectedItemTintColor = UIColor.gray
+    }
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             ProductListView()
@@ -29,7 +35,8 @@ struct HomePage: View {
                     Image(selectedTab == 3 ? "profileselected" : "profile")
                     Text("Profile")
                 }.tag(2)
-        }
+        }.accentColor(.themeRed)
+
      
     }
 }
