@@ -13,6 +13,7 @@ struct ProductListView: View {
     @State private var test: Bool = false
     @Environment(\.presentationMode) var presentationMode // For manual back action
     @StateObject private var viewModel = ProductListViewModel()
+    @StateObject private var categoryViewModel = CategoriesTabBarViewModel()
    
     let columns = [
           GridItem(.flexible())
@@ -27,7 +28,7 @@ struct ProductListView: View {
                             Task {
                                 await viewModel.getAllProductbyStore(category_id: category.categoryID)
                             }
-                        })
+                        }, viewModel: categoryViewModel)
                         if $viewModel.storeProductsbyCategories.products.isEmpty {
                             addtoProductView()
                         } else {
@@ -54,8 +55,7 @@ struct ProductListView: View {
                     "", destination: ProductDetails(product: $viewModel.seletectedProduct),
                     isActive: $viewModel.moveToProductDetails)
                 
-            }.navigationTitle("Products")
-                .toolbar {
+            }.toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) { // Add a button on the right side
                         Button(action: {
                             // Action to add a product
@@ -112,10 +112,7 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).onTapGesture {
-                    viewModel.seletectedProduct = product.wrappedValue
-                    viewModel.moveToProductDetails = true
-                }
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).id(index)
             }
         }
         .padding()

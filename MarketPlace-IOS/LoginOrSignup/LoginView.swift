@@ -73,7 +73,7 @@ struct LoginView: View {
                         .navigationBarBackButtonHidden(true),
                     isActive: $viewModel.movetoStore)
             }
-            .ignoresSafeArea(edges: .all)
+            .ignoresSafeArea(edges: .all).background(.white)
             
         }
     }

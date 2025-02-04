@@ -11,6 +11,7 @@ import Combine
 protocol ProductListViewModelDelegate: AnyObject {
     func didtapOnEditButton(for product: EditProduct)
     func didtapOnDeleteButton(for product: Product)
+    func didtapProduct(for product: Product)
 }
 
 
@@ -19,7 +20,7 @@ class ProductListViewModel: ObservableObject {
     @Published var moveToProductDetails: Bool = false
     @Published var seletectedProduct: Product = .init(product_id: "", store_id: "", product_name: "", price: 0, stock: 0, description: "", category_id: "", updatedAt: "", imageids: [])
     
-    @MainThreadPublished var showProgressIndicator = false
+    @Published var showProgressIndicator = false
     @Published var categories: [Category] = []
     private var cancellables = Set<AnyCancellable>()
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
@@ -27,7 +28,9 @@ class ProductListViewModel: ObservableObject {
     @Published var editProduct: EditProduct?
     func getstoreCategories() async -> Bool {
         return await withCheckedContinuation { continuation in
-            showProgressIndicator = true
+            DispatchQueue.main.async {
+                self.showProgressIndicator = true
+            }
             let fetchcategoryRequest: FetchCategoryRequest = .init()
 
             NetworkManager.shared.performRequest(
@@ -56,7 +59,9 @@ class ProductListViewModel: ObservableObject {
     }
 
     func getAllProductbyStore(category_id: String = "", page: Int = 1) async {
-        showProgressIndicator = true
+        DispatchQueue.main.async {
+            self.showProgressIndicator = true
+        }
         let request = GetAllProductByStoreRequest(category_id: category_id.isEmpty ? categories.first?.categoryID : category_id,
                                                   isPublish: true,
                                                   page: 1)
@@ -77,8 +82,9 @@ class ProductListViewModel: ObservableObject {
                 receiveValue: { response in
                     DispatchQueue.main.async {
                         self.showProgressIndicator = false
-                        self.storeProductsbyCategories = response
+                        self.storeProductsbyCategories = GetAllStoreProductsResponse(products: response.products)
                     }
+
                 }
             ).store(in: &cancellables)
     }
@@ -86,6 +92,12 @@ class ProductListViewModel: ObservableObject {
 }
 
 extension ProductListViewModel: ProductListViewModelDelegate {
+    
+    func didtapProduct(for product: Product) {
+        seletectedProduct = product
+        moveToProductDetails = true
+    }
+    
     
     func didtapOnEditButton(for product: EditProduct) {
         self.editProduct = product

@@ -1,11 +1,12 @@
 
 import SwiftUI
+import Shimmer
 
 
 struct ProductCellItem: View {
     @State private var quantity = 1
     @State private var currentImageIndex = 0
-    @StateObject var viewModel: ProductCellItemViewModel
+    @ObservedObject var viewModel: ProductCellItemViewModel
     private var discount: Int? {
         return 10
     }
@@ -14,18 +15,21 @@ struct ProductCellItem: View {
         VStack(alignment: .leading, spacing: 12) {
             // Image Carousel
             ZStack(alignment: .bottomTrailing) {
-                TabView(selection: $currentImageIndex) {
-                    ForEach(viewModel.productImages, id: \.self) { image in
-                        Image(uiImage: image).resizable()
-                            .aspectRatio(contentMode: .fill)
-                    }
+                if !viewModel.productImages.isEmpty {
+                    Image(uiImage: viewModel.productImages.first ?? UIImage(named: "placeholder")!)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(height: 250)
+                        .clipped()
+                } else {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.gray.opacity(0.3))
+                        .frame(height: 200)
+                        .shimmering(active: true)
                 }
-                .frame(height: 250)
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                
-                // Image Pagination Indicator
+
                 HStack(spacing: 8) {
-                    ForEach(viewModel.imageIds.indices, id: \.self) { index in
+                    ForEach(viewModel.productImages.indices, id: \.self) { index in
                         Circle()
                             .fill(currentImageIndex == index ? Color.white : Color.gray.opacity(0.5))
                             .frame(width: 8, height: 8)
@@ -48,7 +52,7 @@ struct ProductCellItem: View {
                         Image(systemName: "star.fill")
                             .foregroundColor(.yellow)
                         Text(String(format: "%.1f", 3))
-                        Text("10")
+                        Text("/10")
                             .foregroundColor(.gray)
                     }
                     .font(.subheadline)
@@ -59,7 +63,7 @@ struct ProductCellItem: View {
                     Text("$\(String(format: "%.2f", viewModel.productPrice))")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.black)
                     
                     Text("$\(String(format: "%.2f", viewModel.productPrice))")
                         .font(.subheadline)
@@ -81,7 +85,7 @@ struct ProductCellItem: View {
                 // Description
                 Text(viewModel.description)
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.gray)
                     .lineLimit(2)
                 
                 // Stock Information
@@ -91,132 +95,28 @@ struct ProductCellItem: View {
                     Text("\(viewModel.stock) in stock")
                         .font(.caption)
                         .foregroundColor(.gray)
-                }
-                
-                // Quantity Selector and Add to Cart Button
-                HStack {
-                    Stepper(value: $quantity, in: 1...viewModel.stockCount) {
-                        Text("Qty: \(quantity)")
-                            .font(.subheadline)
-                    }
-                    
                     Spacer()
-                    
-                    Button(action: {
-                        // Add to cart logic here
-                        print("Added \(quantity) of \(viewModel.productTitle) to cart")
-                    }) {
-                        Text("Add to Cart")
-                            .fontWeight(.semibold)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(8)
-                    }
+                    CartButtonView()
                 }
-            }
-            .padding(.horizontal)
+               
+            }.padding()
         }
         .background(Color.white)
         .cornerRadius(15)
-        .shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5).task {
-            await viewModel.downloadproductImages()
+        .shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5)
+        .onAppear {
+            viewModel.downloadproductImages()
+            print("Images in viewModel: \(viewModel.productImages.count)")
+        }
+        .onTapGesture {
+            viewModel.didTapOnProduct()
         }
     }
 }
 
-//struct ProductCellItem: View {
-//  
-//    @StateObject var viewModel: ProductCellItemViewModel
-//        
-//    var body: some View {
-//        VStack(alignment: .leading, spacing: 8) {
-//            // Image Carousel
-//            ZStack(alignment: .bottomTrailing) {
-//                TabView {
-//                    ForEach(viewModel.productImages, id: \.self) { image in
-//                        Image(uiImage: image)
-//                            .resizable()
-//                            .clipped()
-//                            .frame(width: 120, height: 200)
-//                    }
-//                }
-//                .tabViewStyle(PageTabViewStyle())
-//                .frame(height: 200)
-//                if UserDetails.userType != .storeOwner {
-//                    AddToCartView().padding(EdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
-//                }
-//            }
-//            
-//            HStack {
-//                PriceView(price: viewModel.productPrice)
-//                    .padding(EdgeInsets(top: 0, leading: -2, bottom: 0, trailing: 0))
-//                if UserDetails.userType == .storeOwner {
-//                    menuOptions()
-//                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 30))
-//                        .frame(maxWidth: .infinity, alignment: .trailing)
-//                        
-//                }
-//            }
-//            
-//            VStack(alignment: .leading, spacing: 4) {
-//                Text(viewModel.productTitle)
-//                    .font(.subheadline)
-//                    .foregroundColor(Color.subtitleGray)
-//                    .lineLimit(2)
-//                    .padding(EdgeInsets(top: 0, leading: -5, bottom: 0, trailing: 0))
-//
-//                Text(viewModel.description)
-//                    .font(.subheadline)
-//                    .foregroundColor(Color.subtitleGray)
-//                    .lineLimit(2)
-//                    .padding(EdgeInsets(top: 0, leading: -5, bottom: 0, trailing: 0))
-//
-//                if UserDetails.store_type == nil {
-//                    Text("In stock: \(viewModel.stock)")
-//                        .font(.subheadline)
-//                        .foregroundColor(Color.subtitleGray)
-//                        .padding(EdgeInsets(top: 0, leading: -8, bottom: 0, trailing: 0))
-//                }
-//                if viewModel.stockCount > 50 {
-//                    Text("Many in stock")
-//                        .padding(5)
-//                        .font(.system(size: 12, weight: .bold, design: .default))
-//                        .foregroundColor(Color(hex: "#02832D"))
-//                        .background(Color.green.opacity(0.1))
-//                        .cornerRadius(2)
-//                        .padding(EdgeInsets(top: 3, leading: -5, bottom: 0, trailing: 0))
-//                }
-//            }
-//            .padding([.horizontal, .bottom])
-//        }
-//        .background(Color.white)
-//        .task {
-//            await viewModel.downloadproductImages()
-//        }
-//    }
-//    
-//    func menuOptions() -> some View {
-//        Menu {
-//            Button("Edit", action: viewModel.editProduct)
-//            Button("Delete", action: viewModel.deleteProduct)
-//        } label: {
-//            Image(systemName: "ellipsis")
-//                .resizable()
-//                .scaledToFit()
-//                .frame(width: 20, height: 20)
-//                .foregroundColor(.black)
-//        }
-//    }
-//    
-//  
-//}
 
 
-#Preview(body: {
-//    ProductCellItem(viewModel: .init(product: []))
-})
+
 
 struct AddToCartView: View {
     @State var itemCount: Int = 0
@@ -302,3 +202,75 @@ struct PriceView: View {
         }
     }
 }
+
+struct CartButtonView: View {
+    @State private var quantity: Int = 0
+    @State private var showControls = false
+    
+    var body: some View {
+        Group {
+            if quantity == 0 {
+                // Add to Cart Button
+                Button(action: {
+                    withAnimation(.spring()) {
+                        quantity = 1
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "cart.badge.plus")
+                    }
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding()
+                    .frame(height: 40)
+                    .background(Color.black)
+                    .cornerRadius(10)
+                }
+            } else {
+                // Quantity Controls
+                HStack(spacing: 15) {
+                    Button {
+                        withAnimation(.spring()) {
+                            if quantity > 0 {
+                                quantity -= 1
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "minus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(quantity > 1 ? .red : .red)
+                    }
+                    .disabled(quantity == 0)
+                    
+                    Text("\(quantity)")
+                        .font(.headline)
+                        .frame(minWidth: 30)
+                    
+                    Button {
+                        withAnimation(.spring()) {
+                            quantity += 1
+                        }
+                    } label: {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.title2)
+                            .foregroundColor(.black)
+                    }
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+                .background(.gray)
+                .cornerRadius(10)
+            }
+        }.background(.white)
+        .onChange(of: quantity) { newValue in
+            if newValue == 0 {
+                // Handle empty cart logic
+            } else {
+                // Update cart with new quantity
+               
+            }
+        }
+    }
+}
+
+

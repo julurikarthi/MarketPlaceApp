@@ -23,6 +23,7 @@ class ProductCellItemViewModel: ObservableObject {
     var selectedCategory: Category? = nil
     let reviewCount: Int = 20
     let rating: Float = 4
+    var isAddedToCart = true
 
     init(product: Product, delegate: ProductListViewModelDelegate,
          selectedCategory: Category? = nil) {
@@ -37,9 +38,13 @@ class ProductCellItemViewModel: ObservableObject {
         self.selectedCategory = selectedCategory
     }
     
-   
+    func addToCart(quantity: Int) {
+           print("Added \(quantity) of \(productTitle) to cart")
+            isAddedToCart = true
+           // Implement your cart logic here
+       }
     
-    func downloadproductImages() async {
+    func downloadproductImages() {
         var imageURLs = [String]()
         
         // Generate URLs from image IDs
@@ -49,9 +54,8 @@ class ProductCellItemViewModel: ObservableObject {
         imageURLs.append(String.downloadImage(imageid: imageIds.first ?? ""))
 
         
-        // Start downloading images
         downloadImages(from: imageURLs)
-            .receive(on: DispatchQueue.main) // Ensure UI updates happen on the main thread
+            .receive(on: DispatchQueue.main)
             .sink(
                 receiveCompletion: { completion in
                     switch completion {
@@ -62,7 +66,9 @@ class ProductCellItemViewModel: ObservableObject {
                     }
                 },
                 receiveValue: { imageDataArray in
-                    self.productImages = imageDataArray
+                    DispatchQueue.main.async {
+                        self.productImages = imageDataArray
+                    }
                 }
             )
             .store(in: &cancellables)
@@ -104,6 +110,10 @@ class ProductCellItemViewModel: ObservableObject {
 
     func deleteProduct() {
         delegate.didtapOnDeleteButton(for: product)
+    }
+    
+    func didTapOnProduct() {
+        delegate.didtapProduct(for: product)
     }
 
 }

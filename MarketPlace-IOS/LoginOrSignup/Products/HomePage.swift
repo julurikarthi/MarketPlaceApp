@@ -12,30 +12,42 @@ struct HomePage: View {
 
 
     init() {
-        UITabBar.appearance().tintColor = UIColor(Color.themeRed)
-        UITabBar.appearance().unselectedItemTintColor = UIColor.gray
+        let tabBarAppearance = UITabBarAppearance()
+        tabBarAppearance.configureWithOpaqueBackground() // Ensures it's not transparent
+        tabBarAppearance.backgroundColor = UIColor.white
+        
+        UITabBar.appearance().standardAppearance = tabBarAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            ProductListView()
-                   .tabItem {
-                       Image(selectedTab == 0 ? "homeselected" : "home").resizable()
-                       Text("Home")
-                   }.tag(0)
+        ZStack {
+            Color.white.ignoresSafeArea() // Background color applied globally
+            
+            TabView(selection: $selectedTab) {
+                ProductListView()
+                    .tabItem {
+                        Image(selectedTab == 0 ? "homeselected" : "home")
+                        Text("Home")
+                    }
+                    .tag(0)
 
-            ProfileView()
-                .tabItem {
-                    Image(selectedTab == 2 ? "orderselected" : "orders")
-                    Text("Profile")
-                }.tag(1)
+                ProfileView()
+                    .tabItem {
+                        Image(selectedTab == 1 ? "orderselected" : "orders")
+                        Text("Orders")
+                    }
+                    .tag(1)
 
-            ProfileView()
-                .tabItem {
-                    Image(selectedTab == 3 ? "profileselected" : "profile")
-                    Text("Profile")
-                }.tag(2)
-        }.accentColor(.themeRed)
+                ProfileView()
+                    .tabItem {
+                        Image(selectedTab == 2 ? "profileselected" : "profile")
+                        Text("Profile")
+                    }
+                    .tag(2)
+            }
+            .accentColor(.themeRed)
+        }
 
      
     }
