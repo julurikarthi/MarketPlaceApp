@@ -14,8 +14,8 @@ struct ProductDetails: View {
     @State private var quantity = 1
     @State private var isAddingToCart = false
     
+    @Environment(\.presentationMode) var presentationMode
     var body: some View {
-        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     // Image Gallery
@@ -50,11 +50,12 @@ struct ProductDetails: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Description")
                                 .font(.headline)
-                                .foregroundColor(.green)
+                                .foregroundColor(.black).multilineTextAlignment(.leading)
                             Text(product.description)
                                 .font(.body)
-                                .foregroundColor(.subtitleGray)
-                        }.frame(width: .infinity)
+                                .foregroundColor(.subtitleGray).multilineTextAlignment(.leading)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(15)
@@ -77,17 +78,31 @@ struct ProductDetails: View {
                         }
                         .padding()
                         .background(Color.gray.opacity(0.1))
-                        .cornerRadius(15)
+                        .cornerRadius(15).hidden()
                     }
                     .padding()
                 }
-            }
+            
             .navigationTitle("Product Details")
             .navigationBarTitleDisplayMode(.inline)
-            .background(Color.white.ignoresSafeArea())
+            .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
+            .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
+            .accentColor(Color.themeRed)
+            .tint(Color.themeRed)
+            .navigationBarBackButtonHidden(true)
             .onAppear {
                 loadImages()
+            }.toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.themeRed) // Ensure back button is red
+                    }
+                }
             }
+
         }
     }
     

@@ -133,9 +133,7 @@ struct CreateProductView: View {
             }.onChange(of: viewModel.successResponse, { _, _ in
                 presentationMode.wrappedValue.dismiss()
             })
-            .background(Color(.systemGroupedBackground))
-            .navigationTitle("Create Product")
-            .navigationBarTitleDisplayMode(.inline)
+            .background(.white)
             .toolbar {
                 // Add "Create Product" button to the navigation bar
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -154,8 +152,13 @@ struct CreateProductView: View {
                             .font(.title2) // Customize size
                     }
                 }
-            }.navigationBarBackButtonHidden(true)
-        }
+            }
+        }.navigationTitle("Create Product")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.white, for: .navigationBar) // Set background to white
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar) // Ensures black text
+
     }
 }
 
@@ -302,3 +305,12 @@ struct CategorySelectionView: View {
 ////        CreateProductView()
 //    }
 //}
+
+
+extension View {
+    func globalBackground(_ color: Color) -> some View {
+        self
+            .background(color)
+            .edgesIgnoringSafeArea(.all)
+    }
+}

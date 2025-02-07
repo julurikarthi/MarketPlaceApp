@@ -187,11 +187,9 @@ extension NetworkManager {
 }
 
 struct UploadResponse: Decodable {
-    let message: String
     let fileName: String
 
     enum CodingKeys: String, CodingKey {
-        case message
         case fileName = "file_name"
     }
 }

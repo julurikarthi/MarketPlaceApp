@@ -52,7 +52,7 @@ struct GetAllStoreProductsResponse: Codable {
 }
 
 struct Product: Codable {
-    let product_id: String
+    var product_id: String
     let store_id: String
     let product_name: String
     let price: Double

@@ -16,22 +16,26 @@ struct MarketPlace_IOSApp: App {
         }
     
     var body: some Scene {
-        WindowGroup {
-            if UserDetails.isAppOwners {
-                if UserDetails.isLoggedIn {
-                    if UserDetails.storeId != nil {
-                        HomePage()
+            WindowGroup {
+                ZStack {
+                    Color.white.edgesIgnoringSafeArea(.all) // Apply global background
+                    
+                    if UserDetails.isAppOwners {
+                        if UserDetails.isLoggedIn {
+                            if UserDetails.storeId != nil {
+                                HomePage()
+                            } else {
+                                CreateStoreView()
+                            }
+                        } else {
+                            LoginView()
+                        }
                     } else {
-                        CreateStoreView()
+                        DashboardView()
                     }
-                } else {
-                    LoginView()
-                }
-            } else {
-                DashboardView()
+                }.globalBackground(.white)
             }
         }
-    }
 }
 
 

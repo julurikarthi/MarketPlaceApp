@@ -21,44 +21,47 @@ class ProductListViewModel: ObservableObject {
     @Published var seletectedProduct: Product = .init(product_id: "", store_id: "", product_name: "", price: 0, stock: 0, description: "", category_id: "", updatedAt: "", imageids: [])
     
     @Published var showProgressIndicator = false
-    @Published var categories: [Category] = []
+    var categories: [Category] = []
     private var cancellables = Set<AnyCancellable>()
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
     var selectedCategory: Category?
     @Published var editProduct: EditProduct?
-    func getstoreCategories() async -> Bool {
-        return await withCheckedContinuation { continuation in
-            DispatchQueue.main.async {
-                self.showProgressIndicator = true
-            }
-            let fetchcategoryRequest: FetchCategoryRequest = .init()
-
-            NetworkManager.shared.performRequest(
-                url: .getStoreCategories(),
-                method: .POST,
-                payload: fetchcategoryRequest,
-                responseType: CategoriesResponse.self
-            ).sink(
-                receiveCompletion: { completion in
-                    switch completion {
-                    case .finished:
-                        print("Request completed successfully.")
-                    case .failure(let error):
-                        print("Request failed: \(error.localizedDescription)")
-                        continuation.resume(returning: false) // Indicate failure
-                    }
-                },
-                receiveValue: { response in
+    func getstoreCategories() {
+        DispatchQueue.main.async {
+            self.showProgressIndicator = true
+        }
+        let fetchcategoryRequest: FetchCategoryRequest = .init()
+        
+        NetworkManager.shared.performRequest(
+            url: .getStoreCategories(),
+            method: .POST,
+            payload: fetchcategoryRequest,
+            responseType: CategoriesResponse.self
+        ).sink(
+            receiveCompletion: { completion in
+                switch completion {
+                case .finished:
+                    print("Request completed successfully.")
+                case .failure(let error):
+                    print("Request failed: \(error.localizedDescription)")
+                }
+            },
+            receiveValue: {  [weak self] response in
+                self?.categories = response.categories
+                self?.selectedCategory = response.categories.first
+                if !(self?.categories.isEmpty ?? false) {
+                    let categoryID = self?.selectedCategory?.categoryID ?? self?.categories.first?.categoryID ?? ""
+                    self?.getAllProductbyStore(category_id: categoryID)
+                } else {
                     DispatchQueue.main.async {
-                        self.categories = response.categories
-                        continuation.resume(returning: true) // Indicate success
+                        self?.showProgressIndicator = false
                     }
                 }
-            ).store(in: &cancellables)
-        }
+            }
+        ).store(in: &cancellables)
     }
 
-    func getAllProductbyStore(category_id: String = "", page: Int = 1) async {
+    func getAllProductbyStore(category_id: String = "", page: Int = 1) {
         DispatchQueue.main.async {
             self.showProgressIndicator = true
         }

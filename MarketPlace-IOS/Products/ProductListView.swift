@@ -19,15 +19,12 @@ struct ProductListView: View {
           GridItem(.flexible())
       ]
     var body: some View {
-        NavigationStack {
             VStack {
                 if !viewModel.categories.isEmpty  {
                     ScrollView {
                         CategoriesTabBarView(tabs: viewModel.categories, onTabSelection: { category in
                             viewModel.selectedCategory = category
-                            Task {
-                                await viewModel.getAllProductbyStore(category_id: category.categoryID)
-                            }
+                            viewModel.getAllProductbyStore(category_id: category.categoryID)
                         }, viewModel: categoryViewModel)
                         if $viewModel.storeProductsbyCategories.products.isEmpty {
                             addtoProductView()
@@ -37,49 +34,47 @@ struct ProductListView: View {
                     }
                 } else {
                     if viewModel.categories.isEmpty {
-                        addtoProductView().offset(y: 150)
+                        addtoProductView().frame(maxWidth: .infinity, maxHeight: .infinity).offset(y: 150)
                     }
                 }
                 
                 NavigationLink(
-                    "", destination: CreateProductView(editProduct: $viewModel.editProduct)
+                    destination: CreateProductView(editProduct: $viewModel.editProduct)
                         .navigationBarBackButtonHidden(true),
-                    isActive: $viewModel.showAddProductView)
+                    isActive: $viewModel.showAddProductView
+                ) {
+                    EmptyView()
+                }
+                .hidden()
+
                 
                 NavigationLink(
-                    "", destination: CreateStoreView()
+                    destination: CreateStoreView()
                         .navigationBarBackButtonHidden(true),
-                    isActive: $showCreateProductView)
+                    isActive: $showCreateProductView
+                ) {
+                    EmptyView()
+                }
+                .hidden()
 
                 NavigationLink(
-                    "", destination: ProductDetails(product: $viewModel.seletectedProduct),
-                    isActive: $viewModel.moveToProductDetails)
+                    destination: ProductDetails(product: $viewModel.seletectedProduct),
+                    isActive: $viewModel.moveToProductDetails
+                ) {
+                    EmptyView()
+                }
+                .hidden()
                 
-            }.toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) { // Add a button on the right side
-                        Button(action: {
-                            // Action to add a product
-                            viewModel.showAddProductView = true
-                        }) {
-                            Image(systemName: "plus")
-                                .foregroundColor(Color.themeRed)
-                        }
-                    }
-                }
-        }.task {
+            }.background(.white)
+        .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+        .onAppear {
             if viewModel.categories.isEmpty {
-                let isCategoriesFetched = await viewModel.getstoreCategories()
-                if isCategoriesFetched {
-                    let categoryID = viewModel.selectedCategory?.categoryID ?? ""
-                    await viewModel.getAllProductbyStore(category_id: categoryID)
-                }
+                viewModel.getstoreCategories()
             }
-            
-        }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
-            .onAppear {
-                UserDetails.requestCameraPermission()
-                UserDetails.requestPhotoLibraryPermission()
-            }
+            /// TODO: asking permission ar right place
+//                UserDetails.requestCameraPermission()
+//                UserDetails.requestPhotoLibraryPermission()
+        }
     }
     
     func addtoProductView() -> some View {
@@ -112,7 +107,7 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).id(index)
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).id(product.product_id.wrappedValue)
             }
         }
         .padding()

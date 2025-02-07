@@ -25,7 +25,6 @@ struct CategoriesTabBarView: View {
                                 title: tabs[index].categoryName,
                                 isSelected: viewModel.selectedTab == index,
                                 action: {
-                                    print("tabed on category")
                                     if viewModel.selectedTab != index { // Prevent unnecessary updates
                                         withAnimation(.spring()) {
                                             viewModel.selectedTab = index

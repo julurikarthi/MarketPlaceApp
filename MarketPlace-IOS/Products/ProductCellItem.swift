@@ -6,7 +6,8 @@ import Shimmer
 struct ProductCellItem: View {
     @State private var quantity = 1
     @State private var currentImageIndex = 0
-    @ObservedObject var viewModel: ProductCellItemViewModel
+    var viewModel: ProductCellItemViewModel
+    @State private var productImage: UIImage? = nil
     private var discount: Int? {
         return 10
     }
@@ -15,11 +16,11 @@ struct ProductCellItem: View {
         VStack(alignment: .leading, spacing: 12) {
             // Image Carousel
             ZStack(alignment: .bottomTrailing) {
-                if !viewModel.productImages.isEmpty {
-                    Image(uiImage: viewModel.productImages.first ?? UIImage(named: "placeholder")!)
+                if let productImage = productImage {
+                    Image(uiImage: productImage)
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(height: 250)
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 250)
                         .clipped()
                 } else {
                     RoundedRectangle(cornerRadius: 10)
@@ -27,18 +28,23 @@ struct ProductCellItem: View {
                         .frame(height: 200)
                         .shimmering(active: true)
                 }
-
+                
                 HStack(spacing: 8) {
-                    ForEach(viewModel.productImages.indices, id: \.self) { index in
-                        Circle()
-                            .fill(currentImageIndex == index ? Color.white : Color.gray.opacity(0.5))
-                            .frame(width: 8, height: 8)
-                    }
+                    Circle()
+                        .fill(Color.white)
+                        .frame(width: 8, height: 8)
                 }
                 .padding(8)
                 .background(Color.black.opacity(0.6))
                 .cornerRadius(20)
                 .padding(8)
+            }.onAppear {
+                print("ProductCellItem appeared for")
+                viewModel.downloadProductImages { image in
+                    DispatchQueue.main.async {
+                        self.productImage = image ?? UIImage(named: "placeholder")
+                    }
+                }
             }
             
             VStack(alignment: .leading, spacing: 8) {
@@ -96,21 +102,43 @@ struct ProductCellItem: View {
                         .font(.caption)
                         .foregroundColor(.gray)
                     Spacer()
-                    CartButtonView()
+                    if UserDetails.isAppOwners {
+                        Menu {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Button(action: {
+                                    viewModel.editProduct()
+                                }) {
+                                    Label("Edit", systemImage: "pencil")
+                                }
+                                
+                                Button(action: {
+                                    viewModel.deleteProduct()
+                                }) {
+                                    Label("Delete", systemImage: "trash")
+                                        .foregroundColor(.red) // Make delete button red
+                                }
+                            }
+                        } label: {
+                            Image(systemName: "ellipsis") // Vertical menu button (three dots)
+                                .padding()
+                                .background(Color.gray.opacity(0.1))
+                                .clipShape(Circle())
+                        }
+
+                    } else {
+                        CartButtonView()
+                    }
                 }
-               
+                
             }.padding()
         }
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5)
-        .onAppear {
-            viewModel.downloadproductImages()
-            print("Images in viewModel: \(viewModel.productImages.count)")
-        }
         .onTapGesture {
             viewModel.didTapOnProduct()
         }
+        
     }
 }
 

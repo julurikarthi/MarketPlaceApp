@@ -10,10 +10,9 @@ import SwiftUI
 struct HomePage: View {
     @State private var selectedTab = 0
 
-
     init() {
         let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithOpaqueBackground() // Ensures it's not transparent
+        tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor.white
         
         UITabBar.appearance().standardAppearance = tabBarAppearance
@@ -21,37 +20,66 @@ struct HomePage: View {
     }
     
     var body: some View {
-        ZStack {
-            Color.white.ignoresSafeArea() // Background color applied globally
-            
+        NavigationStack {
             TabView(selection: $selectedTab) {
-                ProductListView()
-                    .tabItem {
-                        Image(selectedTab == 0 ? "homeselected" : "home")
-                        Text("Home")
-                    }
-                    .tag(0)
+                NavigationView {
+                    ProductListView()
+                }
+                .tabItem {
+                    Image(selectedTab == 0 ? "homeselected" : "home")
+                    Text("Home")
+                }
+                .tag(0)
 
-                ProfileView()
-                    .tabItem {
-                        Image(selectedTab == 1 ? "orderselected" : "orders")
-                        Text("Orders")
-                    }
-                    .tag(1)
+                NavigationView {
+                    ProfileView()
+                        .navigationTitle("Orders")
+                }
+                .tabItem {
+                    Image(selectedTab == 1 ? "orderselected" : "orders")
+                    Text("Orders")
+                }
+                .tag(1)
 
-                ProfileView()
-                    .tabItem {
-                        Image(selectedTab == 2 ? "profileselected" : "profile")
-                        Text("Profile")
-                    }
-                    .tag(2)
+                NavigationView {
+                    ProfileView()
+                        .navigationTitle("Profile")
+                }
+                .tabItem {
+                    Image(selectedTab == 2 ? "profileselected" : "profile")
+                    Text("Profile")
+                }
+                .tag(2)
             }
             .accentColor(.themeRed)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    navigationButton()
+                }
+            }
         }
+    }
 
-     
+    @ViewBuilder
+    private func navigationButton() -> some View {
+        if UserDetails.isAppOwners {
+            Button(action: {
+                // Action to add a product
+            }) {
+                Image(systemName: "plus")
+                    .foregroundColor(Color.themeRed)
+            }
+        } else {
+            Button(action: {
+                // Action to open cart
+            }) {
+                Image("cart")
+                    .foregroundColor(Color.themeRed)
+            }
+        }
     }
 }
+
 
 struct HomeView: View {
     var body: some View {

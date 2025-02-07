@@ -29,11 +29,11 @@ class CreateProductViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     @Published var newCategoryNameError: String = "Please Enter the Category Name"
     @Published var isPublished: Bool = true
-    @MainThreadPublished var categories: [Category] = []
-    @MainThreadPublished var newCategoryName: String = ""
-    @MainThreadPublished var isAddingCategory: Bool = false
-    @MainThreadPublished var showCetegoryProgressIndicator = false
-    @MainThreadPublished var showProgressIndicator = false
+    @Published var categories: [Category] = []
+    @Published var newCategoryName: String = ""
+    @Published var isAddingCategory: Bool = false
+    @Published var showCetegoryProgressIndicator = false
+    @Published var showProgressIndicator = false
     private var cancellables = Set<AnyCancellable>()
     private var isUpdateProduct: Bool = false
     private var product_id: String?
@@ -78,7 +78,9 @@ class CreateProductViewModel: ObservableObject {
                 responseType: SuccessResponse.self
             ).sink(
                 receiveCompletion: { completion in
-                    self.showProgressIndicator = false
+                    DispatchQueue.main.async {
+                        self.showProgressIndicator = false
+                    }
                     switch completion {
                     case .finished:
                         print("Request completed successfully.")
@@ -136,8 +138,10 @@ class CreateProductViewModel: ObservableObject {
                                                     }
                                                 },
                                                 receiveValue: { response in
-                                                    self.categories = response.categories
-                                                    self.showProgressIndicator = false
+                                                    DispatchQueue.main.async {
+                                                        self.categories = response.categories
+                                                        self.showProgressIndicator = false
+                                                    }
                                                 }
                                              ).store(in: &cancellables)
     }
@@ -172,13 +176,77 @@ class CreateProductViewModel: ObservableObject {
         description = product.description
         price = "\(product.price)"
         stock = "\(product.stock)"
-        selectedPhotos = product.selectedPhotos
         selectedImages_ids = product.imageids
         isPublished = product.isPublish
         categoryID = product.categoryID
         product_id = product.product_id
         isUpdateProduct = true
+        downloadProductImages(imageIds: selectedImages_ids)
     }
+    
+    func downloadProductImages(imageIds: [String]) {
+        self.showProgressIndicator = true
+        let validImageIds = imageIds.filter { !$0.isEmpty }
+        guard !validImageIds.isEmpty else {
+            print("No valid image IDs found")
+            return
+        }
+
+        let dispatchGroup = DispatchGroup()
+
+        for imageID in validImageIds {
+            let imageURL = String.downloadImage(imageid: imageID)
+
+            if let cachedImage = ImageDownloader.shared.getCachedImage(for: imageURL) {
+                selectedPhotos.append(cachedImage)
+                continue
+            }
+
+            dispatchGroup.enter()
+            NetworkManager.shared.downloadImage(from: imageURL)
+                .tryMap { data -> UIImage in
+                    guard let image = UIImage(data: data) else {
+                        throw URLError(.cannotDecodeContentData)
+                    }
+
+                    let resizedImage = image.resized(toWidth: 500)
+                    guard let compressedData = resizedImage.jpegData(compressionQuality: 0.8),
+                          let finalImage = UIImage(data: compressedData) else {
+                        throw URLError(.cannotDecodeContentData)
+                    }
+
+                    ImageDownloader.shared.cacheImage(finalImage, for: imageURL)
+                    return finalImage
+                }
+                .receive(on: DispatchQueue.main)
+                .sink(
+                    receiveCompletion: { [weak self] completionStatus in
+                        switch completionStatus {
+                        case .failure(let error):
+                            print("Image download failed: \(error.localizedDescription)")
+                        case .finished:
+                            print("Download completed successfully")
+                        }
+                        dispatchGroup.leave()
+                    },
+                    receiveValue: { [weak self] downloadedImage in
+                        guard let self = self else { return }
+                        self.showProgressIndicator = false
+                        selectedPhotos.append(downloadedImage)
+                    }
+                )
+                .store(in: &self.cancellables) // Force unwrap is safe here since we check `self` before
+        }
+
+        dispatchGroup.notify(queue: .main) { [weak self] in
+            guard let self = self else { return }
+            print("Final downloaded images")
+        }
+    }
+
+
+    
+    
     
 }
 
@@ -190,7 +258,6 @@ struct EditProduct: RequestBody {
     let stock: Int
     let imageids: [String]
     let isPublish: Bool
-    let selectedPhotos: [UIImage]
     let categoryID: Category
 }
 
