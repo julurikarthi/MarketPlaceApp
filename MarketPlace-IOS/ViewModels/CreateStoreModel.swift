@@ -11,6 +11,7 @@ import Combine
 protocol RequestBody: Encodable {
     var user_id: String? {set get}
     var store_id: String? {set get}
+    var userType: String? {set get}
 }
 
 extension RequestBody {
@@ -21,6 +22,10 @@ extension RequestBody {
     
     var user_id: String? {
         get { UserDetails.userId }
+        set { }
+    }
+    var userType: String? {
+        get { UserDetails.userType }
         set { }
     }
 }
@@ -41,6 +46,9 @@ extension RequestBody {
         if let storeId = store_id {
             try container.encode(storeId, forKey: DynamicCodingKeys(stringValue: "store_id")!)
         }
+        if let userType = userType {
+            try container.encode(userType, forKey: DynamicCodingKeys(stringValue: "userType")!)
+        }
         
         // Encode all other properties dynamically using reflection
         let mirror = Mirror(reflecting: self)
@@ -49,7 +57,7 @@ extension RequestBody {
             guard let key = child.label else { continue }
 
             // Skip encoding 'user_id' and 'store_id' since we already handled them
-            if key == "user_id" || key == "store_id" {
+            if key == "user_id" || key == "store_id" || key == "userType"{
                 continue
             }
 

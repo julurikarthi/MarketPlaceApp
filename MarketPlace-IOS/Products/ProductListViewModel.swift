@@ -26,7 +26,7 @@ class ProductListViewModel: ObservableObject {
     @Published var storeProductsbyCategories: GetAllStoreProductsResponse = .init(products: [])
     var selectedCategory: Category?
     @Published var editProduct: EditProduct?
-    func getstoreCategories() {
+    func getstoreCategories(isCustomer: Bool = false) {
         DispatchQueue.main.async {
             self.showProgressIndicator = true
         }
@@ -51,7 +51,7 @@ class ProductListViewModel: ObservableObject {
                 self?.selectedCategory = response.categories.first
                 if !(self?.categories.isEmpty ?? false) {
                     let categoryID = self?.selectedCategory?.categoryID ?? self?.categories.first?.categoryID ?? ""
-                    self?.getAllProductbyStore(category_id: categoryID)
+                    self?.getAllProductbyStore(category_id: categoryID, isCustomer: isCustomer)
                 } else {
                     DispatchQueue.main.async {
                         self?.showProgressIndicator = false
@@ -61,7 +61,8 @@ class ProductListViewModel: ObservableObject {
         ).store(in: &cancellables)
     }
 
-    func getAllProductbyStore(category_id: String = "", page: Int = 1) {
+    func getAllProductbyStore(category_id: String = "", page: Int = 1,
+                              isCustomer: Bool = false) {
         DispatchQueue.main.async {
             self.showProgressIndicator = true
         }
@@ -69,7 +70,7 @@ class ProductListViewModel: ObservableObject {
                                                   isPublish: true,
                                                   page: 1)
         NetworkManager.shared.performRequest(
-            url: .getAllProductbyStore(),
+            url: isCustomer ? .getPublishedProducts() : .getAllProductbyStore(),
             method: .POST,
             payload: request,
             responseType: GetAllStoreProductsResponse.self

@@ -55,6 +55,7 @@ class NetworkManager {
             do {
                 payload.store_id = UserDetails.storeId
                 payload.user_id = UserDetails.userId
+                payload.userType = UserDetails.userType
                 request.httpBody = try JSONEncoder().encode(payload)
             } catch {
                 return Fail(error: error)

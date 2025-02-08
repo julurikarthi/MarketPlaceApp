@@ -10,11 +10,15 @@ import SwiftUI
 struct ProductListView: View {
   
     @State private var showCreateProductView: Bool = false
-    @State private var test: Bool = false
+    var isCustomer: Bool = false
     @Environment(\.presentationMode) var presentationMode // For manual back action
     @StateObject private var viewModel = ProductListViewModel()
     @StateObject private var categoryViewModel = CategoriesTabBarViewModel()
    
+    init(isCustomer: Bool = false) {
+        self.isCustomer = isCustomer
+    }
+    
     let columns = [
           GridItem(.flexible())
       ]
@@ -24,7 +28,7 @@ struct ProductListView: View {
                     ScrollView {
                         CategoriesTabBarView(tabs: viewModel.categories, onTabSelection: { category in
                             viewModel.selectedCategory = category
-                            viewModel.getAllProductbyStore(category_id: category.categoryID)
+                            viewModel.getAllProductbyStore(category_id: category.categoryID, isCustomer: isCustomer)
                         }, viewModel: categoryViewModel)
                         if $viewModel.storeProductsbyCategories.products.isEmpty {
                             addtoProductView()
@@ -67,9 +71,21 @@ struct ProductListView: View {
                 
             }.background(.white)
         .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+        .toolbar {
+            if isCustomer {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.black) // Ensure back button is red
+                    }
+                }
+            }
+        }
         .onAppear {
             if viewModel.categories.isEmpty {
-                viewModel.getstoreCategories()
+                viewModel.getstoreCategories(isCustomer: isCustomer)
             }
             /// TODO: asking permission ar right place
 //                UserDetails.requestCameraPermission()

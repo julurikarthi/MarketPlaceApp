@@ -3,12 +3,13 @@
 
 import SwiftUI
 import Shimmer
+import Combine
 
 struct DashboardView: View {
   
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
-    
+
     var body: some View {
           NavigationStack {
               ScrollView {
@@ -24,75 +25,122 @@ struct DashboardView: View {
                       // Show actual content when data is loaded
                       LazyVStack(spacing: 16) {
                           ForEach(viewModel.storesResponce?.stores ?? []) { store in
-                              StoreCard(store: store)
+                              StoreCard(viewModel: .init(store: store))
                           }
                       }
                       .padding()
                   }
+              }.toolbar {
+                  ToolbarItem(placement: .navigationBarLeading) {
+                      Button(action: {
+                          viewModel.movetoSelectLocation = true
+                      }) {
+                          Image("pin").resizable().frame(width: 20, height: 20)
+                              .foregroundColor(Color.black)
+                          Text(viewModel.address?.postalCode ?? viewModel.pincode ?? "").bold().foregroundColor(.black)
+                          Image("arrow-down").resizable()
+                              .frame(width: 10, height: 10)
+                              .foregroundColor(Color.black)
+                      }
+                  }
+                  ToolbarItem(placement: .navigationBarTrailing) {
+                      // Add a button on the right side
+                      Button(action: {
+                          // Action to add a product
+                      }) {
+                          Image("shopping-cart").resizable().frame(width: 20, height: 20).padding(.trailing, 4)
+                      }
+                      .frame(height: 200)
+                      .cornerRadius(10)
+                      .clipped()
+                  }
               }
               .navigationTitle("Stores")
+          }.sheet(isPresented: $viewModel.movetoSelectLocation) {
+              LocationSearchView(onAddressSelected: { address in
+                  viewModel.address = address
+              })
           }
           .task {
               await viewModel.getCurrentLocation()
               viewModel.getDashboardData()
           }
+       
       }
 }
 
 struct StoreCard: View {
-    let store: StoreData
-    
+    @ObservedObject var viewModel: StoreCardViewModel
+    @State private var showAllProducts = false
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Store Image
-            AsyncImage(url: URL(string: "https://your-image-url.com/\(store.imageId ?? "")")) { image in
-                image.resizable()
-                    .scaledToFill()
-            } placeholder: {
-                Color.gray.opacity(0.3)
+            VStack {
+                AsyncImageView(imageId: viewModel.store.imageId ?? "")
             }
-            .frame(height: 200)
-            .cornerRadius(10)
-            .clipped()
+            .frame(maxWidth: .infinity, alignment: .center)
             
             // Store Details
             VStack(alignment: .leading, spacing: 8) {
-                Text(store.storeName ?? "")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                
-                Text(store.storeType ?? "")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                Text((viewModel.store.storeName?.prefix(1).uppercased() ?? "") +
+                     (viewModel.store.storeName?.dropFirst() ?? ""))
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .lineLimit(1)
+
                 
                 HStack {
-                    Text("Pincode: \(store.pincode)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Text("State: \(store.state)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    if let city = viewModel.store.city, let state = viewModel.store.state {
+                        Text("City: \(city)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Text("State: \(state)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
                 
-                // Products Section
-                if !store.products.isEmpty {
-                    Text("Products")
-                        .font(.subheadline)
-                        .fontWeight(.bold)
-                        .padding(.top, 8)
-                    
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 12) {
-                            ForEach(store.products) { product in
-                                ProductCard(product: product)
+                VStack(alignment: .leading, spacing: 12) {
+
+                    if !viewModel.store.products.isEmpty {
+                        VStack(spacing: 8) {
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 12) {
+                                    ForEach(viewModel.store.products) { product in
+                                        ProductCard(viewModel: .init(product: product)).padding([.top, .bottom],5)
+                                    }
+                                }
+                            }
+                     
+                            HStack {
+                                Spacer()
+                                Button("View All") {
+                                    UserDetails.storeId = viewModel.store.storeId
+                                    UserDetails.userType = "Customer"
+                                    showAllProducts = true
+                                }
+                                .font(.caption)
+                                .foregroundColor(.black)
+                                .padding(.top, 8)
                             }
                         }
                     }
                 }
             }
+            NavigationLink(
+                destination: ProductListView(isCustomer: true)
+                    .navigationBarBackButtonHidden(true)
+                    .navigationTitle(viewModel.store.storeName?.capitalized ?? "Store"),
+                isActive: $showAllProducts
+            ) {
+                EmptyView()
+            }
+            .hidden()
+
         }
         .padding()
         .background(Color.white)
@@ -101,48 +149,46 @@ struct StoreCard: View {
     }
 }
 
+
+
+
 struct ProductCard: View {
-    let product: ProductDashBoard
-    @StateObject var viewModel = ProductCardViewModel()
+    @ObservedObject var viewModel:ProductCardViewModel
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // Main content (image and details)
             VStack(alignment: .leading, spacing: 4) {
                 // Product Image
-                if (product.imageIds?.first) != nil {
-                    if let image = $viewModel.image.wrappedValue {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 120, height: 120)
-                            .cornerRadius(8)
-                            .clipped()
-                    } else {
-                        Color.gray.opacity(0.3)
-                            .frame(width: 120, height: 120)
-                            .cornerRadius(8)
-                            .shimmering() // Add shimmer effect here
-                    }
+                if let image = viewModel.image {
+                    Image(uiImage: image)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 120, height: 120)
+                        .cornerRadius(8)
+                        .clipped()
                 } else {
                     Color.gray.opacity(0.3)
                         .frame(width: 120, height: 120)
                         .cornerRadius(8)
+                        .shimmering() // Add shimmer effect here
                 }
                 
                 // Product Details
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(product.productName ?? "")
+                    Text(viewModel.product.product_name.prefix(1).uppercased() + viewModel.product.product_name.dropFirst().lowercased())
                         .font(.caption)
                         .fontWeight(.bold)
+                        .lineLimit(1)
+
                     
-                    Text("$\(product.price, specifier: "%.2f")")
+                    Text("$\(viewModel.product.price, specifier: "%.2f")")
                         .font(.caption2)
-                        .foregroundColor(.green)
+                        .foregroundColor(.gray)
                     
-                    Text("Stock: \(product.stock)")
+                    Text("Stock: \(viewModel.product.stock)")
                         .font(.caption2)
-                        .foregroundColor(product.stock > 0 ? Color.blue : Color.red.opacity(0.8))
-                }
+                        .foregroundColor(viewModel.product.stock > 0 ? Color.gray : Color.red.opacity(0.8))
+                }.padding(4)
             }
             
             AddToCartView()
@@ -153,7 +199,7 @@ struct ProductCard: View {
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
         .onAppear {
-            if let imageId = product.imageIds?.first {
+            if let imageId = viewModel.product.imageids.first {
                 viewModel.downloadImage(imageId: imageId)
             }
         }
@@ -287,3 +333,43 @@ struct ShimmeringStoreCardPlaceholder: View {
         .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: 5)
     }
 }
+
+
+
+struct AsyncImageView: View {
+    let imageId: String
+    @State private var image: UIImage?
+    @State private var cancellables = Set<AnyCancellable>()
+
+    var body: some View {
+        Group {
+            if let image = image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+            } else {
+                ShimmeringStoreCardPlaceholder()
+                    .onAppear(perform: loadImage)
+            }
+        }
+        .frame(width: 200, height: 200)
+        .cornerRadius(15)
+    }
+
+    private func loadImage() {
+        NetworkManager.shared.downloadImage(from: .downloadImage(imageid: imageId))
+            .receive(on: DispatchQueue.main)
+            .sink { completion in
+                if case .failure(let error) = completion {
+                    print("Failed to load image: \(error)")
+                }
+            } receiveValue: { data in
+                if let image = UIImage(data: data) {
+                    self.image = image
+                }
+            }
+            .store(in: &cancellables)
+    }
+}
+
+

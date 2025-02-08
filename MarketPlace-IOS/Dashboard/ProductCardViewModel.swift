@@ -11,7 +11,14 @@ class ProductCardViewModel: ObservableObject {
     
     private var cancellables: Set<AnyCancellable> = []
     @Published var image: UIImage?
+    var product: ProductDashBoard
     
+    init(product: ProductDashBoard) {
+        self.product = product
+        if let imageid =  product.imageids.first  {
+            downloadImage(imageId: imageid)
+        }
+    }
     func downloadImage(imageId: String) {
         NetworkManager.shared.downloadImage(from: .downloadImage(imageid: imageId))
             .receive(on: DispatchQueue.main)

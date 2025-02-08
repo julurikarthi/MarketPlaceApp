@@ -88,8 +88,6 @@ struct StoreData: Codable, Identifiable {
     let address: String?
     let street: String?
     let city: String?
-    let createdAt: String?
-    let updatedAt: String?
     let products: [ProductDashBoard]
     
     enum CodingKeys: String, CodingKey {
@@ -105,8 +103,13 @@ struct StoreData: Codable, Identifiable {
         case address
         case street
         case city
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
         case products
+    }
+}
+
+class StoreCardViewModel: ObservableObject {
+    @Published var store: StoreData
+    init(store: StoreData) {
+        self.store = store
     }
 }
