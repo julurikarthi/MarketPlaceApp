@@ -60,6 +60,8 @@ struct LoginView: View {
                     dismissKeyboard()
                 }.onAppear {
                     viewModel.fetchLocation()
+                }.onChange(of: viewModel.dissmissview) {
+                    presentationMode.wrappedValue.dismiss()
                 }
                 
                 

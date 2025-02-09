@@ -23,6 +23,7 @@ struct ProductListView: View {
           GridItem(.flexible())
       ]
     var body: some View {
+        CartNavigationView(title: "Products") {
             VStack {
                 if !viewModel.categories.isEmpty  {
                     ScrollView {
@@ -50,7 +51,7 @@ struct ProductListView: View {
                     EmptyView()
                 }
                 .hidden()
-
+                
                 
                 NavigationLink(
                     destination: CreateStoreView()
@@ -60,7 +61,7 @@ struct ProductListView: View {
                     EmptyView()
                 }
                 .hidden()
-
+                
                 NavigationLink(
                     destination: ProductDetails(product: $viewModel.seletectedProduct),
                     isActive: $viewModel.moveToProductDetails
@@ -70,26 +71,27 @@ struct ProductListView: View {
                 .hidden()
                 
             }.background(.white)
-        .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
-        .toolbar {
-            if isCustomer {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.black) // Ensure back button is red
+                .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+                .toolbar {
+                    if isCustomer {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundColor(.black) // Ensure back button is red
+                            }
+                        }
                     }
                 }
-            }
-        }
-        .onAppear {
-            if viewModel.categories.isEmpty {
-                viewModel.getstoreCategories(isCustomer: isCustomer)
-            }
-            /// TODO: asking permission ar right place
-//                UserDetails.requestCameraPermission()
-//                UserDetails.requestPhotoLibraryPermission()
+                .onAppear {
+                    if viewModel.categories.isEmpty {
+                        viewModel.getstoreCategories(isCustomer: isCustomer)
+                    }
+                    /// TODO: asking permission ar right place
+                    //                UserDetails.requestCameraPermission()
+                    //                UserDetails.requestPhotoLibraryPermission()
+                }
         }
     }
     

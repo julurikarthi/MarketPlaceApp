@@ -63,6 +63,7 @@ class LoginViewModel: ObservableObject {
     @Published var movetoStore: Bool = false
     @Published var movetoHome: Bool = false
     @Published var createStore: Bool = false
+    @Published var dissmissview: Bool = false
     func loginUser(loginRequest: LoginRequest) {
         showProgressIndicator = true
         NetworkManager.shared.performRequest(
@@ -95,14 +96,14 @@ class LoginViewModel: ObservableObject {
                     UserDetails.store_type = response.user.store_type
                     DispatchQueue.main.async { [self] in
                         self.showProgressIndicator = false
-                        if response.user.userType == "storeOwner" {
+                        if response.user.userType == .storeOwner {
                             if response.user.storeId == nil {
                                 self.movetoStore = true
                             } else {
                                 self.movetoHome = true
                             }
-                        } else if response.user.userType == "customer" {
-                            self.movetoDashboard = true
+                        } else if response.user.userType == .customer {
+                            self.dissmissview = true
                         }
                     }
                     
@@ -170,7 +171,10 @@ class LoginViewModel: ObservableObject {
             let digitsOnly = mobile.filter { $0.isNumber }
             let numberformat = (country?.dialCode ?? .empty) + digitsOnly
             let number = numberformat.filter{ $0.isNumber }
-            let request = LoginRequest(mobileNumber: number, userType: .storeOwner)
+            var request = LoginRequest(mobileNumber: number, userType: .storeOwner)
+            if !UserDetails.isAppOwners {
+                request = LoginRequest(mobileNumber: number, userType: .customer)
+            }
             loginUser(loginRequest: request)
         } else {
             mobileError = true

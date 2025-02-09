@@ -10,7 +10,8 @@ import GooglePlaces
 
 @main
 struct MarketPlace_IOSApp: App {
-    
+    @StateObject var cartViewModel = CartViewModel()
+
     init() {
             GMSPlacesClient.provideAPIKey("AIzaSyCilh2e-XLRrdwSM0hHfcGMewbYbZfcmHU")
         }
@@ -31,9 +32,15 @@ struct MarketPlace_IOSApp: App {
                             LoginView()
                         }
                     } else {
-                        DashboardView()
+                        DashboardView().environmentObject(cartViewModel)
                     }
-                }.globalBackground(.white)
+                }.globalBackground(.white).onAppear {
+                    if UserDetails.isAppOwners {
+                        UserDetails.userType = .storeOwner
+                    } else {
+                        UserDetails.userType = .customer
+                    }
+                }
             }
         }
 }
@@ -43,5 +50,36 @@ struct MarketPlace_IOSApp: App {
 extension View {
     func dismissKeyboard() {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}
+
+
+struct CartNavigationView<Content: View>: View {
+    let title: String
+    let content: Content
+
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+
+    var body: some View {
+        NavigationStack {
+            content
+                .navigationTitle(title)
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button(action: {
+                            
+                        }) {
+                            Image("shopping-cart").resizable().frame(width: 20, height: 20).padding(.trailing, 4)
+                        }
+                        .frame(height: 200)
+                        .cornerRadius(10)
+                        .clipped()
+                    }
+                }
+        }
     }
 }

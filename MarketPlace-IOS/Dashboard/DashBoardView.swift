@@ -6,12 +6,11 @@ import Shimmer
 import Combine
 
 struct DashboardView: View {
-  
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
-
+    @State private var showLoginview: Bool = false
     var body: some View {
-          NavigationStack {
+        CartNavigationView(title: "Stores") {
               ScrollView {
                   if $viewModel.isLoading.wrappedValue {
                       // Show shimmer effect while loading
@@ -25,7 +24,7 @@ struct DashboardView: View {
                       // Show actual content when data is loaded
                       LazyVStack(spacing: 16) {
                           ForEach(viewModel.storesResponce?.stores ?? []) { store in
-                              StoreCard(viewModel: .init(store: store))
+                              StoreCard(viewModel: .init(store: store), showLoginview: $showLoginview)
                           }
                       }
                       .padding()
@@ -43,27 +42,19 @@ struct DashboardView: View {
                               .foregroundColor(Color.black)
                       }
                   }
-                  ToolbarItem(placement: .navigationBarTrailing) {
-                      // Add a button on the right side
-                      Button(action: {
-                          // Action to add a product
-                      }) {
-                          Image("shopping-cart").resizable().frame(width: 20, height: 20).padding(.trailing, 4)
-                      }
-                      .frame(height: 200)
-                      .cornerRadius(10)
-                      .clipped()
-                  }
               }
-              .navigationTitle("Stores")
           }.sheet(isPresented: $viewModel.movetoSelectLocation) {
               LocationSearchView(onAddressSelected: { address in
                   viewModel.address = address
+                  viewModel.getDashboardData(pincode: address.postalCode, state: address.state)
               })
-          }
+          }.sheet(isPresented: $showLoginview, content: {
+              LoginView()
+          })
           .task {
-              await viewModel.getCurrentLocation()
-              viewModel.getDashboardData()
+              viewModel.getCurrentLocation { status in
+                  viewModel.getDashboardData(pincode: viewModel.pincode ?? "", state: viewModel.state ?? "")
+              }
           }
        
       }
@@ -72,6 +63,7 @@ struct DashboardView: View {
 struct StoreCard: View {
     @ObservedObject var viewModel: StoreCardViewModel
     @State private var showAllProducts = false
+    @Binding var showLoginview: Bool
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Store Image
@@ -111,7 +103,7 @@ struct StoreCard: View {
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 12) {
                                     ForEach(viewModel.store.products) { product in
-                                        ProductCard(viewModel: .init(product: product)).padding([.top, .bottom],5)
+                                        ProductCard(viewModel: .init(product: product), showLoginview: $showLoginview).padding([.top, .bottom],5)
                                     }
                                 }
                             }
@@ -120,7 +112,6 @@ struct StoreCard: View {
                                 Spacer()
                                 Button("View All") {
                                     UserDetails.storeId = viewModel.store.storeId
-                                    UserDetails.userType = "Customer"
                                     showAllProducts = true
                                 }
                                 .font(.caption)
@@ -154,6 +145,7 @@ struct StoreCard: View {
 
 struct ProductCard: View {
     @ObservedObject var viewModel:ProductCardViewModel
+    @Binding var showLoginview: Bool
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // Main content (image and details)
@@ -191,7 +183,8 @@ struct ProductCard: View {
                 }.padding(4)
             }
             
-            AddToCartView()
+            AddToCartView(showLoginview: $showLoginview,
+                          viewModel: viewModel)
                 .offset(x: 0, y: -50)
         }
         .frame(width: 140) // Ensure consistent card size

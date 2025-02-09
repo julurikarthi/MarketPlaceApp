@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import CoreLocation
 class DashBoardViewViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var movetoSelectLocation: Bool = false
@@ -19,21 +20,25 @@ class DashBoardViewViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     @Published var storesResponce: StoresResponse?
     
-    func getCurrentLocation() async {
-        await withCheckedContinuation { continuation in
-            locationManager.requestLocation()
+    func getCurrentLocation(completionHandler: @escaping (Bool) -> Void) {
+        locationManager.requestLocation()
+        let status = CLLocationManager.authorizationStatus()
+        if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.onLocationUpdate = { newState, newPincode, country in
                 self.state = newState
                 self.pincode = newPincode
-                continuation.resume() // Resume the async task once the location is updated
+                completionHandler(true)
             }
+        } else {
+            completionHandler(false)
         }
+        
     }
 
     
-    func getDashboardData() {
+    func getDashboardData(pincode: String, state: String) {
         isLoading = false
-        let request = DashboardDataRequest(pincode: "28078", state: "NC")
+        let request = DashboardDataRequest(pincode: pincode, state: state)
         NetworkManager.shared.performRequest(url: String.getDashboardData(), method: .POST, payload: request, responseType: StoresResponse.self).sink(
             receiveCompletion: { completion in
                 switch completion {

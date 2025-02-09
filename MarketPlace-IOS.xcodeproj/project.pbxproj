@@ -52,9 +52,7 @@
 		25F607452D4A78E000057F16 /* Exceptions for "MarketPlace-IOS" folder in "MarketPlace-IOS-Customers" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				countries.json,
 				Info.plist,
-				"Preview Content/Preview Assets.xcassets",
 			);
 			target = 25F6073D2D4A78E000057F16 /* MarketPlace-IOS-Customers */;
 		};
