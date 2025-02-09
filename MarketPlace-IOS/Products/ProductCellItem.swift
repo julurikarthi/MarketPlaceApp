@@ -51,8 +51,8 @@ struct ProductCellItem: View {
                 // Product Name and Rating
                 HStack {
                     Text(viewModel.productTitle)
-                        .font(.title3)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 15))
+                        .fontWeight(.semibold).lineLimit(2)
                     Spacer()
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
@@ -90,7 +90,7 @@ struct ProductCellItem: View {
                 
                 // Description
                 Text(viewModel.description)
-                    .font(.subheadline)
+                    .font(.system(size: 13))
                     .foregroundColor(.gray)
                     .lineLimit(2)
                 
@@ -147,13 +147,12 @@ struct ProductCellItem: View {
 
 
 struct AddToCartView: View {
-    @State var itemCount: Int = 0
     @Binding var showLoginview: Bool
     @ObservedObject var viewModel:ProductCardViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
     @State var isLoading: Bool = false
     var body: some View {
-        if itemCount == 0 {
+        if viewModel.itemCount == 0 {
             addButton(action: {
                 updateCart(itemCount: 1)
             }).shimmering(active: isLoading)
@@ -164,14 +163,14 @@ struct AddToCartView: View {
                 counterButton(
                     systemImage: "minus",
                     action: {
-                        if itemCount > 0 {
-                            updateCart(itemCount: itemCount - 1)
+                        if viewModel.itemCount > 0 {
+                            updateCart(itemCount: viewModel.itemCount - 1)
                         }
                     }
                 )
                 
                 // Item Count
-                Text("\(itemCount)")
+                Text("\(viewModel.itemCount)")
                     .font(.headline)
                     .foregroundColor(.black)
                 
@@ -179,7 +178,7 @@ struct AddToCartView: View {
                 counterButton(
                     systemImage: "plus",
                     action: {
-                        updateCart(itemCount: itemCount + 1)
+                        updateCart(itemCount: viewModel.itemCount + 1)
                     }
                 )
             }.shimmering(active: isLoading)
@@ -194,10 +193,10 @@ struct AddToCartView: View {
     func updateCart(itemCount: Int) {
         if UserDetails.isLoggedIn {
             isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount)]) { cartCount in
+            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount)]) { cartCount,quantity  in
                 if let cartCount {
-                    self.itemCount = cartCount
-                    cartViewModel.cartItemCount = itemCount
+                    viewModel.itemCount = quantity ?? 0
+                    cartViewModel.cartItemCount = cartCount
                 }
                 isLoading = false
             }

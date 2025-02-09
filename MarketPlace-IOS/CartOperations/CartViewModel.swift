@@ -10,7 +10,7 @@ class CartViewModel: ObservableObject {
     @Published var cartItemCount: Int = 0
     private var cancellables = Set<AnyCancellable>()
 
-    func createCart(storeID: String, products: [CartProduct], completionHandler: @escaping (Int?) -> Void) {
+    func createCart(storeID: String, products: [CartProduct], completionHandler: @escaping (_ allCartscount: Int?, _ itemCount: Int?) -> Void) {
         UserDetails.storeId = storeID
         let createCartRequest = CreateCartRequest(
             products: products,
@@ -21,7 +21,7 @@ class CartViewModel: ObservableObject {
             url: String.createCart(),
             method: .POST,
             payload: createCartRequest,
-            responseType: CreateCartResponse.self
+            responseType: CartResponse.self
         )
         .receive(on: DispatchQueue.main)
         .sink(
@@ -30,19 +30,32 @@ class CartViewModel: ObservableObject {
                 
                 if case .failure(let error) = completion {
                     debugPrint("Cart creation failed:", error)
-                    completionHandler(nil)
+                    completionHandler(nil, nil)
                 }
             },
             receiveValue: { [weak self] response in
-                if response.products.count > 0 {
-                    self?.cartItemCount = response.products.count
-                    completionHandler(self?.cartItemCount ?? nil)
+                if response.all_carts.count > 0 {
+                    let totalCartItems = response.all_carts.reduce(0) { $0 + $1.products.count }
+                    DispatchQueue.main.async {
+                        self?.cartItemCount = totalCartItems
+                        if let productsFirstID = products.first?.productID {
+                            let quntity = self?.getQuantity(for: productsFirstID, from: response)
+                            completionHandler(self?.cartItemCount, quntity)
+                        }
+                    }
                 }
             }
         )
         .store(in: &cancellables)
        
     }
+    
+    func getQuantity(for productId: String, from response: CartResponse) -> Int {
+        return response.all_carts.reduce(0) { total, cart in
+            total + cart.products.filter { $0.product_id == productId }.reduce(0) { $0 + $1.quantity }
+        }
+    }
+
 
 }
 
@@ -62,26 +75,27 @@ struct CartProduct: Codable {
 }
 
 
-struct CreateCartResponse: Codable {
+
+// MARK: - CartResponse
+struct CartResponse: Codable {
     let message: String
     let total_amount: Double
     let tax_amount: Double
     let total_amount_with_tax: Double
-//    let cart_id: String
+    let all_carts: [Cart]
+}
+
+// MARK: - Cart
+struct Cart: Codable {
+    let cart_id: String
+    let store_id: String
     let products: [CartProductResponse]
 }
 
+// MARK: - Product
 struct CartProductResponse: Codable {
-    let productID: String
+    let product_id: String
     let quantity: Int
     let price: Double
-    let productName: String
-
-    enum CodingKeys: String, CodingKey {
-        case productID = "product_id"
-        case quantity
-        case price
-        case productName = "product_name"
-    }
+    let product_name: String
 }
-

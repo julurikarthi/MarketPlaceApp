@@ -57,6 +57,7 @@ extension View {
 struct CartNavigationView<Content: View>: View {
     let title: String
     let content: Content
+    @EnvironmentObject var cartViewModel: CartViewModel
 
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -70,16 +71,29 @@ struct CartNavigationView<Content: View>: View {
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: {
+                        ZStack {
+                            Button(action: {
+                                // Action for cart button
+                            }) {
+                                Image("shopping-cart")
+                                    .resizable()
+                                    .frame(width: 24, height: 24)
+                                    .padding(.trailing, 4)
+                            }
                             
-                        }) {
-                            Image("shopping-cart").resizable().frame(width: 20, height: 20).padding(.trailing, 4)
+                            if cartViewModel.cartItemCount > 0 {
+                                Text("\(cartViewModel.cartItemCount)")
+                                    .font(.caption2)
+                                    .foregroundColor(.white)
+                                    .frame(width: 18, height: 18)
+                                    .background(Color.red)
+                                    .clipShape(Circle())
+                                    .offset(x: 10, y: -10)
+                            }
                         }
-                        .frame(height: 200)
-                        .cornerRadius(10)
-                        .clipped()
                     }
                 }
         }
     }
 }
+

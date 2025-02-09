@@ -12,7 +12,7 @@ class ProductCardViewModel: ObservableObject {
     private var cancellables: Set<AnyCancellable> = []
     @Published var image: UIImage?
     var product: ProductDashBoard
-    
+    @Published var itemCount: Int = 0
     init(product: ProductDashBoard) {
         self.product = product
         if let imageid =  product.imageids.first  {
