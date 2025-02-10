@@ -37,7 +37,7 @@ class DashBoardViewViewModel: ObservableObject {
 
     
     func getDashboardData(pincode: String, state: String) {
-        isLoading = false
+        isLoading = true
         let request = DashboardDataRequest(pincode: pincode, state: state)
         NetworkManager.shared.performRequest(url: String.getDashboardData(), method: .POST, payload: request, responseType: StoresResponse.self).sink(
             receiveCompletion: { completion in
@@ -70,11 +70,14 @@ struct StoresResponse: Codable {
     let stores: [StoreData]
     let page: Int
     let totalStores: Int
+    let total_cart_products: Int
+    
     
     enum CodingKeys: String, CodingKey {
         case stores
         case page
         case totalStores = "total_stores"
+        case total_cart_products
     }
 }
 

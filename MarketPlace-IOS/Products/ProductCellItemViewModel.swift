@@ -24,7 +24,7 @@ class ProductCellItemViewModel: ObservableObject {
     let reviewCount: Int = 20
     let rating: Float = 4
     var isAddedToCart = true
-
+    @Published var itemCount: Int = 0
     init(product: Product, delegate: ProductListViewModelDelegate,
          selectedCategory: Category? = nil) {
         self.product = product

@@ -14,7 +14,8 @@ struct ProductListView: View {
     @Environment(\.presentationMode) var presentationMode // For manual back action
     @StateObject private var viewModel = ProductListViewModel()
     @StateObject private var categoryViewModel = CategoriesTabBarViewModel()
-   
+    @State var showLoginview: Bool = false
+
     init(isCustomer: Bool = false) {
         self.isCustomer = isCustomer
     }
@@ -36,9 +37,11 @@ struct ProductListView: View {
                         } else {
                             productsView()
                         }
+                    }.sheet(isPresented: $showLoginview) {
+                        LoginView()
                     }
                 } else {
-                    if viewModel.categories.isEmpty {
+                    if UserDetails.isAppOwners, viewModel.categories.isEmpty {
                         addtoProductView().frame(maxWidth: .infinity, maxHeight: .infinity).offset(y: 150)
                     }
                 }
@@ -125,7 +128,7 @@ struct ProductListView: View {
     func productsView() -> some View {
         LazyVGrid(columns: columns, spacing: 16) {
             ForEach(Array($viewModel.storeProductsbyCategories.products.enumerated()), id: \.offset) { index, product in
-                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory)).id(product.product_id.wrappedValue)
+                ProductCellItem(viewModel: ProductCellItemViewModel(product: product.wrappedValue, delegate: viewModel, selectedCategory: viewModel.selectedCategory), showLoginview: $showLoginview).id(product.product_id.wrappedValue)
             }
         }
         .padding()

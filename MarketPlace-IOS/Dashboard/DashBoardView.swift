@@ -9,6 +9,8 @@ struct DashboardView: View {
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
     @State private var showLoginview: Bool = false
+//    @EnvironmentObject var cartViewModel: CartViewModel
+
     var body: some View {
         CartNavigationView(title: "Stores") {
               ScrollView {
@@ -27,7 +29,6 @@ struct DashboardView: View {
                               StoreCard(viewModel: .init(store: store), showLoginview: $showLoginview)
                           }
                       }
-                      .padding()
                   }
               }.toolbar {
                   ToolbarItem(placement: .navigationBarLeading) {
@@ -59,7 +60,6 @@ struct DashboardView: View {
        
       }
 }
-
 struct StoreCard: View {
     @ObservedObject var viewModel: StoreCardViewModel
     @State private var showAllProducts = false
@@ -195,6 +195,89 @@ struct ProductCard: View {
             if let imageId = viewModel.product.imageids.first {
                 viewModel.downloadImage(imageId: imageId)
             }
+        }
+    }
+}
+
+struct AddToCartView: View {
+    @Binding var showLoginview: Bool
+    @ObservedObject var viewModel:ProductCardViewModel
+    @EnvironmentObject var cartViewModel: CartViewModel
+    @State var isLoading: Bool = false
+    var body: some View {
+        if viewModel.itemCount == 0 {
+            addButton(action: {
+                updateCart(itemCount: 1)
+            }).shimmering(active: isLoading)
+        } else {
+            // Counter view when items are added
+            HStack(spacing: 12) {
+                // Minus Button
+                counterButton(
+                    systemImage: "minus",
+                    action: {
+                        if viewModel.itemCount > 0 {
+                            updateCart(itemCount: viewModel.itemCount - 1)
+                        }
+                    }
+                )
+                
+                // Item Count
+                Text("\(viewModel.itemCount)")
+                    .font(.headline)
+                    .foregroundColor(.black)
+                
+                // Plus Button
+                counterButton(
+                    systemImage: "plus",
+                    action: {
+                        updateCart(itemCount: viewModel.itemCount + 1)
+                    }
+                )
+            }.shimmering(active: isLoading)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.white)
+            .cornerRadius(16)
+            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+        }
+    }
+    
+    func updateCart(itemCount: Int) {
+        if UserDetails.isLoggedIn {
+            isLoading = true
+            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount)]) { cartCount,quantity  in
+                if let cartCount {
+                    viewModel.itemCount = quantity ?? 0
+                    cartViewModel.cartItemCount = cartCount
+                }
+                isLoading = false
+            }
+        } else {
+            showLoginview = true
+        }
+    }
+    
+    // MARK: - Reusable Components
+    
+    /// Button for "+" and "-" actions in the counter
+    private func counterButton(systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .foregroundColor(.black)
+                .frame(width: 30, height: 30)
+                .background(Circle().fill(Color.white))
+        }
+    }
+    
+    /// Initial "Add to Cart" button
+    private func addButton(action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: "plus")
+                .foregroundColor(.black)
+                .frame(width: 40, height: 40)
+                .background(Circle().fill(Color.white))
+                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
         }
     }
 }

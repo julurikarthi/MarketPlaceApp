@@ -73,6 +73,8 @@ struct ProductDashBoard: Codable, Identifiable {
     let category_id: String
     let imageids: [String]
     let isPublish: Bool
+    let isAddToCart: Bool
+    let quantity: Int
     let store_type: String
 }
 

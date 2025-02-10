@@ -15,6 +15,7 @@ class ProductCardViewModel: ObservableObject {
     @Published var itemCount: Int = 0
     init(product: ProductDashBoard) {
         self.product = product
+        itemCount = product.quantity
         if let imageid =  product.imageids.first  {
             downloadImage(imageId: imageid)
         }

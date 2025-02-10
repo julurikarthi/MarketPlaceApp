@@ -8,6 +8,9 @@ struct ProductCellItem: View {
     @State private var currentImageIndex = 0
     var viewModel: ProductCellItemViewModel
     @State private var productImage: UIImage? = nil
+    @Binding var showLoginview: Bool
+    @EnvironmentObject var cartViewModel: CartViewModel
+
     private var discount: Int? {
         return 10
     }
@@ -126,7 +129,7 @@ struct ProductCellItem: View {
                         }
 
                     } else {
-                        CartButtonView()
+                        CartButtonView(showLoginview: $showLoginview, viewModel: viewModel)
                     }
                 }
                 
@@ -139,93 +142,6 @@ struct ProductCellItem: View {
             viewModel.didTapOnProduct()
         }
         
-    }
-}
-
-
-
-
-
-struct AddToCartView: View {
-    @Binding var showLoginview: Bool
-    @ObservedObject var viewModel:ProductCardViewModel
-    @EnvironmentObject var cartViewModel: CartViewModel
-    @State var isLoading: Bool = false
-    var body: some View {
-        if viewModel.itemCount == 0 {
-            addButton(action: {
-                updateCart(itemCount: 1)
-            }).shimmering(active: isLoading)
-        } else {
-            // Counter view when items are added
-            HStack(spacing: 12) {
-                // Minus Button
-                counterButton(
-                    systemImage: "minus",
-                    action: {
-                        if viewModel.itemCount > 0 {
-                            updateCart(itemCount: viewModel.itemCount - 1)
-                        }
-                    }
-                )
-                
-                // Item Count
-                Text("\(viewModel.itemCount)")
-                    .font(.headline)
-                    .foregroundColor(.black)
-                
-                // Plus Button
-                counterButton(
-                    systemImage: "plus",
-                    action: {
-                        updateCart(itemCount: viewModel.itemCount + 1)
-                    }
-                )
-            }.shimmering(active: isLoading)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
-        }
-    }
-    
-    func updateCart(itemCount: Int) {
-        if UserDetails.isLoggedIn {
-            isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount)]) { cartCount,quantity  in
-                if let cartCount {
-                    viewModel.itemCount = quantity ?? 0
-                    cartViewModel.cartItemCount = cartCount
-                }
-                isLoading = false
-            }
-        } else {
-            showLoginview = true
-        }
-    }
-    
-    // MARK: - Reusable Components
-    
-    /// Button for "+" and "-" actions in the counter
-    private func counterButton(systemImage: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: systemImage)
-                .foregroundColor(.black)
-                .frame(width: 30, height: 30)
-                .background(Circle().fill(Color.white))
-        }
-    }
-    
-    /// Initial "Add to Cart" button
-    private func addButton(action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: "plus")
-                .foregroundColor(.black)
-                .frame(width: 40, height: 40)
-                .background(Circle().fill(Color.white))
-                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
-        }
     }
 }
 
@@ -256,16 +172,22 @@ struct PriceView: View {
 }
 
 struct CartButtonView: View {
-    @State private var quantity: Int = 0
     @State private var showControls = false
-    
+    @Binding var showLoginview: Bool
+    @State var isLoading: Bool = false
+    @EnvironmentObject var cartViewModel: CartViewModel
+    var viewModel: ProductCellItemViewModel
     var body: some View {
         Group {
-            if quantity == 0 {
+            if viewModel.itemCount  == 0 {
                 // Add to Cart Button
                 Button(action: {
                     withAnimation(.spring()) {
-                        quantity = 1
+                        if UserDetails.isLoggedIn {
+                            updateCart(itemCount: 1)
+                        } else {
+                            showLoginview = true
+                        }
                     }
                 }) {
                     HStack {
@@ -283,24 +205,30 @@ struct CartButtonView: View {
                 HStack(spacing: 15) {
                     Button {
                         withAnimation(.spring()) {
-                            if quantity > 0 {
-                                quantity -= 1
+                            if UserDetails.isLoggedIn {
+                                if viewModel.itemCount  > 0 {
+                                    let newValue = viewModel.itemCount - 1
+                                    updateCart(itemCount: newValue)
+                                }
+                            } else {
+                                showLoginview = true
                             }
                         }
                     } label: {
                         Image(systemName: "minus.circle.fill")
                             .font(.title2)
-                            .foregroundColor(quantity > 1 ? .red : .red)
+                            .foregroundColor(viewModel.itemCount  > 1 ? .red : .red)
                     }
-                    .disabled(quantity == 0)
+                    .disabled(viewModel.itemCount  == 0)
                     
-                    Text("\(quantity)")
+                    Text("\(viewModel.itemCount)")
                         .font(.headline)
                         .frame(minWidth: 30)
                     
                     Button {
                         withAnimation(.spring()) {
-                            quantity += 1
+                            let newValue = viewModel.itemCount + 1
+                            updateCart(itemCount: newValue)
                         }
                     } label: {
                         Image(systemName: "plus.circle.fill")
@@ -314,13 +242,24 @@ struct CartButtonView: View {
                 .cornerRadius(10)
             }
         }.background(.white)
-        .onChange(of: quantity) { newValue in
-            if newValue == 0 {
-                // Handle empty cart logic
-            } else {
-                // Update cart with new quantity
-               
+        .shimmering(active: isLoading)
+        .onChange(of: viewModel.itemCount) { newValue in
+            updateCart(itemCount: newValue)
+        }
+    }
+    
+    func updateCart(itemCount: Int) {
+        if UserDetails.isLoggedIn {
+            isLoading = true
+            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product.product_id, quantity: itemCount)]) { cartCount,quantity  in
+                if let cartCount {
+                    viewModel.itemCount = quantity ?? 0
+                    cartViewModel.cartItemCount = cartCount
+                }
+                isLoading = false
             }
+        } else {
+            showLoginview = true
         }
     }
 }
