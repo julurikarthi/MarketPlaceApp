@@ -9,8 +9,7 @@ struct DashboardView: View {
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
     @State private var showLoginview: Bool = false
-//    @EnvironmentObject var cartViewModel: CartViewModel
-
+    
     var body: some View {
         CartNavigationView(title: "Stores") {
               ScrollView {

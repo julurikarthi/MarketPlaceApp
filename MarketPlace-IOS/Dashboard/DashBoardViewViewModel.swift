@@ -16,10 +16,10 @@ class DashBoardViewViewModel: ObservableObject {
     var imageIds: [String]?
 
     @Published var state: String?
+    @Published var total_cart_items: Int = 0
     @Published var pincode: String?
     private var cancellables = Set<AnyCancellable>()
     @Published var storesResponce: StoresResponse?
-    
     func getCurrentLocation(completionHandler: @escaping (Bool) -> Void) {
         locationManager.requestLocation()
         let status = CLLocationManager.authorizationStatus()
@@ -52,6 +52,7 @@ class DashBoardViewViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     self.isLoading = false
                     self.storesResponce = response
+                    self.total_cart_items = response.total_cart_products
                 }
             }
         ).store(in: &cancellables)
