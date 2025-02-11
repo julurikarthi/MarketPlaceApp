@@ -16,7 +16,7 @@ class DashBoardViewViewModel: ObservableObject {
     var imageIds: [String]?
 
     @Published var state: String?
-    @Published var total_cart_items: Int = 0
+    @Published var total_cart_items: Int? = nil
     @Published var pincode: String?
     private var cancellables = Set<AnyCancellable>()
     @Published var storesResponce: StoresResponse?

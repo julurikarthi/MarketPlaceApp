@@ -9,9 +9,8 @@ struct DashboardView: View {
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
     @State private var showLoginview: Bool = false
-    
     var body: some View {
-        CartNavigationView(title: "Stores") {
+        CartNavigationView(title: "Stores", badgeCount: $viewModel.total_cart_items) {
               ScrollView {
                   if $viewModel.isLoading.wrappedValue {
                       // Show shimmer effect while loading
@@ -282,11 +281,11 @@ struct AddToCartView: View {
 }
 
 
-struct DashboardView_Previews: PreviewProvider {
-    static var previews: some View {
-        DashboardView()
-    }
-}
+//struct DashboardView_Previews: PreviewProvider {
+//    static var previews: some View {
+////        DashboardView()
+//    }
+//}
 
 // MARK: - Mock Data
 
