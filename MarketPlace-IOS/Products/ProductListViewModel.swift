@@ -18,7 +18,7 @@ protocol ProductListViewModelDelegate: AnyObject {
 class ProductListViewModel: ObservableObject {
     @Published var showAddProductView: Bool = false
     @Published var moveToProductDetails: Bool = false
-    @Published var seletectedProduct: Product = .init(product_id: "", store_id: "", product_name: "", price: 0, stock: 0, description: "", category_id: "", updatedAt: "", imageids: [])
+    @Published var seletectedProduct: Product = .init(product_id: "", store_id: "", product_name: "", price: 0, stock: 0, description: "", category_id: "", updatedAt: "", imageids: [], isAddToCart: false, quantity: 0)
     
     @Published var showProgressIndicator = false
     var categories: [Category] = []

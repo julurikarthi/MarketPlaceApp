@@ -61,6 +61,8 @@ struct Product: Codable {
     let category_id: String
     let updatedAt: String?
     let imageids: [String]?
+    let isAddToCart: Bool
+    let quantity: Int
 }
 struct ProductDashBoard: Codable, Identifiable {
     var id: String { _id } 

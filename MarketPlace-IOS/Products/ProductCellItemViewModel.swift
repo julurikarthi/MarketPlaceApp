@@ -36,6 +36,7 @@ class ProductCellItemViewModel: ObservableObject {
         imageIds = product.imageids ?? []
         self.delegate = delegate
         self.selectedCategory = selectedCategory
+        itemCount = product.quantity
         
     }
     

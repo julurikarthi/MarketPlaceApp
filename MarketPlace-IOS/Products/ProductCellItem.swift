@@ -204,15 +204,13 @@ struct CartButtonView: View {
                 // Quantity Controls
                 HStack(spacing: 15) {
                     Button {
-                        withAnimation(.spring()) {
-                            if UserDetails.isLoggedIn {
-                                if viewModel.itemCount  > 0 {
-                                    let newValue = viewModel.itemCount - 1
-                                    updateCart(itemCount: newValue)
-                                }
-                            } else {
-                                showLoginview = true
+                        if UserDetails.isLoggedIn {
+                            if viewModel.itemCount  > 0 {
+                                let newValue = viewModel.itemCount - 1
+                                updateCart(itemCount: newValue)
                             }
+                        } else {
+                            showLoginview = true
                         }
                     } label: {
                         Image(systemName: "minus.circle.fill")
@@ -226,10 +224,8 @@ struct CartButtonView: View {
                         .frame(minWidth: 30)
                     
                     Button {
-                        withAnimation(.spring()) {
-                            let newValue = viewModel.itemCount + 1
-                            updateCart(itemCount: newValue)
-                        }
+                        let newValue = viewModel.itemCount + 1
+                        updateCart(itemCount: newValue)
                     } label: {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
@@ -243,9 +239,6 @@ struct CartButtonView: View {
             }
         }.background(.white)
         .shimmering(active: isLoading)
-        .onChange(of: viewModel.itemCount) { newValue in
-            updateCart(itemCount: newValue)
-        }
     }
     
     func updateCart(itemCount: Int) {
