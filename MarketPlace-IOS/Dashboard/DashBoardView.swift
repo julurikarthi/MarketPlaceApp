@@ -10,7 +10,7 @@ struct DashboardView: View {
     @StateObject private var viewModel = DashBoardViewViewModel()
     @State private var showLoginview: Bool = false
     var body: some View {
-        CartNavigationView(title: "Stores", badgeCount: $viewModel.total_cart_items) {
+        CartNavigationView(title: "Stores") {
               ScrollView {
                   if $viewModel.isLoading.wrappedValue {
                       // Show shimmer effect while loading

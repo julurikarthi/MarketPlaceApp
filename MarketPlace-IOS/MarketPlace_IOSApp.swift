@@ -58,11 +58,9 @@ struct CartNavigationView<Content: View>: View {
     let title: String
     let content: Content
     @EnvironmentObject var cartViewModel: CartViewModel
-    @Binding var badgeCount: Int?
-    init(title: String, badgeCount: Binding<Int?>? = nil, @ViewBuilder content: () -> Content) {
+    init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.content = content()
-        self._badgeCount = badgeCount ?? .constant(nil)
     }
 
     var body: some View {
@@ -90,16 +88,6 @@ struct CartNavigationView<Content: View>: View {
                                     .background(Color.red)
                                     .clipShape(Circle())
                                     .offset(x: 10, y: -10)
-                            } else {
-                                if badgeCount ?? 0 > 0 {
-                                    Text("\(badgeCount!)")
-                                        .font(.caption2)
-                                        .foregroundColor(.white)
-                                        .frame(width: 18, height: 18)
-                                        .background(Color.red)
-                                        .clipShape(Circle())
-                                        .offset(x: 10, y: -10)
-                                }
                             }
                         }
                     }
