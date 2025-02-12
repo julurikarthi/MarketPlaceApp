@@ -7,16 +7,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5A4990D5-1AC5-440E-97D6-5C99AA407DA0"
+            uuid = "FB2213F8-DDED-47B9-B497-85FB1387DFF4"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/Dashboard/DashBoardViewViewModel.swift"
+            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetailsViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
-            landmarkName = "getDashboardData(pincode:state:)"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "getProductDetails(productID:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C6C9F32E-5831-437C-9DC1-10A496456860"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetailsViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "getProductDetails(productID:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

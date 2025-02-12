@@ -14,7 +14,7 @@ class DashBoardViewViewModel: ObservableObject {
     @Published var address: Address?
     let locationManager = LocationManager()
     var imageIds: [String]?
-
+    @Published var moveToProductDetails: Bool = false 
     @Published var state: String?
     @Published var total_cart_items: Int? = nil
     @Published var pincode: String?

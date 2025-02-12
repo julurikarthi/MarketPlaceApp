@@ -6,52 +6,71 @@
 //
 import SwiftUI
 import Combine
+import Shimmer
 
 struct ProductDetails: View {
-    @Binding var product: Product
     @StateObject private var imageLoader = ImageLoader()
     @State private var currentImageIndex = 0
     @State private var quantity = 1
-    @State private var isAddingToCart = false
+    @State var viewModel: ProductDetailsViewModel
+    @State var showLoginview = false
+    init(viewModel: ProductDetailsViewModel) {
+        self.viewModel = viewModel
+    }
     
     @Environment(\.presentationMode) var presentationMode
     var body: some View {
-            ScrollView {
+        ScrollView {
+            if viewModel.product == nil {
+                ShimmeringStoreCardPlaceholder().onAppear {
+                    viewModel.getProductDetails(productID: viewModel.product_id)
+                }
+            } else {
                 VStack(alignment: .leading, spacing: 20) {
-                    // Image Gallery
-                    ImageGallery(imageLoader: imageLoader, imageIds: product.imageids ?? [], currentIndex: $currentImageIndex, colors: CustomColors())
-                        .frame(height: 300)
-                        .cornerRadius(20)
-                        .overlay(
-                            ImageCounter(current: currentImageIndex + 1, total: product.imageids?.count ?? 0)
-                                .padding(.bottom, 12)
-                                .padding(.trailing, 12),
-                            alignment: .bottomTrailing
-                        )
-                        .padding(.horizontal)
+                    
+                    TabView(selection: $currentImageIndex) {
+                        ForEach(viewModel.product?.imageids ?? [], id: \.self) { imageId in
+                            VStack {
+                                AsyncImageView(imageId: imageId)
+                                    .cornerRadius(20)
+                                    .tag(viewModel.product?.imageids?.firstIndex(of: imageId) ?? 0)
+                            }
+                        }
+                    }
+                    .frame(height: 300)
+                    .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+                    .overlay(
+                        ImageCounter(current: currentImageIndex + 1, total: viewModel.product?.imageids?.count ?? 0)
+                            .padding(.bottom, 12)
+                            .padding(.trailing, 12),
+                        alignment: .bottomTrailing
+                    )
+                    .padding(.horizontal)
+
                     
                     VStack(alignment: .leading, spacing: 24) {
                         // Product Name
-                        Text(product.product_name)
+                        Text(viewModel.product?.product_name ?? "")
                             .font(.system(size: 28, weight: .bold))
                             .foregroundColor(.black)
                         
                         // Price and Stock
                         HStack {
-                            PriceTag(price: product.price)
+                            PriceTag(price: viewModel.product?.price ?? 0)
                             Spacer()
-                            StockBadge(stock: product.stock)
+                            StockBadge(stock: viewModel.product?.stock ?? 0)
                         }
                         
-                        // Quantity Selector
-                        QuantitySelector(quantity: $quantity, maxStock: product.stock)
-                        
-                        // Description
+                        if let product = viewModel.product {
+                            CartButtonView(showLoginview: $showLoginview, viewModel: ProductCellItemViewModel(product: product,
+                                                                                                              delegate: viewModel))
+                        }
+
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Description")
                                 .font(.headline)
                                 .foregroundColor(.black).multilineTextAlignment(.leading)
-                            Text(product.description)
+                            Text(viewModel.product?.description ?? "")
                                 .font(.body)
                                 .foregroundColor(.subtitleGray).multilineTextAlignment(.leading)
                         }
@@ -60,54 +79,36 @@ struct ProductDetails: View {
                         .background(Color.gray.opacity(0.1))
                         .cornerRadius(15)
                         
-                        // Add to Cart Button
-                        AddToCartButton(
-                            product: product,
-                            quantity: quantity,
-                            isAddingToCart: $isAddingToCart
-                        )
-                        
-                        // Additional Details
-                        VStack(alignment: .leading, spacing: 16) {
-                            DetailRow(title: "Product ID", value: product.product_id)
-                            DetailRow(title: "Store ID", value: product.store_id)
-                            DetailRow(title: "Category", value: product.category_id)
-                            if let updated = product.updatedAt {
-                                DetailRow(title: "Updated", value: formatDate(updated))
-                            }
-                        }
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(15).hidden()
                     }
                     .padding()
                 }
-            
-            .navigationTitle("Product Details")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
-            .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
-            .accentColor(Color.themeRed)
-            .tint(Color.themeRed)
-            .navigationBarBackButtonHidden(true)
-            .onAppear {
-                loadImages()
-            }.toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "chevron.left")
-                            .foregroundColor(.themeRed) // Ensure back button is red
-                    }
+                .navigationTitle("Product Details")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
+                .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
+                .accentColor(Color.themeRed)
+                .tint(Color.themeRed)
+                .navigationBarBackButtonHidden(true)
+                .onAppear {
+                    loadImages()
                 }
             }
-
-        }
+        }.toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "chevron.left")
+                        .foregroundColor(.themeRed) // Ensure back button is red
+                }
+            }
+        }.sheet(isPresented: $showLoginview) {
+            LoginView()
+        }.navigationBarBackButtonHidden()
     }
     
     private func loadImages() {
-        for imageId in product.imageids ?? [] {
+        for imageId in viewModel.product?.imageids ?? [] {
             imageLoader.loadImage(for: imageId)
         }
     }

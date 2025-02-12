@@ -66,7 +66,7 @@ struct ProductListView: View {
                 .hidden()
                 
                 NavigationLink(
-                    destination: ProductDetails(product: $viewModel.seletectedProduct),
+                    destination: ProductDetails(viewModel: .init(product_id: $viewModel.seletectedProduct.product_id.wrappedValue)),
                     isActive: $viewModel.moveToProductDetails
                 ) {
                     EmptyView()
