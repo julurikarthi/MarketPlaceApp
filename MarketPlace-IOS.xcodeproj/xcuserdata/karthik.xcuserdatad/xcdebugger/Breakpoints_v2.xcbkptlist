@@ -14,8 +14,8 @@
             filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetailsViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
             landmarkName = "getProductDetails(productID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetailsViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
             landmarkName = "getProductDetails(productID:)"
             landmarkType = "7">
          </BreakpointContent>

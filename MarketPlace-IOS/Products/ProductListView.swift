@@ -64,15 +64,7 @@ struct ProductListView: View {
                     EmptyView()
                 }
                 .hidden()
-                
-                NavigationLink(
-                    destination: ProductDetails(viewModel: .init(product_id: $viewModel.seletectedProduct.product_id.wrappedValue)),
-                    isActive: $viewModel.moveToProductDetails
-                ) {
-                    EmptyView()
-                }
-                .hidden()
-                
+                                
             }.background(.white)
                 .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                 .toolbar {

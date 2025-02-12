@@ -10,7 +10,7 @@ struct ProductCellItem: View {
     @State private var productImage: UIImage? = nil
     @Binding var showLoginview: Bool
     @EnvironmentObject var cartViewModel: CartViewModel
-
+    @State var moveToProductDetails = false
     private var discount: Int? {
         return 10
     }
@@ -139,9 +139,15 @@ struct ProductCellItem: View {
         .cornerRadius(15)
         .shadow(color: Color.gray.opacity(0.2), radius: 10, x: 0, y: 5)
         .onTapGesture {
-            viewModel.didTapOnProduct()
+            moveToProductDetails = true
         }
-        
+        NavigationLink(
+            destination: ProductDetails(viewModel: .init(product_id: viewModel.product.product_id)),
+            isActive: $moveToProductDetails
+        ) {
+            EmptyView()
+        }
+        .hidden()
     }
 }
 
