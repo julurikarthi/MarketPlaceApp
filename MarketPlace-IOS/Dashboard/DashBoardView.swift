@@ -9,6 +9,7 @@ struct DashboardView: View {
     @State private var stores: [Store] = []
     @StateObject private var viewModel = DashBoardViewViewModel()
     @State private var showLoginview: Bool = false
+   
     var body: some View {
         CartNavigationView(title: "Stores") {
               ScrollView {
@@ -35,7 +36,7 @@ struct DashboardView: View {
                       }) {
                           Image("pin").resizable().frame(width: 20, height: 20)
                               .foregroundColor(Color.black)
-                          Text(viewModel.address?.postalCode ?? viewModel.pincode ?? "").bold().foregroundColor(.black)
+                          Text(viewModel.address?.postalCode ?? viewModel.pincode).bold().foregroundColor(.black)
                           Image("arrow-down").resizable()
                               .frame(width: 10, height: 10)
                               .foregroundColor(Color.black)
@@ -51,8 +52,12 @@ struct DashboardView: View {
               LoginView()
           })
           .task {
-              viewModel.getCurrentLocation { status in
-                  viewModel.getDashboardData(pincode: viewModel.pincode ?? "", state: viewModel.state ?? "")
+              if !viewModel.state.isEmpty && !viewModel.pincode.isEmpty {
+                  viewModel.getDashboardData(pincode: viewModel.pincode, state: viewModel.state)
+              } else {
+                  viewModel.getCurrentLocation { status in
+                      viewModel.getDashboardData(pincode: viewModel.pincode ?? "", state: viewModel.state ?? "")
+                  }
               }
           }
        

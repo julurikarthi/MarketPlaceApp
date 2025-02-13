@@ -20,6 +20,8 @@ struct LocationSearchView: View {
     @State private var isSearching = false
     @StateObject private var viewModel: LocationSearchViewModel = .init()
     var onAddressSelected: (Address) -> Void
+    @AppStorage("state") var state: String = ""
+    @AppStorage("pincode") var pincode: String = ""
     
     var body: some View {
         NavigationStack {
@@ -27,6 +29,8 @@ struct LocationSearchView: View {
                 VStack {
                     AddressSearchBarView(searchText: $searchText)
                     ExploreNearbyView(viewModel: viewModel) { address in
+                        pincode = address.postalCode
+                        state = address.state
                         onAddressSelected(address)
                         presentationMode.wrappedValue.dismiss()
                     }
@@ -40,6 +44,8 @@ struct LocationSearchView: View {
                             .listRowBackground(Color.clear).onTapGesture {
                                 fetchPlaceDetails(placeID: prediction.placeID) { address in
                                     if let address = address {
+                                        pincode = address.postalCode
+                                        state = address.state
                                         onAddressSelected(address)
                                         presentationMode.wrappedValue.dismiss()
                                     }

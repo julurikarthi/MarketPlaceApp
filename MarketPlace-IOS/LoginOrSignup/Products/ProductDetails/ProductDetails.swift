@@ -20,33 +20,35 @@ struct ProductDetails: View {
     
     @Environment(\.presentationMode) var presentationMode
     var body: some View {
-        ScrollView {
-            if viewModel.isLoading {
-                ShimmeringStoreCardPlaceholder()
-            } else {
-                productDetailView()
-            }
-        }.onAppear(perform: {
-            viewModel.getProductDetails(productID: viewModel.product_id)
-        }).navigationTitle("Product Details")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
-            .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
-            .accentColor(Color.themeRed)
-            .tint(Color.themeRed)
-            .navigationBarBackButtonHidden(true)
-            .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "chevron.left")
-                        .foregroundColor(.themeRed) // Ensure back button is red
+        CartNavigationView(title: "Details") {
+            ScrollView {
+                if viewModel.isLoading {
+                    ShimmeringStoreCardPlaceholder()
+                } else {
+                    productDetailView()
                 }
-            }
-        }.sheet(isPresented: $showLoginview) {
-            LoginView()
-        }.navigationBarBackButtonHidden()
+            }.onAppear(perform: {
+                viewModel.getProductDetails(productID: viewModel.product_id)
+            }).navigationTitle("Product Details")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
+                .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
+                .accentColor(Color.themeRed)
+                .tint(Color.themeRed)
+                .navigationBarBackButtonHidden(true)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.themeRed) // Ensure back button is red
+                        }
+                    }
+                }.sheet(isPresented: $showLoginview) {
+                    LoginView()
+                }.navigationBarBackButtonHidden()
+        }
     }
     
     private func formatDate(_ dateString: String) -> String {

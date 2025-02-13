@@ -8,6 +8,7 @@
 import Foundation
 import Combine
 import CoreLocation
+import SwiftUI
 class DashBoardViewViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var movetoSelectLocation: Bool = false
@@ -15,18 +16,17 @@ class DashBoardViewViewModel: ObservableObject {
     let locationManager = LocationManager()
     var imageIds: [String]?
     @Published var moveToProductDetails: Bool = false 
-    @Published var state: String?
-    @Published var total_cart_items: Int? = nil
-    @Published var pincode: String?
     private var cancellables = Set<AnyCancellable>()
     @Published var storesResponce: StoresResponse?
+    @AppStorage("state") var state: String = ""
+    @AppStorage("pincode") var pincode: String = ""
     func getCurrentLocation(completionHandler: @escaping (Bool) -> Void) {
         locationManager.requestLocation()
         let status = CLLocationManager.authorizationStatus()
         if status == .authorizedWhenInUse || status == .authorizedAlways {
             locationManager.onLocationUpdate = { newState, newPincode, country in
-                self.state = newState
-                self.pincode = newPincode
+                self.state = newState ?? ""
+                self.pincode = newPincode ?? ""
                 completionHandler(true)
             }
         } else {
@@ -36,7 +36,7 @@ class DashBoardViewViewModel: ObservableObject {
     }
 
     
-    func getDashboardData(pincode: String, state: String) {
+    func getDashboardData(pincode: String, state: String, completionHandler: ((Bool,Int) -> Void)? = nil) {
         isLoading = true
         let request = DashboardDataRequest(pincode: pincode, state: state)
         NetworkManager.shared.performRequest(url: String.getDashboardData(), method: .POST, payload: request, responseType: StoresResponse.self).sink(
@@ -45,14 +45,15 @@ class DashBoardViewViewModel: ObservableObject {
                 case .finished:
                     print("Request completed successfully.")
                 case .failure(let error):
+                    completionHandler?(false,0)
                     print("Request failed: \(error.localizedDescription)")
                 }
             },
             receiveValue: { response in
                 DispatchQueue.main.async {
                     self.isLoading = false
+                    completionHandler?(true, response.total_cart_products)
                     self.storesResponce = response
-                    self.total_cart_items = response.total_cart_products
                 }
             }
         ).store(in: &cancellables)
