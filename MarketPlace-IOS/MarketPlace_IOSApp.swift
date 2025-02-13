@@ -87,6 +87,9 @@ struct CartNavigationView<Content: View>: View {
     let title: String
     let content: Content
     @EnvironmentObject var cartViewModel: CartViewModel
+    @State private var showLoginView = false
+    @State private var showtotalCartView = false
+
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
         self.content = content()
@@ -101,14 +104,23 @@ struct CartNavigationView<Content: View>: View {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         ZStack {
                             Button(action: {
-                                // Action for cart button
+                                if UserDetails.isLoggedIn {
+                                    // Navigate to TotalCartView
+                                    showtotalCartView = true
+                                } else {
+                                    // Show login view
+                                    showLoginView = true
+                                }
                             }) {
                                 Image("shopping-cart")
                                     .resizable()
                                     .frame(width: 24, height: 24)
                                     .padding(.trailing, 4)
                             }
-                            
+                            .fullScreenCover(isPresented: $showLoginView) {
+                                LoginView()
+                            }
+
                             if cartViewModel.cartItemCount > 0 {
                                 Text("\(cartViewModel.cartItemCount)")
                                     .font(.caption2)
@@ -121,7 +133,18 @@ struct CartNavigationView<Content: View>: View {
                         }
                     }
                 }
+            NavigationLink(
+                "", destination: TotalCartView(),
+                isActive: $showtotalCartView) .ignoresSafeArea(edges: .all)
+        }
+    }
+
+    @ViewBuilder
+    private func navigateToCart() -> some View {
+        NavigationLink(destination: TotalCartView()) {
+            EmptyView()
         }
     }
 }
+
 
