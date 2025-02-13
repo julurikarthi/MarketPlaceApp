@@ -11,16 +11,24 @@ import GooglePlaces
 @main
 struct MarketPlace_IOSApp: App {
     @StateObject var cartViewModel = CartViewModel()
-
+    @ObservedObject var dashboardViewModel = DashBoardViewViewModel()
+    @State private var isLoading = true
+    @AppStorage("state") var state: String = ""
+    @AppStorage("pincode") var pincode: String = ""
     init() {
             GMSPlacesClient.provideAPIKey("AIzaSyCilh2e-XLRrdwSM0hHfcGMewbYbZfcmHU")
         }
-    
     var body: some Scene {
-            WindowGroup {
-                ZStack {
-                    Color.white.edgesIgnoringSafeArea(.all) // Apply global background
-                    
+        WindowGroup {
+            ZStack {
+                Color.white.edgesIgnoringSafeArea(.all)
+
+                if isLoading {
+                    SplashScreenView()
+                        .onAppear {
+                            loadDashboardData()
+                        }
+                } else {
                     if UserDetails.isAppOwners {
                         if UserDetails.isLoggedIn {
                             if UserDetails.storeId != nil {
@@ -32,17 +40,38 @@ struct MarketPlace_IOSApp: App {
                             LoginView()
                         }
                     } else {
-                        DashboardView().environmentObject(cartViewModel)
-                    }
-                }.globalBackground(.white).onAppear {
-                    if UserDetails.isAppOwners {
-                        UserDetails.userType = .storeOwner
-                    } else {
-                        UserDetails.userType = .customer
+                        DashboardView(viewModel: dashboardViewModel)
+                            .environmentObject(cartViewModel)
                     }
                 }
             }
         }
+    }
+    
+    private func loadDashboardData() {
+        if !state.isEmpty, !pincode.isEmpty {
+            dashboardViewModel.getDashboardData(pincode: pincode, state: state) { status, cartItems in
+                if status {
+                    DispatchQueue.main.async {
+                        cartViewModel.cartItemCount = cartItems
+                        isLoading = false
+                    }
+                }
+            }
+        } else {
+            dashboardViewModel.getCurrentLocation { _ in
+                dashboardViewModel.getDashboardData(pincode: dashboardViewModel.pincode ?? "", state: dashboardViewModel.state ?? "") { status, cartItems in
+                    if status {
+                        DispatchQueue.main.async {
+                            cartViewModel.cartItemCount = cartItems
+                            isLoading = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 

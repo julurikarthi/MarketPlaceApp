@@ -7,9 +7,13 @@ import Combine
 
 struct DashboardView: View {
     @State private var stores: [Store] = []
-    @StateObject private var viewModel = DashBoardViewViewModel()
+    @StateObject var viewModel: DashBoardViewViewModel
     @State private var showLoginview: Bool = false
-   
+    init(viewModel: DashBoardViewViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+
+    }
+
     var body: some View {
         CartNavigationView(title: "Stores") {
               ScrollView {
@@ -37,6 +41,7 @@ struct DashboardView: View {
                           Image("pin").resizable().frame(width: 20, height: 20)
                               .foregroundColor(Color.black)
                           Text(viewModel.address?.postalCode ?? viewModel.pincode).bold().foregroundColor(.black)
+
                           Image("arrow-down").resizable()
                               .frame(width: 10, height: 10)
                               .foregroundColor(Color.black)
@@ -44,23 +49,16 @@ struct DashboardView: View {
                   }
               }
           }.sheet(isPresented: $viewModel.movetoSelectLocation) {
-              LocationSearchView(onAddressSelected: { address in
-                  viewModel.address = address
-                  viewModel.getDashboardData(pincode: address.postalCode, state: address.state)
-              })
+              if !viewModel.state.isEmpty && !viewModel.pincode.isEmpty {
+                  LocationSearchView(onAddressSelected: { address in
+                      viewModel.address = address
+                      viewModel.getDashboardData(pincode: address.postalCode, state: address.state)
+                  })
+              }
+             
           }.sheet(isPresented: $showLoginview, content: {
               LoginView()
           })
-          .task {
-              if !viewModel.state.isEmpty && !viewModel.pincode.isEmpty {
-                  viewModel.getDashboardData(pincode: viewModel.pincode, state: viewModel.state)
-              } else {
-                  viewModel.getCurrentLocation { status in
-                      viewModel.getDashboardData(pincode: viewModel.pincode ?? "", state: viewModel.state ?? "")
-                  }
-              }
-          }
-       
       }
 }
 struct StoreCard: View {
@@ -149,6 +147,7 @@ struct StoreCard: View {
 struct ProductCard: View {
     @ObservedObject var viewModel:ProductCardViewModel
     @Binding var showLoginview: Bool
+    @State var moveToProductDetails = false
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             // Main content (image and details)
@@ -198,7 +197,16 @@ struct ProductCard: View {
             if let imageId = viewModel.product.imageids.first {
                 viewModel.downloadImage(imageId: imageId)
             }
+        }.onTapGesture {
+            moveToProductDetails = true
         }
+        NavigationLink(
+            destination: ProductDetails(viewModel: .init(product_id: viewModel.product.id)),
+            isActive: $moveToProductDetails
+        ) {
+            EmptyView()
+        }
+        .hidden()
     }
 }
 
