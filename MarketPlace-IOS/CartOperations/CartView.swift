@@ -10,9 +10,10 @@ import Combine
 
 struct TotalCartView: View {
     @StateObject private var viewModel = TotalCartViewModel()
-    
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
-        NavigationView {
+        NavigationStack {
             if viewModel.carts.isEmpty {
                 ShimmeringStoreCardPlaceholder()
             } else {
@@ -25,10 +26,21 @@ struct TotalCartView: View {
                     .padding()
                 }
                 .navigationTitle("Shopping Cart")
+                .navigationBarTitleDisplayMode(.inline)
                 .background(Color(.systemGroupedBackground))
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .foregroundColor(.themeRed) // Ensure back button is red
+                        }
+                    }
+                }
             }
        
-        }
+        }.navigationBarBackButtonHidden()
         .onAppear(perform: viewModel.loadCartData)
     }
 }
@@ -36,15 +48,13 @@ struct TotalCartView: View {
 struct CartSectionView: View {
     let cart: CartModel
     let onQuantityChange: (String, String, Int) -> Void
-    
+    @StateObject private var viewmodel = CartSectionViewModel()
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             StoreHeaderView(cart: cart)
             
             ForEach(cart.products) { product in
-                ProductRowView(product: product, onQuantityChange: { newQuantity in
-                    onQuantityChange(cart.cart_id, product.product_id, newQuantity)
-                })
+                ProductRowView(product: product, viewModel: .init(product: product, delegate: viewmodel))
             }
             
             Divider()
@@ -62,22 +72,34 @@ struct CartSectionView: View {
     }
 }
 
+class CartSectionViewModel: ObservableObject {
+
+}
+extension CartSectionViewModel: ProductListViewModelDelegate {
+    func didtapOnEditButton(for product: EditProduct) {
+        
+    }
+    
+    func didtapOnDeleteButton(for product: Product) {
+        
+    }
+    
+    func didtapProduct(for product: Product) {
+        
+    }
+    
+}
+
 struct StoreHeaderView: View {
     let cart: CartModel
     
     var body: some View {
         HStack(spacing: 12) {
-            AsyncImage(url: URL(string: cart.store_image)) { image in
-                image.resizable()
-                    .aspectRatio(contentMode: .fill)
+            VStack {
+                AsyncImageView(imageId: cart.store_image)
                     .frame(width: 60, height: 60)
-                    .clipShape(Circle())
-            } placeholder: {
-                Circle()
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 60, height: 60)
-            }
-            
+            }.frame(width: 60, height: 60).cornerRadius(10)
+
             Text(cart.store_name)
                 .font(.title2)
                 .fontWeight(.bold)
@@ -85,50 +107,29 @@ struct StoreHeaderView: View {
     }
 }
 struct ProductRowView: View {
-    let product: AllCartProduct
-    let onQuantityChange: (Int) -> Void
-    
+    let product: Product
+    @State var showLoginview: Bool = false
+    var viewModel: ProductCellItemViewModel
     var body: some View {
         HStack(spacing: 15) {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: 80, height: 80)
+            VStack {
+                AsyncImageView(imageId: product.imageids?.first ?? "")
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(10)
+            }
+            .frame(width: 60, height: 60)
             
             VStack(alignment: .leading, spacing: 5) {
                 Text(product.product_name)
                     .font(.headline)
                     .lineLimit(2)
                 
-                Text("\(product.price)")
+                Text("\(product.price.formattedPrice)")
                     .font(.subheadline)
-                    .foregroundColor(.blue)
-                
-                QuantityStepper(quantity: product.quantity, onChange: onQuantityChange)
+                    .foregroundColor(.black)
+                CartButtonView(showLoginview: $showLoginview, viewModel: viewModel)
             }
         }
-    }
-}
-
-struct QuantityStepper: View {
-    let quantity: Int
-    let onChange: (Int) -> Void
-    
-    var body: some View {
-        HStack {
-            Button(action: { if quantity > 1 { onChange(quantity - 1) } }) {
-                Image(systemName: "minus.circle.fill")
-            }
-            .disabled(quantity <= 1)
-            
-            Text("\(quantity)")
-                .frame(width: 30)
-            
-            Button(action: { onChange(quantity + 1) }) {
-                Image(systemName: "plus.circle.fill")
-            }
-        }
-        .font(.system(size: 20))
-        .foregroundColor(.blue)
     }
 }
 
@@ -145,6 +146,7 @@ struct SubtotalView: View {
                 Spacer()
                 Text(subtotal.formattedPrice)
                     .font(.subheadline)
+                    .foregroundColor(.black)
             }
             HStack {
                 Text("Tax:")
@@ -152,6 +154,7 @@ struct SubtotalView: View {
                 Spacer()
                 Text(tax.formattedPrice)
                     .font(.subheadline)
+                    .foregroundColor(.black)
             }
             HStack {
                 Text("Total:")
@@ -159,7 +162,7 @@ struct SubtotalView: View {
                 Spacer()
                 Text(total.formattedPrice)
                     .font(.headline)
-                    .foregroundColor(.blue)
+                    .foregroundColor(.black)
             }
         }
     }
@@ -175,7 +178,7 @@ struct CheckoutButton: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.blue)
+                .background(Color.themeRed)
                 .cornerRadius(10)
         }
     }
@@ -187,7 +190,7 @@ struct CartModel: Identifiable, Codable {
     let store_id: String
     let store_name: String
     let store_image: String
-    var products: [AllCartProduct]
+    var products: [Product]
     var total_amount: Double
     var tax_amount: Double
     var total_amount_with_tax: Double
@@ -200,6 +203,7 @@ struct AllCartProduct: Codable, Identifiable {
     var quantity: Int
     let price: Double
     let product_name: String
+    let imageids: [String]
 }
 
 extension Double {

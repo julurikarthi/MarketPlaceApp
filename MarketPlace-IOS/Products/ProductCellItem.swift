@@ -207,11 +207,10 @@ struct CartButtonView: View {
                     .cornerRadius(10)
                 }
             } else {
-                // Quantity Controls
-                HStack(spacing: 15) {
+                HStack(spacing: 20) {
                     Button {
                         if UserDetails.isLoggedIn {
-                            if viewModel.itemCount  > 0 {
+                            if viewModel.itemCount > 0 {
                                 let newValue = viewModel.itemCount - 1
                                 updateCart(itemCount: newValue)
                             }
@@ -221,13 +220,17 @@ struct CartButtonView: View {
                     } label: {
                         Image(systemName: "minus.circle.fill")
                             .font(.title2)
-                            .foregroundColor(viewModel.itemCount  > 1 ? .red : .red)
+                            .foregroundColor(viewModel.itemCount > 1 ? .red : .gray)
+                            .padding(8)
+                            .background(Color.white.opacity(0.2))
+                            .clipShape(Circle())
                     }
-                    .disabled(viewModel.itemCount  == 0)
+                    .disabled(viewModel.itemCount == 0)
                     
                     Text("\(viewModel.itemCount)")
                         .font(.headline)
-                        .frame(minWidth: 30)
+                        .frame(minWidth: 10)
+                        .foregroundColor(.black)
                     
                     Button {
                         let newValue = viewModel.itemCount + 1
@@ -236,12 +239,15 @@ struct CartButtonView: View {
                         Image(systemName: "plus.circle.fill")
                             .font(.title2)
                             .foregroundColor(.black)
+                            .padding(8)
+                            .background(Color.white.opacity(0.2))
+                            .clipShape(Circle())
                     }
                 }
-                .padding(.horizontal)
-                .padding(.vertical, 8)
-                .background(.gray)
-                .cornerRadius(10)
+                .padding(.vertical, 12)
+                .frame(height: 40)
+                .background(Color(.systemGray6))
+                .cornerRadius(15)
             }
         }.background(.white)
         .shimmering(active: isLoading)

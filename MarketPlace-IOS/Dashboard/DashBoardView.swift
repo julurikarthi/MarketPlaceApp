@@ -434,13 +434,12 @@ struct AsyncImageView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFill()
+                    .clipped()
             } else {
                 ShimmeringStoreCardPlaceholder()
                     .onAppear(perform: loadImage)
             }
         }
-        .frame(width: 200, height: 200)
-        .cornerRadius(15)
     }
 
     private func loadImage() {
@@ -458,5 +457,6 @@ struct AsyncImageView: View {
             .store(in: &cancellables)
     }
 }
+
 
 

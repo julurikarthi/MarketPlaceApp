@@ -54,16 +54,16 @@ struct GetAllStoreProductsResponse: Codable {
 struct Product: Codable, Identifiable {
     var id: String { product_id }
     var product_id: String
-    let store_id: String
+    let store_id: String?
     let product_name: String
     let price: Double
-    let stock: Int
-    let description: String
-    let category_id: String
+    let stock: Int?
+    var description: String?
+    let category_id: String?
     let updatedAt: String?
     let imageids: [String]?
-    let isAddToCart: Bool
-    var quantity: Int
+    let isAddToCart: Bool?
+    var quantity: Int?
 }
 struct ProductDashBoard: Codable, Identifiable {
     var id: String { _id } 
