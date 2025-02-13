@@ -70,8 +70,11 @@ struct StoreCard: View {
             // Store Image
             VStack {
                 AsyncImageView(imageId: viewModel.store.imageId ?? "")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity, maxHeight: 200)
+            .cornerRadius(10)
+
             
             // Store Details
             VStack(alignment: .leading, spacing: 8) {
@@ -431,8 +434,7 @@ struct AsyncImageView: View {
     var body: some View {
         Group {
             if let image = image {
-                Image(uiImage: image)
-                    .resizable()
+                Image(uiImage: image).resizable()
                     .scaledToFill()
                     .clipped()
             } else {
