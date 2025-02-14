@@ -9,21 +9,28 @@ import SwiftUI
 
 struct HomePage: View {
     @State private var selectedTab = 0
-
-    init() {
+    @StateObject var viewModel: DashBoardViewViewModel
+    
+    
+    init(viewModel: DashBoardViewViewModel? = nil) {
         let tabBarAppearance = UITabBarAppearance()
         tabBarAppearance.configureWithOpaqueBackground()
         tabBarAppearance.backgroundColor = UIColor.white
         
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
+        _viewModel = StateObject(wrappedValue: viewModel ?? DashBoardViewViewModel())
+
     }
     
     var body: some View {
-        CartNavigationView(title: "Products") {
             TabView(selection: $selectedTab) {
                 NavigationView {
-                    ProductListView()
+                    if UserDetails.isAppOwners {
+                        ProductListView()
+                    } else {
+                        DashboardView(viewModel: viewModel)
+                    }
                 }
                 .tabItem {
                     Image(selectedTab == 0 ? "homeselected" : "home")
@@ -52,7 +59,7 @@ struct HomePage: View {
                 .tag(2)
             }
             .accentColor(.themeRed)
-        }
+        
     }
 
     @ViewBuilder

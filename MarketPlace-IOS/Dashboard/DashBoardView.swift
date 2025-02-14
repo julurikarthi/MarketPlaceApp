@@ -15,7 +15,10 @@ struct DashboardView: View {
     }
 
     var body: some View {
-        CartNavigationView(title: "Stores") {
+        CartNavigationView(title: "Stores",
+                           presentLocatonSelector: $viewModel.movetoSelectLocation
+                           , selectedPincode: $viewModel.pincode,
+                           showlocationSelector: $viewModel.showLocationSelectionView) {
               ScrollView {
                   if $viewModel.isLoading.wrappedValue {
                       // Show shimmer effect while loading
@@ -33,25 +36,12 @@ struct DashboardView: View {
                           }
                       }
                   }
-              }.toolbar {
-                  ToolbarItem(placement: .navigationBarLeading) {
-                      Button(action: {
-                          viewModel.movetoSelectLocation = true
-                      }) {
-                          Image("pin").resizable().frame(width: 20, height: 20)
-                              .foregroundColor(Color.black)
-                          Text(viewModel.address?.postalCode ?? viewModel.pincode).bold().foregroundColor(.black)
-
-                          Image("arrow-down").resizable()
-                              .frame(width: 10, height: 10)
-                              .foregroundColor(Color.black)
-                      }
-                  }
               }
           }.sheet(isPresented: $viewModel.movetoSelectLocation) {
               if !viewModel.state.isEmpty && !viewModel.pincode.isEmpty {
                   LocationSearchView(onAddressSelected: { address in
                       viewModel.address = address
+                      viewModel.pincode = address.postalCode
                       viewModel.getDashboardData(pincode: address.postalCode, state: address.state)
                   })
               }

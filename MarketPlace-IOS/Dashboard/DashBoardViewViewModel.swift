@@ -13,6 +13,7 @@ class DashBoardViewViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var movetoSelectLocation: Bool = false
     @Published var address: Address?
+    @Published var showLocationSelectionView: Bool = true
     let locationManager = LocationManager()
     var imageIds: [String]?
     @Published var moveToProductDetails: Bool = false 
