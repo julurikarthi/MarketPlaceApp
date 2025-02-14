@@ -49,6 +49,7 @@ struct CartSectionView: View {
     let cart: CartModel
     let onQuantityChange: (String, String, Int) -> Void
     @StateObject private var viewmodel = CartSectionViewModel()
+    @State private var selectedServiceType: String? = nil
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             StoreHeaderView(cart: cart)
@@ -61,6 +62,46 @@ struct CartSectionView: View {
             
             SubtotalView(subtotal: cart.total_amount, tax: cart.tax_amount, total: cart.total_amount_with_tax)
             
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Select Your Order Preference")
+                    .font(.system(size: 12))
+                
+                // Service Type Cards
+                VStack(spacing: 10) {
+                    if ((cart.serviceType?.first(where: {$0 == "Pickup"})) != nil) {
+                        ServiceTypeCard(
+                            title: "Pickup",
+                            description: "Pick up your order at the store.",
+                            icon: "bag.fill",
+                            isSelected: selectedServiceType == "Pickup"
+                        ) {
+                            selectedServiceType = "Pickup"
+                        }
+                    }
+                    
+                    if ((cart.serviceType?.first(where: {$0 == "Pay at Pickup"})) != nil) {
+                        ServiceTypeCard(
+                            title: "Pay at Pickup",
+                            description: "Pay when you pick up your order.",
+                            icon: "dollarsign.circle.fill",
+                            isSelected: selectedServiceType == "PayAtPickup"
+                        ) {
+                            selectedServiceType = "PayAtPickup"
+                        }
+                    }
+                    if ((cart.serviceType?.first(where: {$0 == "Delivery"})) != nil) {
+                        ServiceTypeCard(
+                            title: "Delivery",
+                            description: "Get your order delivered to your doorstep.",
+                            icon: "shippingbox.fill",
+                            isSelected: selectedServiceType == "Delivery"
+                        ) {
+                            selectedServiceType = "Delivery"
+                        }
+                    }
+                }
+            } .padding(.vertical, 10)
+            
             CheckoutButton(action: {
                 print("Proceeding to checkout for \(cart.store_name)")
             })
@@ -69,6 +110,48 @@ struct CartSectionView: View {
         .background(Color.white)
         .cornerRadius(15)
         .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+    }
+}
+
+struct ServiceTypeCard: View {
+    let title: String
+    let description: String
+    let icon: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                // Icon
+                Image(systemName: icon)
+                    .frame(width: 20, height: 20)
+                    .foregroundColor(isSelected ? .white : .green)
+                
+                // Text Content
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.system(size: 10)).bold()
+                        .foregroundColor(isSelected ? .white : .primary)
+                    
+                    Text(description)
+                        .font(.system(size: 10))
+                        .foregroundColor(isSelected ? .white.opacity(0.8) : .gray)
+                }
+                
+                Spacer()
+                
+                // Selected Indicator
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .frame(width: 20, height: 20)
+                        .foregroundColor(.white)
+                }
+            }
+            .padding()
+            .background(isSelected ? Color.black : Color.gray.opacity(0.1))
+            .cornerRadius(15)
+        }
     }
 }
 
@@ -194,6 +277,7 @@ struct CartModel: Identifiable, Codable {
     var total_amount: Double
     var tax_amount: Double
     var total_amount_with_tax: Double
+    var serviceType: [String]?
 }
 
 
