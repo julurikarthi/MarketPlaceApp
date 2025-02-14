@@ -25,13 +25,15 @@ class UserDetails {
         }
     }
     
-    static var userType: String? {
+    static var userType: String {
         get {
-            return UserDefaults.standard.string(forKey: "userType")
+            if isAppOwners {
+                return .storeOwner
+            } else {
+                return .customer
+            }
         }
-        set {
-            UserDefaults.standard.set(newValue, forKey: "userType")
-        }
+
     }
     
     static var store_type: String? {
@@ -94,7 +96,6 @@ class UserDetails {
     // Method to populate user details
     static func setUserDetails(from user: User, token: String) {
         self.userId = user.userId
-        self.userType = user.userType
         self.mobileNumber = user.mobileNumber
         self.storeId = user.storeId
         self.token = token
@@ -103,7 +104,6 @@ class UserDetails {
     // Clear user details (e.g., on logout)
     static func clearUserDetails() {
         self.userId = nil
-        self.userType = nil
         self.mobileNumber = nil
         self.storeId = nil
         self.token = nil

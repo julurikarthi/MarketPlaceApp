@@ -20,7 +20,7 @@ struct HomePage: View {
     }
     
     var body: some View {
-        NavigationStack {
+        CartNavigationView(title: "Products") {
             TabView(selection: $selectedTab) {
                 NavigationView {
                     ProductListView()
@@ -30,7 +30,7 @@ struct HomePage: View {
                     Text("Home")
                 }
                 .tag(0)
-
+                
                 NavigationView {
                     ProfileView()
                         .navigationTitle("Orders")
@@ -40,7 +40,7 @@ struct HomePage: View {
                     Text("Orders")
                 }
                 .tag(1)
-
+                
                 NavigationView {
                     ProfileView()
                         .navigationTitle("Profile")
@@ -52,11 +52,6 @@ struct HomePage: View {
                 .tag(2)
             }
             .accentColor(.themeRed)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    navigationButton()
-                }
-            }
         }
     }
 

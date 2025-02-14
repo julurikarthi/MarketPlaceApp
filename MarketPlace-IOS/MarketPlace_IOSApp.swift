@@ -91,6 +91,7 @@ struct CartNavigationView<Content: View>: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @State private var showLoginView = false
     @State private var showtotalCartView = false
+    @State private var showAddProductView = false
 
     init(title: String, @ViewBuilder content: () -> Content) {
         self.title = title
@@ -108,16 +109,30 @@ struct CartNavigationView<Content: View>: View {
                             Button(action: {
                                 if UserDetails.isLoggedIn {
                                     // Navigate to TotalCartView
-                                    showtotalCartView = true
+                                    if UserDetails.isAppOwners  {
+                                        showAddProductView = true
+                                    } else {
+                                        showtotalCartView = true
+                                    }
+                                    
                                 } else {
                                     // Show login view
                                     showLoginView = true
                                 }
                             }) {
-                                Image("shopping-cart")
-                                    .resizable()
-                                    .frame(width: 24, height: 24)
-                                    .padding(.trailing, 4)
+                                if UserDetails.isAppOwners {
+                                    Image(systemName: "plus")
+                                        .resizable()
+                                        .frame(width: 14, height: 14)
+                                        .padding(.trailing, 4)
+                                        .foregroundColor(.red)
+                                } else {
+                                    Image(UserDetails.isAppOwners ? "plus" : "shopping-cart")
+                                        .resizable()
+                                        .frame(width: 24, height: 24)
+                                        .padding(.trailing, 4)
+                                }
+                                
                             }
                             .fullScreenCover(isPresented: $showLoginView) {
                                 LoginView()
@@ -133,13 +148,28 @@ struct CartNavigationView<Content: View>: View {
                                         .offset(x: 10, y: -10)
                                 }
                             }
-                          
+                            
                         }
                     }
+                  
                 }
             NavigationLink(
-                "", destination: TotalCartView(),
-                isActive: $showtotalCartView) .ignoresSafeArea(edges: .all)
+                destination: TotalCartView()
+                    .navigationBarBackButtonHidden(true),
+                isActive: $showtotalCartView
+            ) {
+                EmptyView()
+            }
+            .hidden()
+            
+            NavigationLink(
+                destination: CreateProductView(editProduct: .constant(nil))
+                    .navigationBarBackButtonHidden(true),
+                isActive: $showAddProductView
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
     }
 

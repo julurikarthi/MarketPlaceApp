@@ -90,7 +90,6 @@ class LoginViewModel: ObservableObject {
                     UserDetails.mobileNumber = response.user.mobileNumber
                     UserDetails.token = response.token
                     UserDetails.userId = response.user.userId
-                    UserDetails.userType = response.user.userType
                     UserDetails.storeId = response.user.storeId
                     UserDetails.mobileNumber = response.user.mobileNumber
                     UserDetails.store_type = response.user.store_type
