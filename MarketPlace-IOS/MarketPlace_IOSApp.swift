@@ -127,7 +127,6 @@ struct CartNavigationView<Content: View>: View {
                         }
                     }                    
                     ToolbarItem(placement: .navigationBarTrailing) {
-                       
                         ZStack {
                             Button(action: {
                                 if UserDetails.isLoggedIn {

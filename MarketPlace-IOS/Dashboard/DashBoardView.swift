@@ -170,7 +170,7 @@ struct ProductCard: View {
                     
                     Text("$\(viewModel.product.price, specifier: "%.2f")")
                         .font(.caption2)
-                        .foregroundColor(.gray)
+                        .foregroundColor(.green)
                     
                     Text("Stock: \(viewModel.product.stock)")
                         .font(.caption2)

@@ -14,8 +14,8 @@
             filePath = "MarketPlace-IOS/MarketPlace_IOSApp.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "201"
-            endingLineNumber = "201"
+            startingLineNumber = "200"
+            endingLineNumber = "200"
             landmarkName = "navigateToCart()"
             landmarkType = "7">
          </BreakpointContent>
