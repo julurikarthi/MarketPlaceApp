@@ -20,7 +20,7 @@ struct TotalCartView: View {
                 ScrollView {
                     LazyVStack(spacing: 20) {
                         ForEach(viewModel.carts) { cart in
-                            CartSectionView(cart: cart, onQuantityChange: viewModel.updateProductQuantity)
+                            CartSectionView(viewmodel: .init(cart: cart))
                         }
                     }
                     .padding()
@@ -46,21 +46,27 @@ struct TotalCartView: View {
 }
 
 struct CartSectionView: View {
-    let cart: CartModel
-    let onQuantityChange: (String, String, Int) -> Void
-    @StateObject private var viewmodel = CartSectionViewModel()
+    @StateObject var viewmodel: CartSectionViewModel
     @State private var selectedServiceType: String? = nil
+    
+    init(viewmodel: CartSectionViewModel, selectedServiceType: String? = nil) {
+        self._viewmodel = StateObject(wrappedValue:viewmodel)
+        self.selectedServiceType = selectedServiceType
+    }
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
-            StoreHeaderView(cart: cart)
+            StoreHeaderView(cart: viewmodel.cart)
             
-            ForEach(cart.products) { product in
-                ProductRowView(product: product, viewModel: .init(product: product, delegate: viewmodel))
+            ForEach(viewmodel.cart.products) { product in
+                ProductRowView(product: product,
+                               viewModel: .init(product: product, delegate: viewmodel),
+                               cart: viewmodel.cart,
+                               cartPubliser: viewmodel.cartPubliser)
             }
             
             Divider()
             
-            SubtotalView(subtotal: cart.total_amount, tax: cart.tax_amount, total: cart.total_amount_with_tax)
+            SubtotalView(subtotal: viewmodel.total_amount, tax: viewmodel.tax_amount, total: viewmodel.total_amount_with_tax)
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("Select Your Order Preference")
@@ -68,7 +74,7 @@ struct CartSectionView: View {
                 
                 // Service Type Cards
                 VStack(spacing: 10) {
-                    if ((cart.serviceType?.first(where: {$0 == "Pickup"})) != nil) {
+                    if ((viewmodel.cart.serviceType?.first(where: {$0 == "Pickup"})) != nil) {
                         ServiceTypeCard(
                             title: "Pickup",
                             description: "Pick up your order at the store.",
@@ -79,7 +85,7 @@ struct CartSectionView: View {
                         }
                     }
                     
-                    if ((cart.serviceType?.first(where: {$0 == "Pay at Pickup"})) != nil) {
+                    if ((viewmodel.cart.serviceType?.first(where: {$0 == "Pay at Pickup"})) != nil) {
                         ServiceTypeCard(
                             title: "Pay at Pickup",
                             description: "Pay when you pick up your order.",
@@ -89,7 +95,7 @@ struct CartSectionView: View {
                             selectedServiceType = "PayAtPickup"
                         }
                     }
-                    if ((cart.serviceType?.first(where: {$0 == "Delivery"})) != nil) {
+                    if ((viewmodel.cart.serviceType?.first(where: {$0 == "Delivery"})) != nil) {
                         ServiceTypeCard(
                             title: "Delivery",
                             description: "Get your order delivered to your doorstep.",
@@ -103,7 +109,10 @@ struct CartSectionView: View {
             } .padding(.vertical, 10)
             
             CheckoutButton(action: {
-                print("Proceeding to checkout for \(cart.store_name)")
+                if selectedServiceType?.isEmpty ?? false {
+                    
+                }
+                print("Proceeding to checkout for \(viewmodel.cart.store_name)")
             })
         }
         .padding()
@@ -156,6 +165,33 @@ struct ServiceTypeCard: View {
 }
 
 class CartSectionViewModel: ObservableObject {
+    var cartPubliser: PassthroughSubject<CartResponse, Never> = .init()
+    var cart: TotalCartDataViewModel
+    @Published var total_amount: Double
+    @Published var tax_amount: Double
+    @Published var total_amount_with_tax: Double
+    private var cancellables: Set<AnyCancellable> = []
+    init(cart: TotalCartDataViewModel) {
+        self.cart = cart
+        self.total_amount = cart.total_amount
+        self.total_amount_with_tax = cart.total_amount_with_tax
+        self.tax_amount = cart.tax_amount
+        updateCart()
+    }
+    
+    func updateCart() {
+        cartPubliser.sink { _ in
+            
+        } receiveValue: { cart in
+            let sectionCart = cart.all_carts.filter({$0.cart_id == self.cart.id}).first
+            if let sectionCart {
+                self.tax_amount = sectionCart.tax_amount
+                self.total_amount_with_tax = sectionCart.total_amount_with_tax
+                self.tax_amount = sectionCart.tax_amount
+            }
+        }.store(in: &cancellables)
+
+    }
 
 }
 extension CartSectionViewModel: ProductListViewModelDelegate {
@@ -174,7 +210,7 @@ extension CartSectionViewModel: ProductListViewModelDelegate {
 }
 
 struct StoreHeaderView: View {
-    let cart: CartModel
+    let cart: TotalCartDataViewModel
     
     var body: some View {
         HStack(spacing: 12) {
@@ -193,6 +229,8 @@ struct ProductRowView: View {
     let product: Product
     @State var showLoginview: Bool = false
     var viewModel: ProductCellItemViewModel
+    var cart: TotalCartDataViewModel? = nil
+    var cartPubliser: PassthroughSubject<CartResponse, Never>?
     var body: some View {
         HStack(spacing: 15) {
             VStack {
@@ -210,7 +248,9 @@ struct ProductRowView: View {
                 Text("\(product.price.formattedPrice)")
                     .font(.subheadline)
                     .foregroundColor(.black)
-                CartButtonView(showLoginview: $showLoginview, viewModel: viewModel)
+                CartButtonView(showLoginview: $showLoginview,
+                               viewModel: viewModel,
+                               cartPubliser: cartPubliser)
             }
         }
     }
@@ -267,87 +307,3 @@ struct CheckoutButton: View {
     }
 }
 
-struct CartModel: Identifiable, Codable {
-    var id: String { cart_id }
-    let cart_id: String
-    let store_id: String
-    let store_name: String
-    let store_image: String
-    var products: [Product]
-    var total_amount: Double
-    var tax_amount: Double
-    var total_amount_with_tax: Double
-    var serviceType: [String]?
-}
-
-
-struct AllCartProduct: Codable, Identifiable {
-    var id: String { product_id }
-    let product_id: String
-    var quantity: Int
-    let price: Double
-    let product_name: String
-    let imageids: [String]
-}
-
-extension Double {
-    var formattedPrice: String {
-        String(format: "$%.2f", self)
-    }
-}
-
-
-class TotalCartViewModel: ObservableObject {
-    @Published var carts: [CartModel] = []
-    private var cancellables = Set<AnyCancellable>()
-
-    func loadCartData() {
-        // TODO: Implement API call to fetch cart data
-        // For now, we'll use the provided mock data
-        guard let customer_id = UserDetails.userId else { return  }
-        
-        let request = TotalCartRequest(customer_id: customer_id)
-
-        NetworkManager.shared.performRequest(
-            url: String.getCart(),
-            method: .POST,
-            payload: request,
-            responseType: TotalCartsResponce.self
-        )
-        .receive(on: DispatchQueue.main)
-        .sink(
-            receiveCompletion: { [weak self] completion in
-                guard let self else { return }
-                
-                if case .failure(let error) = completion {
-                    debugPrint("Cart creation failed:", error)
-                }
-            },
-            receiveValue: { [weak self] response in
-                DispatchQueue.main.async {
-                    self?.carts = response.carts
-                }
-            }
-        )
-        .store(in: &cancellables)
-     
-    }
-    
-    func updateProductQuantity(cartId: String, productId: String, newQuantity: Int) {
-        if let cartIndex = carts.firstIndex(where: { $0.cart_id == cartId }),
-           let productIndex = carts[cartIndex].products.firstIndex(where: { $0.product_id == productId }) {
-            carts[cartIndex].products[productIndex].quantity = newQuantity
-
-            
-        }
-    }
-    
-}
-
-struct TotalCartRequest: RequestBody {
-    let customer_id: String
-}
-
-struct TotalCartsResponce: Codable {
-    let carts: [CartModel]
-}

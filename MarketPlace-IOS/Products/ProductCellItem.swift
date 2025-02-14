@@ -1,6 +1,7 @@
 
 import SwiftUI
 import Shimmer
+import Combine
 
 
 struct ProductCellItem: View {
@@ -183,6 +184,7 @@ struct CartButtonView: View {
     @State var isLoading: Bool = false
     @EnvironmentObject var cartViewModel: CartViewModel
     var viewModel: ProductCellItemViewModel
+    var cartPubliser: PassthroughSubject<CartResponse, Never>?
     var body: some View {
         Group {
             if viewModel.itemCount  == 0 {
@@ -256,10 +258,13 @@ struct CartButtonView: View {
     func updateCart(itemCount: Int) {
         if UserDetails.isLoggedIn {
             isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id ?? "", products: [.init(productID: viewModel.product.product_id, quantity: itemCount)]) { cartCount,quantity  in
+            cartViewModel.createCart(storeID: viewModel.product.store_id ?? "", products: [.init(productID: viewModel.product.product_id, quantity: itemCount)]) { cartCount,quantity, response  in
                 if let cartCount {
                     viewModel.itemCount = quantity ?? 0
                     cartViewModel.cartItemCount = cartCount
+                    if let response {
+                        cartPubliser?.send(response)
+                    }
                 }
                 isLoading = false
             }

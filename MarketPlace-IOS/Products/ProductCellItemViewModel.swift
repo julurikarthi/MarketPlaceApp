@@ -36,8 +36,7 @@ class ProductCellItemViewModel: ObservableObject {
         imageIds = product.imageids ?? []
         self.delegate = delegate
         self.selectedCategory = selectedCategory
-        itemCount = product.quantity ?? 0
-        
+        itemCount = product.quantity ?? 0        
     }
     
     func addToCart(quantity: Int) {

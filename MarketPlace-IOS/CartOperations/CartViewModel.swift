@@ -10,7 +10,8 @@ class CartViewModel: ObservableObject {
     @Published var cartItemCount: Int = 0
     private var cancellables = Set<AnyCancellable>()
 
-    func createCart(storeID: String, products: [CartProduct], completionHandler: @escaping (_ allCartscount: Int?, _ itemCount: Int?) -> Void) {
+    func createCart(storeID: String, products: [CartProduct], completionHandler: @escaping (_ allCartscount: Int?, _ itemCount: Int?,
+                                                                                            _ response: CartResponse?) -> Void) {
         UserDetails.storeId = storeID
         let createCartRequest = CreateCartRequest(
             products: products,
@@ -30,7 +31,7 @@ class CartViewModel: ObservableObject {
                 
                 if case .failure(let error) = completion {
                     debugPrint("Cart creation failed:", error)
-                    completionHandler(nil, nil)
+                    completionHandler(nil, nil, nil)
                 }
             },
             receiveValue: { [weak self] response in
@@ -40,7 +41,7 @@ class CartViewModel: ObservableObject {
                         self?.cartItemCount = totalCartItems
                         if let productsFirstID = products.first?.productID {
                             let quntity = self?.getQuantity(for: productsFirstID, from: response)
-                            completionHandler(self?.cartItemCount, quntity)
+                            completionHandler(self?.cartItemCount, quntity, response)
                         }
                     }
                 }
@@ -90,6 +91,9 @@ struct Cart: Codable {
     let cart_id: String
     let store_id: String
     let products: [CartProductResponse]
+    let total_amount: Double
+    let tax_amount: Double
+    let total_amount_with_tax: Double
 }
 
 // MARK: - Product
