@@ -23,27 +23,29 @@ struct MarketPlace_IOSApp: App {
             ZStack {
                 Color.white.edgesIgnoringSafeArea(.all)
 
-                if isLoading {
-                    SplashScreenView()
-                        .onAppear {
-                            loadDashboardData()
-                        }
-                } else {
-                    if UserDetails.isAppOwners {
-                        if UserDetails.isLoggedIn {
-                            if UserDetails.storeId != nil {
-                                HomePage()
-                            } else {
-                                CreateStoreView()
-                            }
+                if UserDetails.isAppOwners {
+                    if UserDetails.isLoggedIn {
+                        if UserDetails.storeId != nil {
+                            HomePage()
                         } else {
-                            LoginView()
+                            CreateStoreView()
                         }
+                    } else {
+                        LoginView()
+                    }
+                } else {
+                    if isLoading {
+                        SplashScreenView()
+                            .onAppear {
+                                loadDashboardData()
+                            }
                     } else {
                         DashboardView(viewModel: dashboardViewModel)
                             .environmentObject(cartViewModel)
                     }
                 }
+
+                
             }
         }
     }
@@ -120,16 +122,18 @@ struct CartNavigationView<Content: View>: View {
                             .fullScreenCover(isPresented: $showLoginView) {
                                 LoginView()
                             }
-
-                            if cartViewModel.cartItemCount > 0 {
-                                Text("\(cartViewModel.cartItemCount)")
-                                    .font(.caption2)
-                                    .foregroundColor(.white)
-                                    .frame(width: 18, height: 18)
-                                    .background(Color.red)
-                                    .clipShape(Circle())
-                                    .offset(x: 10, y: -10)
+                            if !UserDetails.isAppOwners {
+                                if cartViewModel.cartItemCount > 0 {
+                                    Text("\(cartViewModel.cartItemCount)")
+                                        .font(.caption2)
+                                        .foregroundColor(.white)
+                                        .frame(width: 18, height: 18)
+                                        .background(Color.red)
+                                        .clipShape(Circle())
+                                        .offset(x: 10, y: -10)
+                                }
                             }
+                          
                         }
                     }
                 }
