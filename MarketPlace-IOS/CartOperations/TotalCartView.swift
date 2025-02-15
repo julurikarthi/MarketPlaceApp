@@ -14,36 +14,78 @@ struct TotalCartView: View {
 
     var body: some View {
         NavigationStack {
-            if viewModel.carts.isEmpty {
-                ShimmeringStoreCardPlaceholder()
-            } else {
-                ScrollView {
-                    LazyVStack(spacing: 20) {
-                        ForEach(viewModel.carts) { cart in
-                            CartSectionView(viewmodel: .init(cart: cart))
+            VStack {
+                if let error = viewModel.error, viewModel.carts.isEmpty {
+                    CartEmptyView(errorMessage: error)
+                } else if viewModel.carts.isEmpty {
+                    ShimmeringStoreCardPlaceholder()
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 20) {
+                            ForEach(viewModel.carts) { cart in
+                                CartSectionView(viewmodel: .init(cart: cart))
+                            }
                         }
+                        .padding()
                     }
-                    .padding()
                 }
-                .navigationTitle("Shopping Cart")
-                .navigationBarTitleDisplayMode(.inline)
-                .background(Color(.systemGroupedBackground))
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
+            }
+            .navigationTitle("Shopping Cart")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemGroupedBackground))
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        HStack {
                             Image(systemName: "chevron.left")
-                                .foregroundColor(.themeRed) // Ensure back button is red
+                                .foregroundColor(.themeRed)
+                            Text("Back")
+                                .foregroundColor(.themeRed)
                         }
                     }
                 }
             }
-       
-        }.navigationBarBackButtonHidden()
+        }
         .onAppear(perform: viewModel.loadCartData)
     }
 }
+
+// MARK: - Cart Empty View
+struct CartEmptyView: View {
+    let errorMessage: String
+
+    var body: some View {
+        VStack {
+            Image(systemName: "cart.badge.minus")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 100, height: 100)
+                .foregroundColor(.gray)
+
+            Text("Your cart is empty")
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding(.top, 10)
+
+            Button(action: {
+                // Action to retry or navigate elsewhere
+            }) {
+                Text("Continue Shopping")
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .background(Color.themeRed)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .padding(.top, 20)
+            .padding(.horizontal, 40).hidden()
+        }
+        .padding()
+    }
+}
+
 
 struct CartSectionView: View {
     @StateObject var viewmodel: CartSectionViewModel

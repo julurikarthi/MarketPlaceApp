@@ -64,6 +64,7 @@ extension Double {
 
 class TotalCartViewModel: ObservableObject {
     @Published var carts: [TotalCartDataViewModel] = []
+    @Published var error: String? = nil
     private var cancellables = Set<AnyCancellable>()
 
     func loadCartData() {
@@ -90,7 +91,8 @@ class TotalCartViewModel: ObservableObject {
             },
             receiveValue: { [weak self] response in
                 DispatchQueue.main.async {
-                    self?.carts = response.carts.map { TotalCartDataViewModel(cart: $0) }
+                    self?.error = response.error
+                    self?.carts = response.carts?.map { TotalCartDataViewModel(cart: $0) } ?? []
                 }
             }
         )
@@ -105,7 +107,8 @@ struct TotalCartRequest: RequestBody {
 }
 
 struct TotalCartsResponce: Codable {
-    let carts: [CartModel]
+    let carts: [CartModel]?
+    let error: String?
 }
 
 
