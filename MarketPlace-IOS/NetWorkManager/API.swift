@@ -90,8 +90,8 @@ extension String {
         return "\(baseURL)/updateOrder/"
     }
 
-    static func getCustomerOrder() -> String {
-        return "\(baseURL)/getCustomerOrder/"
+    static func getOrdersForCustomer() -> String {
+        return "\(baseURL)/getOrdersForCustomer/"
     }
 
     static func getOrdersForStore() -> String {

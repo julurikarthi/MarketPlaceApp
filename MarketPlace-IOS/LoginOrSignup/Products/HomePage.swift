@@ -39,7 +39,7 @@ struct HomePage: View {
                 .tag(0)
                 
                 NavigationView {
-                    ProfileView()
+                    OrderView()
                         .navigationTitle("Orders")
                 }
                 .tabItem {
