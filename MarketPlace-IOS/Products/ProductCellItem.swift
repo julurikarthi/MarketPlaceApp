@@ -183,8 +183,16 @@ struct CartButtonView: View {
     @Binding var showLoginview: Bool
     @State var isLoading: Bool = false
     @EnvironmentObject var cartViewModel: CartViewModel
-    var viewModel: ProductCellItemViewModel
+    @StateObject var viewModel: ProductCellItemViewModel
     var cartPubliser: PassthroughSubject<CartResponse, Never>?
+    
+    init(showLoginview: Binding<Bool>, viewModel: ProductCellItemViewModel,
+         cartPubliser: PassthroughSubject<CartResponse, Never>? = nil) {
+        self._showLoginview = showLoginview
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.cartPubliser = cartPubliser
+    }
+    
     var body: some View {
         Group {
             if viewModel.itemCount  == 0 {
