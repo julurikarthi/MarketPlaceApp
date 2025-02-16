@@ -8,8 +8,9 @@ import SwiftUI
 import Combine
 class CartViewModel: ObservableObject {
     @Published var cartItemCount: Int = 0
+    var updatedCartdata = [UpdatedCart]()
     private var cancellables = Set<AnyCancellable>()
-
+    
     func createCart(storeID: String, products: [CartProduct], completionHandler: @escaping (_ allCartscount: Int?, _ itemCount: Int?,
                                                                                             _ response: CartResponse?) -> Void) {
         UserDetails.storeId = storeID
@@ -28,7 +29,6 @@ class CartViewModel: ObservableObject {
         .sink(
             receiveCompletion: { [weak self] completion in
                 guard let self else { return }
-                
                 if case .failure(let error) = completion {
                     debugPrint("Cart creation failed:", error)
                     completionHandler(nil, nil, nil)
@@ -37,10 +37,13 @@ class CartViewModel: ObservableObject {
             receiveValue: { [weak self] response in
                 if response.all_carts.count > 0 {
                     let totalCartItems = response.all_carts.reduce(0) { $0 + $1.products.count }
-                    DispatchQueue.main.async {
-                        self?.cartItemCount = totalCartItems
-                        if let productsFirstID = products.first?.productID {
-                            let quntity = self?.getQuantity(for: productsFirstID, from: response)
+                    self?.cartItemCount = totalCartItems
+                    if let productsFirstID = products.first?.productID {
+                        let quntity = self?.getQuantity(for: productsFirstID, from: response)
+                        self?.updateCart(productID: productsFirstID, quantity: quntity ?? 0)
+                        if let product = self?.updatedCartdata.first(where: {$0.productID == productsFirstID}) {
+                            completionHandler(self?.cartItemCount, quntity, response)
+                        } else {
                             completionHandler(self?.cartItemCount, quntity, response)
                         }
                     }
@@ -51,6 +54,14 @@ class CartViewModel: ObservableObject {
        
     }
     
+    func updateCart(productID: String, quantity: Int) {
+        if let index = updatedCartdata.firstIndex(where: { $0.productID == productID }) {
+            updatedCartdata[index].quantity = quantity
+        } else {
+            updatedCartdata.append(UpdatedCart(productID: productID, quantity: quantity)) // Add new entry
+        }
+    }
+    
     func getQuantity(for productId: String, from response: CartResponse) -> Int {
         return response.all_carts.reduce(0) { total, cart in
             total + cart.products.filter { $0.product_id == productId }.reduce(0) { $0 + $1.quantity }
@@ -58,6 +69,11 @@ class CartViewModel: ObservableObject {
     }
 
 
+}
+
+struct UpdatedCart {
+    let productID: String
+    var quantity: Int
 }
 
 struct CreateCartRequest: Codable, RequestBody {
