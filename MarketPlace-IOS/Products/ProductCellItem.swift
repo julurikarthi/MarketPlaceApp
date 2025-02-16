@@ -260,7 +260,11 @@ struct CartButtonView: View {
                 .cornerRadius(15)
             }
         }.background(.white)
-        .shimmering(active: isLoading)
+            .shimmering(active: isLoading).onViewWillAppear {
+                if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product.product_id }) {
+                    viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
+                }
+            }
     }
     
     func updateCart(itemCount: Int) {
@@ -283,3 +287,19 @@ struct CartButtonView: View {
 }
 
 
+
+struct ViewWillAppearModifier: ViewModifier {
+    let action: () -> Void
+
+    func body(content: Content) -> some View {
+        content.onAppear {
+            action()
+        }
+    }
+}
+
+extension View {
+    func onViewWillAppear(_ action: @escaping () -> Void) -> some View {
+        self.modifier(ViewWillAppearModifier(action: action))
+    }
+}

@@ -19,13 +19,13 @@ class ProductCellItemViewModel: ObservableObject {
     var imageIds: [String]
     var cancellables = Set<AnyCancellable>()
     @Published var product: Product
-    var delegate: ProductListViewModelDelegate
+    weak var delegate: ProductListViewModelDelegate? = nil
     var selectedCategory: Category? = nil
     let reviewCount: Int = 20
     let rating: Float = 4
     var isAddedToCart = true
     @Published var itemCount: Int = 0
-    init(product: Product, delegate: ProductListViewModelDelegate,
+    init(product: Product, delegate: ProductListViewModelDelegate? = nil,
          selectedCategory: Category? = nil) {
         self.product = product
         self.productTitle = product.product_name
@@ -127,17 +127,17 @@ class ProductCellItemViewModel: ObservableObject {
         if let selectedCategory = selectedCategory {
             let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description ?? "", price: product.price, stock: product.stock ?? 0,  imageids: product.imageids ?? [], isPublish: true,
                                          categoryID: selectedCategory)
-            delegate.didtapOnEditButton(for: ediProduct)
+            delegate?.didtapOnEditButton(for: ediProduct)
         }
       
     }
 
     func deleteProduct() {
-        delegate.didtapOnDeleteButton(for: product)
+        delegate?.didtapOnDeleteButton(for: product)
     }
     
     func didTapOnProduct() {
-        delegate.didtapProduct(for: product)
+        delegate?.didtapProduct(for: product)
     }
 
 }

@@ -209,42 +209,49 @@ struct AddToCartView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @State var isLoading: Bool = false
     var body: some View {
-        if viewModel.itemCount == 0 {
-            addButton(action: {
-                updateCart(itemCount: 1)
-            }).shimmering(active: isLoading)
-        } else {
-            // Counter view when items are added
-            HStack(spacing: 12) {
-                // Minus Button
-                counterButton(
-                    systemImage: "minus",
-                    action: {
-                        if viewModel.itemCount > 0 {
-                            updateCart(itemCount: viewModel.itemCount - 1)
+        VStack {
+            if viewModel.itemCount == 0 {
+                addButton(action: {
+                    updateCart(itemCount: 1)
+                }).shimmering(active: isLoading)
+            } else {
+                // Counter view when items are added
+                HStack(spacing: 12) {
+                    // Minus Button
+                    counterButton(
+                        systemImage: "minus",
+                        action: {
+                            if viewModel.itemCount > 0 {
+                                updateCart(itemCount: viewModel.itemCount - 1)
+                            }
                         }
-                    }
-                )
-                
-                // Item Count
-                Text("\(viewModel.itemCount)")
-                    .font(.headline)
-                    .foregroundColor(.black)
-                
-                // Plus Button
-                counterButton(
-                    systemImage: "plus",
-                    action: {
-                        updateCart(itemCount: viewModel.itemCount + 1)
-                    }
-                )
-            }.shimmering(active: isLoading)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(Color.white)
-            .cornerRadius(16)
-            .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+                    )
+                    
+                    // Item Count
+                    Text("\(viewModel.itemCount)")
+                        .font(.headline)
+                        .foregroundColor(.black)
+                    
+                    // Plus Button
+                    counterButton(
+                        systemImage: "plus",
+                        action: {
+                            updateCart(itemCount: viewModel.itemCount + 1)
+                        }
+                    )
+                }.shimmering(active: isLoading)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(Color.white)
+                .cornerRadius(16)
+                .shadow(color: Color.black.opacity(0.1), radius: 3, x: 0, y: 2)
+            }
+        }.onViewWillAppear {
+            if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product._id }) {
+                viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
+            }
         }
+        
     }
     
     func updateCart(itemCount: Int) {

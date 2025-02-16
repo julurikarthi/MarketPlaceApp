@@ -67,6 +67,10 @@ class CartViewModel: ObservableObject {
             total + cart.products.filter { $0.product_id == productId }.reduce(0) { $0 + $1.quantity }
         }
     }
+    
+    func refreshCartQuantity() {
+        
+    }
 
 
 }
