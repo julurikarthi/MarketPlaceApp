@@ -24,67 +24,66 @@ struct ProductListView: View {
           GridItem(.flexible())
       ]
     var body: some View {
-        VStack {
-            if !viewModel.categories.isEmpty  {
-                ScrollView {
-                    CategoriesTabBarView(tabs: viewModel.categories, onTabSelection: { category in
-                        viewModel.selectedCategory = category
-                        viewModel.getAllProductbyStore(category_id: category.categoryID, isCustomer: isCustomer)
-                    }, viewModel: categoryViewModel)
-                    if $viewModel.storeProductsbyCategories.products.isEmpty {
-                        addtoProductView()
-                    } else {
-                        productsView()
+        CartNavigationView(title: "Products") {
+            VStack {
+                if !viewModel.categories.isEmpty  {
+                    ScrollView {
+                        CategoriesTabBarView(tabs: viewModel.categories, onTabSelection: { category in
+                            viewModel.selectedCategory = category
+                            viewModel.getAllProductbyStore(category_id: category.categoryID, isCustomer: isCustomer)
+                        }, viewModel: categoryViewModel)
+                        if $viewModel.storeProductsbyCategories.products.isEmpty {
+                            addtoProductView()
+                        } else {
+                            productsView()
+                        }
+                    }.sheet(isPresented: $showLoginview) {
+                        LoginView()
                     }
-                }.sheet(isPresented: $showLoginview) {
-                    LoginView()
+                } else {
+                    if UserDetails.isAppOwners, viewModel.categories.isEmpty {
+                        addtoProductView().frame(maxWidth: .infinity, maxHeight: .infinity).offset(y: 150)
+                    }
                 }
-            } else {
-                if UserDetails.isAppOwners, viewModel.categories.isEmpty {
-                    addtoProductView().frame(maxWidth: .infinity, maxHeight: .infinity).offset(y: 150)
+                NavigationLink(
+                    destination: CreateProductView(editProduct: $viewModel.editProduct)
+                        .navigationBarBackButtonHidden(true),
+                    isActive: $viewModel.showAddProductView
+                ) {
+                    EmptyView()
                 }
-            }
-            NavigationLink(
-                destination: CreateProductView(editProduct: $viewModel.editProduct)
-                    .navigationBarBackButtonHidden(true),
-                isActive: $viewModel.showAddProductView
-            ) {
-                EmptyView()
-            }
-            .hidden()
-            
-            NavigationLink(
-                destination: CreateStoreView()
-                    .navigationBarBackButtonHidden(true),
-                isActive: $showCreateProductView
-            ) {
-                EmptyView()
-            }
-            .hidden()
-            
-        }.background(.white).navigationBarBackButtonHidden()
-            .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
-            .toolbar {
-                if isCustomer {
+                .hidden()
+                
+                NavigationLink(
+                    destination: CreateStoreView()
+                        .navigationBarBackButtonHidden(true),
+                    isActive: $showCreateProductView
+                ) {
+                    EmptyView()
+                }
+                .hidden()
+                
+            }.navigationBarBackButtonHidden(true)
+                .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button(action: {
                             presentationMode.wrappedValue.dismiss()
                         }) {
                             Image(systemName: "chevron.left")
-                                .foregroundColor(.black)
+                                .foregroundColor(.themeRed)
                         }
                     }
+                }.background(.white).navigationBarBackButtonHidden()
+                .loadingIndicator(isLoading: $viewModel.showProgressIndicator)
+                .onAppear {
+                    if viewModel.categories.isEmpty {
+                        viewModel.getstoreCategories(isCustomer: isCustomer)
+                    }
+                    /// TODO: asking permission ar right place
+                    //                UserDetails.requestCameraPermission()
+                    //                UserDetails.requestPhotoLibraryPermission()
                 }
-            }
-            .onAppear {
-                if viewModel.categories.isEmpty {
-                    viewModel.getstoreCategories(isCustomer: isCustomer)
-                }
-                /// TODO: asking permission ar right place
-                //                UserDetails.requestCameraPermission()
-                //                UserDetails.requestPhotoLibraryPermission()
-            }
-        
+        }
     }
     
     func addtoProductView() -> some View {

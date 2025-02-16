@@ -117,9 +117,7 @@ struct StoreCard: View {
                 }
             }
             NavigationLink(
-                destination: ProductListView(isCustomer: true)
-                    .navigationBarBackButtonHidden(true)
-                    .navigationTitle(viewModel.store.storeName?.capitalized ?? "Store"),
+                destination: ProductListView(isCustomer: true),
                 isActive: $showAllProducts
             ) {
                 EmptyView()
