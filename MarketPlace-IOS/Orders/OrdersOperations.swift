@@ -66,6 +66,7 @@ class OrdersOperations: ObservableObject {
             payload: request,
             responseType: OrdersReposnce.self
         )
+        .receive(on: DispatchQueue.main)
         .sink(
             receiveCompletion: { completion in
                 switch completion {

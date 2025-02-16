@@ -12,13 +12,15 @@ struct ProductDetails: View {
     @State private var currentImageIndex = 0
     @State private var quantity = 1
     @StateObject var viewModel: ProductDetailsViewModel
-    @State var showLoginview = false
-    
+    @State var showLoginView = false
+    @State private var isPresentingFullScreenImage = false
+
     init(viewModel: ProductDetailsViewModel) {
         _viewModel = StateObject(wrappedValue: ProductDetailsViewModel(product_id: viewModel.product_id))
     }
-    
+
     @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
         CartNavigationView(title: "Details") {
             ScrollView {
@@ -27,50 +29,45 @@ struct ProductDetails: View {
                 } else {
                     productDetailView()
                 }
-            }.onAppear(perform: {
+            }
+            .onAppear {
                 viewModel.getProductDetails(productID: viewModel.product_id)
-            }).navigationTitle("Product Details")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(Color.white, for: .navigationBar) // Set the navigation bar background to white
-                .toolbarBackground(.visible, for: .navigationBar) // Ensure it's always visible
-                .accentColor(Color.themeRed)
-                .tint(Color.themeRed)
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.themeRed) // Ensure back button is red
-                        }
+            }
+            .navigationTitle("Product Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.white, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .accentColor(Color.themeRed)
+            .tint(Color.themeRed)
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "chevron.left")
+                            .foregroundColor(.themeRed)
                     }
-                }.sheet(isPresented: $showLoginview) {
-                    LoginView()
-                }.navigationBarBackButtonHidden()
+                }
+            }
+            .sheet(isPresented: $showLoginView) {
+                LoginView()
+            }
+            .navigationBarBackButtonHidden()
         }
     }
-    
-    private func formatDate(_ dateString: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-        if let date = formatter.date(from: dateString) {
-            formatter.dateFormat = "MMM d, yyyy HH:mm"
-            return formatter.string(from: date)
-        }
-        return dateString
-    }
-    
+
     private func productDetailView() -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            
+            // Image Gallery
             TabView(selection: $currentImageIndex) {
                 ForEach(viewModel.product?.imageids ?? [], id: \.self) { imageId in
-                    VStack {
-                        AsyncImageView(imageId: imageId)
-                            .cornerRadius(20)
-                            .tag(viewModel.product?.imageids?.firstIndex(of: imageId) ?? 0)
-                    }
+                    AsyncImageView(imageId: imageId)
+                        .cornerRadius(20)
+                        .onTapGesture {
+                            isPresentingFullScreenImage = true
+                        }
+                        .tag(viewModel.product?.imageids?.firstIndex(of: imageId) ?? 0)
                 }
             }
             .frame(height: 300)
@@ -83,97 +80,120 @@ struct ProductDetails: View {
             )
             .padding(.horizontal)
 
-            
+            // Product Details
             VStack(alignment: .leading, spacing: 24) {
                 // Product Name
                 Text(viewModel.product?.product_name ?? "")
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.black)
-                
+
                 // Price and Stock
                 HStack {
                     PriceTag(price: viewModel.product?.price ?? 0)
                     Spacer()
                     StockBadge(stock: viewModel.product?.stock ?? 0)
                 }
-                
+
+                // Add to Cart Button
                 if let product = viewModel.product {
-                    CartButtonView(showLoginview: $showLoginview, viewModel: ProductCellItemViewModel(product: product,
-                                                                                                      delegate: viewModel))
+                    CartButtonView(showLoginview: $showLoginView, viewModel: ProductCellItemViewModel(product: product, delegate: viewModel))
                 }
 
+                // Product Description
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Description")
                         .font(.headline)
-                        .foregroundColor(.black).multilineTextAlignment(.leading)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.leading)
                     Text(viewModel.product?.description ?? "")
                         .font(.body)
-                        .foregroundColor(.subtitleGray).multilineTextAlignment(.leading)
+                        .foregroundColor(.subtitleGray)
+                        .multilineTextAlignment(.leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding()
                 .background(Color.gray.opacity(0.1))
                 .cornerRadius(15)
-                
             }
             .padding()
         }
+        .sheet(isPresented: $isPresentingFullScreenImage) {
+            FullScreenImageView(imageIds: viewModel.product?.imageids ?? [], currentIndex: $currentImageIndex)
+        }
     }
 }
 
-// MARK: - Quantity Selector
+// MARK: - Full Screen Image View
+struct FullScreenImageView: View {
+    let imageIds: [String]
+    @Binding var currentIndex: Int
+    @State private var zoomScale: CGFloat = 1.0
+    @Environment(\.presentationMode) var presentationMode
 
-struct QuantitySelector: View {
-    @Binding var quantity: Int
-    let maxStock: Int
-    
     var body: some View {
-        HStack {
-            Text("Quantity")
-                .foregroundColor(.subtitleGray)
-            
-            Spacer()
-            
-            HStack {
-                Button(action: {
-                    if quantity > 1 {
-                        quantity -= 1
-                    }
-                }) {
-                    Image(systemName: "minus")
-                        .foregroundColor(.themeRed)
-                        .padding(8)
-                        .background(Color.gray.opacity(0.1))
-                        .clipShape(Circle())
-                }
-                
-                Text("\(quantity)")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                Button(action: {
-                    if quantity < maxStock {
-                        quantity += 1
-                    }
-                }) {
-                    Image(systemName: "plus")
-                        .foregroundColor(.themeRed)
-                        .padding(8)
-                        .background(Color.gray.opacity(0.1))
-                        .clipShape(Circle())
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            TabView(selection: $currentIndex) {
+                ForEach(imageIds.indices, id: \.self) { index in
+                    ZoomableImageView(imageId: imageIds[index], zoomScale: $zoomScale)
+                        .tag(index)
                 }
             }
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(20)
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .automatic))
+            .ignoresSafeArea()
+            .overlay(
+                Button(action: {
+                    zoomScale = 1.0
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundColor(.white)
+                        .padding()
+                }
+                .padding(.top, 40)
+                .padding(.trailing, 20),
+                alignment: .topTrailing
+            )
         }
-        .padding(.vertical, 8)
     }
 }
 
+// MARK: - Zoomable Image View
+struct ZoomableImageView: View {
+    let imageId: String
+    @Binding var zoomScale: CGFloat
+
+    var body: some View {
+        AsyncImageView(imageId: imageId)
+            .scaleEffect(zoomScale)
+            .gesture(
+                MagnificationGesture()
+                    .onChanged { value in
+                        zoomScale = value
+                    }
+                    .onEnded { _ in
+                        withAnimation {
+                            zoomScale = 1.0
+                        }
+                    }
+            )
+            .onTapGesture(count: 2) {
+                withAnimation {
+                    zoomScale = zoomScale > 1.0 ? 1.0 : 2.0
+                }
+            }
+    }
+}
+
+
+
+// MARK: - Image Counter
 struct ImageCounter: View {
     let current: Int
     let total: Int
-    
+
     var body: some View {
         Text("\(current)/\(total)")
             .font(.caption)
@@ -184,55 +204,10 @@ struct ImageCounter: View {
     }
 }
 
-
-// MARK: - Add to Cart Button
-
-struct AddToCartButton: View {
-    let product: Product
-    let quantity: Int
-    @Binding var isAddingToCart: Bool
-    
-    var body: some View {
-        Button(action: {
-            addToCart()
-        }) {
-            HStack {
-                if isAddingToCart {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                } else {
-                    Image(systemName: "cart.badge.plus")
-                    Text("Add to Cart")
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(Color.themeRed)
-            .foregroundColor(.white)
-            .cornerRadius(15)
-            .font(.headline)
-        }
-        .disabled(isAddingToCart)
-    }
-    
-    private func addToCart() {
-        isAddingToCart = true
-        
-        // Simulate cart addition (replace with your actual cart logic here!)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            print("Added \(quantity) of \(product.product_name) to cart.")
-            isAddingToCart = false
-            
-            // Optional success alert or toast can be added here.
-        }
-    }
-}
-
-// MARK - Supporting Views
-
+// MARK: - Price Tag
 struct PriceTag: View {
     let price: Double
-    
+
     var body: some View {
         Text("$\(price, specifier: "%.2f")")
             .font(.system(size: 24, weight: .bold))
@@ -244,26 +219,18 @@ struct PriceTag: View {
     }
 }
 
+// MARK: - Stock Badge
 struct StockBadge: View {
     let stock: Int
-    
-    var body: some View {
-        Text("In Stock \(stock)")
-            .font(.subheadline)
-            .foregroundColor(stock > 0 ? Color.subtitleGray : Color.red.opacity(0.8))
-    }
-}
 
-struct DetailRow: View {
-    let title: String
-    let value: String
-    
     var body: some View {
-        HStack {
-            Text(title).fontWeight(.medium).foregroundColor(.green)
-            Spacer()
-            Text(value).foregroundColor(.subtitleGray).lineLimit(1).truncationMode(.tail)
-        }
+        Text(stock > 0 ? "In Stock" : "Out of Stock")
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(.white)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(stock > 0 ? Color.green : Color.red)
+            .cornerRadius(15)
     }
 }
 
