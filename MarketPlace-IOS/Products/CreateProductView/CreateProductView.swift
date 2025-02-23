@@ -169,7 +169,7 @@ struct CreateProductView: View {
                     }
                     Button(action: {
                         if let price = Double(newPrice), let stock = Int(newStock), !newVariantType.isEmpty {
-                            viewModel.variants.append(Variant(variantType: newVariantType, price: price, stock: stock))
+                            viewModel.variants.append(Variant(variant_type: newVariantType, price: price, stock: stock))
                             newVariantType = ""
                             newPrice = ""
                             newStock = ""
@@ -240,9 +240,9 @@ struct CreateProductView: View {
     func variantView(variant: Binding<Variant>) -> some View {
        
         VStack(alignment: .leading, spacing: 8) {
-            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variantType) // ❌ Incorrect
+            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variant_type) // ❌ Incorrect
             // ✅ FIX: Use $variant.wrappedValue
-            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variantType)
+            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variant_type)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
             HStack {
