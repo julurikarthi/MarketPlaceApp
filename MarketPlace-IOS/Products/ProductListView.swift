@@ -65,12 +65,14 @@ struct ProductListView: View {
                 
             }.navigationBarBackButtonHidden(true)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: {
-                            presentationMode.wrappedValue.dismiss()
-                        }) {
-                            Image(systemName: "chevron.left")
-                                .foregroundColor(.themeRed)
+                    if !UserDetails.isAppOwners {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                presentationMode.wrappedValue.dismiss()
+                            }) {
+                                Image(systemName: "chevron.left")
+                                    .foregroundColor(.themeRed)
+                            }
                         }
                     }
                 }.background(.white).navigationBarBackButtonHidden()

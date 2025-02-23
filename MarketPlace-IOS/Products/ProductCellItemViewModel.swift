@@ -29,7 +29,7 @@ class ProductCellItemViewModel: ObservableObject {
          selectedCategory: Category? = nil) {
         self.product = product
         self.productTitle = product.product_name
-        self.productPrice = product.price
+        self.productPrice = product.price ?? 0.0
         self.description = product.description ?? ""
         self.stock = "\(product.stock ?? 0)"
         self.stockCount = product.stock ?? 0
@@ -125,7 +125,7 @@ class ProductCellItemViewModel: ObservableObject {
     
     func editProduct() {
         if let selectedCategory = selectedCategory {
-            let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description ?? "", price: product.price, stock: product.stock ?? 0,  imageids: product.imageids ?? [], isPublish: true,
+            let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description ?? "", price: product.price ?? 0.0, stock: product.stock ?? 0,  imageids: product.imageids ?? [], isPublish: true,
                                          categoryID: selectedCategory)
             delegate?.didtapOnEditButton(for: ediProduct)
         }

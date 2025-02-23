@@ -13,11 +13,13 @@ struct CreateProductRequest: Codable, RequestBody {
     var user_id: String?
     let product_name: String
     let description: String
-    let price: Double
+    let price: Double?
     let stock: Int
     let category_id: String
     let imageids: [String]
     let isPublish: Bool
+    var variants: [Variant]?
+    var search_tag: [String]?
 }
 
 struct GetAllProductByStoreRequest: Codable, RequestBody {
@@ -56,7 +58,7 @@ struct Product: Codable, Identifiable {
     var product_id: String
     let store_id: String?
     let product_name: String
-    let price: Double
+    let price: Double?
     let stock: Int?
     var description: String?
     let category_id: String?
@@ -70,8 +72,8 @@ struct ProductDashBoard: Codable, Identifiable {
     let _id: String
     let product_name: String
     let description: String
-    let price: Double
-    let stock: Int
+    let price: Double?
+    let stock: Int?
     let store_id: String
     let category_id: String
     let imageids: [String]

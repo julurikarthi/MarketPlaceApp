@@ -287,7 +287,7 @@ struct ProductRowView: View {
                     .font(.headline)
                     .lineLimit(2)
                 
-                Text("\(product.price.formattedPrice)")
+                Text("\(product.price?.formattedPrice)")
                     .font(.subheadline)
                     .foregroundColor(.black)
                 CartButtonView(showLoginview: $showLoginview,

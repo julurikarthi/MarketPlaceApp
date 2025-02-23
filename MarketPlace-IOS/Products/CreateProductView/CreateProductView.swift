@@ -1,13 +1,28 @@
 import SwiftUI
 import PhotosUI
 
+
+struct Variant: Identifiable, Codable {
+    var id = UUID()
+    var variant_type: String
+    var price: Double
+    var stock: Int
+}
+
 struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
     @Binding var editProduct: EditProduct?
     let columns = [GridItem(.adaptive(minimum: 100))]
     @Environment(\.presentationMode) var presentationMode
+    @State private var newVariantType: String = ""
+    @State private var newPrice: String = ""
+    @State private var newStock: String = ""
+    @State private var isAddingVariant = false
     
-
+    @State private var variantTypeError: String?
+    @State private var priceError: String?
+    @State private var stockError: String?
+    
     
     var body: some View {
         NavigationStack {
@@ -95,13 +110,15 @@ struct CreateProductView: View {
                                 showError: viewModel.showErrorMessage && viewModel.description.isEmpty,
                                 height: 150
                             )
-                            TextFieldWithError(
-                                title: "Price",
-                                text: $viewModel.price,
-                                errorMessage: $viewModel.errorMessage,
-                                showError: viewModel.showErrorMessage && viewModel.price.isEmpty,
-                                keyboardType: .decimalPad
-                            )
+                            if viewModel.variants.isEmpty {
+                                TextFieldWithError(
+                                    title: "Price",
+                                    text: $viewModel.price,
+                                    errorMessage: $viewModel.errorMessage,
+                                    showError: viewModel.showErrorMessage && viewModel.price.isEmpty,
+                                    keyboardType: .decimalPad
+                                )
+                            }
                             TextFieldWithError(
                                 title: "Stock Quantity",
                                 text: $viewModel.stock,
@@ -109,15 +126,74 @@ struct CreateProductView: View {
                                 showError: viewModel.showErrorMessage && viewModel.stock.isEmpty,
                                 keyboardType: .numberPad
                             )
-                            
                             CategorySelectionView(selectedCategory: $viewModel.categoryID, viewModel: viewModel)
                         }
                     }
                     .padding(.horizontal)
-
+                    if isAddingVariant {
+                        VStack(alignment: .leading, spacing: 8) {
+                            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: $newVariantType)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                            
+                            HStack {
+                                TextField("Price", text: $newPrice)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .keyboardType(.decimalPad)
+                                
+                                TextField("Stock", text: $newStock)
+                                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                                    .keyboardType(.numberPad)
+                            }
+                            
+                            HStack {
+                                Button(action: {
+                                    isAddingVariant = false
+                                    newVariantType = ""
+                                    newPrice = ""
+                                    newStock = ""
+                                    variantTypeError = ""
+                                }) {
+                                    Text("Cancel")
+                                        .foregroundColor(.red)
+                                }
+                            }
+                        }.padding()
+                    }
+                    
+                    if let variantTypeError = variantTypeError {
+                        Text(variantTypeError).font(.caption)
+                                                   .foregroundColor(.red)
+                    }
+                    ForEach($viewModel.variants) { $variant in
+                        variantView(variant: $variant)
+                    }
+                    Button(action: {
+                        if let price = Double(newPrice), let stock = Int(newStock), !newVariantType.isEmpty {
+                            viewModel.variants.append(Variant(variantType: newVariantType, price: price, stock: stock))
+                            newVariantType = ""
+                            newPrice = ""
+                            newStock = ""
+                            isAddingVariant = false
+                        } else {
+                            if isAddingVariant {
+                                variantTypeError = "Please enter the variant details"
+                            } else {
+                                isAddingVariant = true
+                            }
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add Variant")
+                                .bold()
+                        }
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue.opacity(0.2))
+                        .cornerRadius(8)
+                    }.padding(.horizontal)
+                    HorizontalTextFieldView(savedTexts: $viewModel.search_tags)
                     Divider()
-
-                    // Publish Toggle
                     Toggle("Publish", isOn: $viewModel.isPublished)
                         .padding(.horizontal)
                 }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
@@ -158,7 +234,100 @@ struct CreateProductView: View {
             .toolbarBackground(Color.white, for: .navigationBar) // Set background to white
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.light, for: .navigationBar) // Ensures black text
+    }
+    
+    
+    func variantView(variant: Binding<Variant>) -> some View {
+       
+        VStack(alignment: .leading, spacing: 8) {
+            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variantType) // ❌ Incorrect
+            // ✅ FIX: Use $variant.wrappedValue
+            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variantType)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
 
+            HStack {
+                if viewModel.variants.isEmpty {
+                    TextField("Price", value: variant.price, format: .number)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .keyboardType(.decimalPad)
+                }
+                TextField("Stock", value: variant.stock, format: .number)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.numberPad)
+            }
+
+            Button(action: {
+                if let index = viewModel.variants.firstIndex(where: { $0.id == variant.wrappedValue.id }) {
+                    viewModel.variants.remove(at: index)
+                }
+            }) {
+                Text("Remove Variant")
+                    .foregroundColor(.red)
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+    
+}
+
+struct HorizontalTextFieldView: View {
+    @State private var inputText: String = ""
+    @Binding var savedTexts: [String]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            // ✅ Display Saved Texts Above the Input Field
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(savedTexts, id: \.self) { text in
+                        Text(text)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(12)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .stroke(Color.blue.opacity(0.4), lineWidth: 1)
+                            )
+                            .transition(.scale) // Add a transition for when items are added
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+            .animation(.easeInOut, value: savedTexts) // Animate changes to savedTexts
+
+            HStack(spacing: 12) {
+                TextField("Enter search tag...", text: $inputText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 200)
+                    .shadow(color: .gray.opacity(0.2), radius: 2, x: 0, y: 2)
+
+                Button(action: {
+                    let trimmedText = inputText.trimmingCharacters(in: .whitespaces)
+                    if !trimmedText.isEmpty {
+                        withAnimation {
+                            savedTexts.append(trimmedText)
+                        }
+                        inputText = ""
+                    }
+                }) {
+                    Text("Save")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color.green)
+                        .cornerRadius(8)
+                        .shadow(color: .green.opacity(0.3), radius: 3, x: 0, y: 2)
+                }
+                .disabled(inputText.trimmingCharacters(in: .whitespaces).isEmpty) // Disable button if input is empty
+                .opacity(inputText.trimmingCharacters(in: .whitespaces).isEmpty ? 0.6 : 1)
+            }
+        }
+        .padding()
+        .background(Color(.systemBackground).edgesIgnoringSafeArea(.all))
     }
 }
 
@@ -216,6 +385,8 @@ struct TextFieldWithError: View {
         }
     }
 }
+
+
 
 struct CategorySelectionView: View {
     @Binding var selectedCategory: Category

@@ -34,16 +34,24 @@ class CreateProductViewModel: ObservableObject {
     @Published var isAddingCategory: Bool = false
     @Published var showCetegoryProgressIndicator = false
     @Published var showProgressIndicator = false
+    @Published var variants = [Variant]()
+    @Published var search_tags = [String]()
     private var cancellables = Set<AnyCancellable>()
     private var isUpdateProduct: Bool = false
     private var product_id: String?
 
     func validateFields() -> Bool {
-        if productName.isEmpty || description.isEmpty || price.isEmpty || stock.isEmpty || categoryID.categoryName.isEmpty || selectedPhotos.isEmpty {
+        if productName.isEmpty || description.isEmpty || stock.isEmpty || categoryID.categoryName.isEmpty || selectedPhotos.isEmpty {
             errorMessage = "All fields are required"
             showErrorMessage = true
             return false
         }
+        if variants.isEmpty ||  price.isEmpty {
+            errorMessage = "All fields are required"
+            showErrorMessage = true
+            return false
+        }
+        
         return true
     }
     
@@ -57,7 +65,9 @@ class CreateProductViewModel: ObservableObject {
                                            stock: Int(stock)!,
                                            category_id: categoryID.categoryID,
                                            imageids: selectedImages_ids,
-                                           isPublish: isPublished)
+                                           isPublish: isPublished,
+                                           variants: variants,
+                                           search_tag: search_tags)
         sendCreateProductRequest(request: request)
         
     }

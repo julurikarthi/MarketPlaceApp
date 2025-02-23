@@ -166,13 +166,13 @@ struct ProductCard: View {
                         .lineLimit(1)
 
                     
-                    Text("$\(viewModel.product.price, specifier: "%.2f")")
+                    Text("$\(viewModel.product.price ?? 0.0, specifier: "%.2f")")
                         .font(.caption2)
                         .foregroundColor(.green)
                     
-                    Text("Stock: \(viewModel.product.stock)")
+                    Text("Stock: \(viewModel.product.stock ?? 0)")
                         .font(.caption2)
-                        .foregroundColor(viewModel.product.stock > 0 ? Color.gray : Color.red.opacity(0.8))
+                        .foregroundColor((viewModel.product.stock ?? 0) > 0 ? Color.gray : Color.red.opacity(0.8))
                 }.padding(4)
             }
             
