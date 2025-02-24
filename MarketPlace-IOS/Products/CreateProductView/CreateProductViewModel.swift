@@ -249,14 +249,41 @@ class CreateProductViewModel: ObservableObject {
         }
 
         dispatchGroup.notify(queue: .main) { [weak self] in
-            guard let self = self else { return }
+            guard self != nil else { return }
             print("Final downloaded images")
         }
     }
 
 
-    
-    
+    func generateAIContent(description: String) {
+          let apiKey = "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"
+          let url = URL(string: "https://api.openai.com/v1/chat/completions")!
+          var request = URLRequest(url: url)
+          request.httpMethod = "POST"
+          request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+          request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        let parameters: [String: Any] = [
+            "model": "gpt-4o",
+            "messages": [
+                ["role": "system", "content": "Generate a compelling product description."],
+                ["role": "user", "content": "Product: \(description)"]
+            ],
+            "max_tokens": 100
+        ]
+          request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
+
+          URLSession.shared.dataTask(with: request) { data, response, error in
+              DispatchQueue.main.async {
+                  if let data = data,
+                     let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                     let choices = json["choices"] as? [[String: Any]],
+                     let text = choices.first?["message"] as? [String: String] {
+                      let description = text["content"] ?? ""
+                  }
+              }
+          }.resume()
+      }
     
 }
 

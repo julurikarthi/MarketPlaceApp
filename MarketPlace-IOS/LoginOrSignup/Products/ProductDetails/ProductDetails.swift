@@ -95,7 +95,7 @@ struct ProductDetails: View {
                 }
 
                 // Add to Cart Button
-                if let product = viewModel.product {
+                if let product = viewModel.product, !UserDetails.isAppOwners {
                     CartButtonView(showLoginview: $showLoginView, viewModel: ProductCellItemViewModel(product: product, delegate: viewModel))
                 }
 

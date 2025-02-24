@@ -103,13 +103,32 @@ struct CreateProductView: View {
                                 errorMessage: $viewModel.errorMessage,
                                 showError: viewModel.showErrorMessage && viewModel.productName.isEmpty
                             )
-                            TextFieldWithError(
-                                title: "Description",
-                                text: $viewModel.description,
-                                errorMessage: $viewModel.errorMessage,
-                                showError: viewModel.showErrorMessage && viewModel.description.isEmpty,
-                                height: 150
-                            )
+                            ZStack(alignment: .topTrailing) {
+                                TextFieldWithError(
+                                    title: "Description",
+                                    text: $viewModel.description,
+                                    errorMessage: $viewModel.errorMessage,
+                                    showError: viewModel.showErrorMessage && viewModel.description.isEmpty,
+                                    height: 150
+                                )
+                                Button(action: {
+                                    if !viewModel.productName.isEmpty, viewModel.description.isEmpty {
+                                        viewModel.generateAIContent(description: viewModel.productName)
+                                    } else {
+                                        if !viewModel.description.isEmpty {
+                                            viewModel.generateAIContent(description: viewModel.description)
+                                        }
+                                    }
+                                }) {
+                                    Image("chatgpticon").resizable().frame(width: 20, height: 20)
+                                        .padding()
+                                }
+                                .padding(.top, 5)
+                                .padding(.trailing, 5)
+                            }
+
+                            
+                           
                             if viewModel.variants.isEmpty {
                                 TextFieldWithError(
                                     title: "Price",
