@@ -49,8 +49,6 @@ struct CreateProductResponse: Codable {
 
 struct GetAllStoreProductsResponse: Codable {
     var products: [Product]
-
-   
 }
 
 struct Product: Codable, Identifiable {
@@ -66,7 +64,15 @@ struct Product: Codable, Identifiable {
     let imageids: [String]?
     let isAddToCart: Bool?
     var quantity: Int?
+    var variants:[ProductVariant]?
 }
+
+struct ProductVariant: Codable {
+    var variant_type: String?
+    var price: Double?
+    var stock: Int?
+}
+
 struct ProductDashBoard: Codable, Identifiable {
     var id: String { _id } 
     let _id: String

@@ -17,7 +17,7 @@ class ProductDetailsViewModel: ObservableObject {
     init(product_id: String) {
         self.product_id = product_id
     }
-    
+    @Published var selectedVariant: ProductVariant?
     func getProductDetails(productID: String) {
         let request = GetProductDetailsRequest(
             userType: UserDetails.isAppOwners ? .storeOwner : .customer,
@@ -44,6 +44,7 @@ class ProductDetailsViewModel: ObservableObject {
             receiveValue: { response in
                 DispatchQueue.main.async {
                     self.product = response.product
+                    self.selectedVariant = response.product.variants?.first
                     self.isLoading = false
                     self.objectWillChange.send()
                     print("isLoading: \(self.isLoading)")

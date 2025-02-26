@@ -256,7 +256,7 @@ class CreateProductViewModel: ObservableObject {
 
 
     func generateAIContent(description: String) {
-          let apiKey = "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"
+          let apiKey = "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"
           let url = URL(string: "https://api.openai.com/v1/chat/completions")!
           var request = URLRequest(url: url)
           request.httpMethod = "POST"
@@ -278,9 +278,11 @@ class CreateProductViewModel: ObservableObject {
                   if let data = data,
                      let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                      let choices = json["choices"] as? [[String: Any]],
-                     let text = choices.first?["message"] as? [String: String] {
-                      let description = text["content"] ?? ""
+                     let message = choices.first?["message"] as? [String: Any],  // Fix: Casting to [String: Any]
+                     let content = message["content"] as? String {  // Extracting "content" correctly
+                      self.description = content
                   }
+
               }
           }.resume()
       }

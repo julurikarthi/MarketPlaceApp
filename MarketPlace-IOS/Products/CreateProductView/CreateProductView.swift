@@ -3,11 +3,12 @@ import PhotosUI
 
 
 struct Variant: Identifiable, Codable {
-    var id = UUID()
+    var id: UUID? = UUID()
     var variant_type: String
     var price: Double
     var stock: Int
 }
+
 
 struct CreateProductView: View {
     @StateObject private var viewModel = CreateProductViewModel()
@@ -103,7 +104,7 @@ struct CreateProductView: View {
                                 errorMessage: $viewModel.errorMessage,
                                 showError: viewModel.showErrorMessage && viewModel.productName.isEmpty
                             )
-                            ZStack(alignment: .topTrailing) {
+                            ZStack(alignment: .bottomTrailing) { // Change alignment to bottomTrailing
                                 TextFieldWithError(
                                     title: "Description",
                                     text: $viewModel.description,
@@ -111,6 +112,7 @@ struct CreateProductView: View {
                                     showError: viewModel.showErrorMessage && viewModel.description.isEmpty,
                                     height: 150
                                 )
+
                                 Button(action: {
                                     if !viewModel.productName.isEmpty, viewModel.description.isEmpty {
                                         viewModel.generateAIContent(description: viewModel.productName)
@@ -120,15 +122,18 @@ struct CreateProductView: View {
                                         }
                                     }
                                 }) {
-                                    Image("chatgpticon").resizable().frame(width: 20, height: 20)
-                                        .padding()
+                                    Image("chatgpticon")
+                                        .resizable()
+                                        .frame(width: 24, height: 24) // Slightly bigger for better UI
+                                        .padding(8)
+                                        .background(Color.white.opacity(0.8)) // Optional background for visibility
+                                        .clipShape(Circle()) // Make it circular
+                                        .shadow(radius: 2) // Add a shadow for depth
                                 }
-                                .padding(.top, 5)
-                                .padding(.trailing, 5)
+                                .padding(.trailing, 10) // Adjust right padding
+                                .padding(.bottom, 10) // Adjust bottom padding
                             }
 
-                            
-                           
                             if viewModel.variants.isEmpty {
                                 TextFieldWithError(
                                     title: "Price",
@@ -357,39 +362,62 @@ struct TextFieldWithError: View {
     var showError: Bool
     var keyboardType: UIKeyboardType = .default
     var height: CGFloat?
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
                 .font(.subheadline)
                 .foregroundColor(.gray)
-            if height != nil {
-                
-                ZStack(alignment: .bottomLeading) {
-                    TextField("", text: $text)
-                        .keyboardType(keyboardType)
-                        .padding()
-                        .frame(height: 150)
+            
+            if let height = height { // Multi-line TextEditor
+                ZStack(alignment: .topTrailing) {
+                    TextEditor(text: $text)
+                        .frame(height: height)
+                        .padding(8)
                         .background(Color.white)
                         .cornerRadius(8)
                         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
-                    if text.isEmpty {
+                    
+                    if text.isEmpty { // Placeholder
                         Text("Enter \(title)")
                             .foregroundColor(Color(hex: "#C5C5C7"))
-                            .padding(.leading, 11)
-                            .padding(.bottom, 10)
+                            .padding(.leading, 14)
+                            .padding(.top, 14)
+                            .allowsHitTesting(false) // Doesn't block typing
                     }
-                   
+                    
+                    // Clear button
+                    if !text.isEmpty {
+                        Button(action: {
+                            text = ""
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.trailing, 10)
+                        .padding(.top, 10)
+                    }
                 }
-               
-            } else {
-                TextField("Enter \(title)", text: $text)
-                    .keyboardType(keyboardType)
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(8)
-                    .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+            } else { // Single-line TextField with clear button
+                HStack {
+                    TextField("Enter \(title)", text: $text)
+                        .keyboardType(keyboardType)
+                        .padding()
+                    
+                    if !text.isEmpty {
+                        Button(action: {
+                            text = ""
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.gray)
+                        }
+                        .padding(.trailing, 8)
+                    }
+                }
+                .background(Color.white)
+                .cornerRadius(8)
+                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
             }
-            
             
             if showError {
                 HStack {
@@ -404,6 +432,8 @@ struct TextFieldWithError: View {
         }
     }
 }
+
+
 
 
 

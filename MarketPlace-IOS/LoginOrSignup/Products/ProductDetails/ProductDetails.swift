@@ -14,7 +14,7 @@ struct ProductDetails: View {
     @StateObject var viewModel: ProductDetailsViewModel
     @State var showLoginView = false
     @State private var isPresentingFullScreenImage = false
-
+    
     init(viewModel: ProductDetailsViewModel) {
         _viewModel = StateObject(wrappedValue: ProductDetailsViewModel(product_id: viewModel.product_id))
     }
@@ -87,11 +87,31 @@ struct ProductDetails: View {
                     .font(.system(size: 28, weight: .bold))
                     .foregroundColor(.black)
 
-                // Price and Stock
+                
+                if let variants = viewModel.product?.variants, !variants.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(variants.indices, id: \.self) { index in
+                                let variant = variants[index] // Get the variant safely
+                                
+                                VariantButton(
+                                    variant: variant,
+                                    isSelected: viewModel.selectedVariant?.variant_type == variant.variant_type
+                                ) {
+                                    viewModel.selectedVariant = variant
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
+                }
+
+
+                // Price and Stock (based on selected variant)
                 HStack {
-                    PriceTag(price: viewModel.product?.price ?? 0)
+                    PriceTag(price: viewModel.selectedVariant?.price ?? viewModel.product?.price ?? 0)
                     Spacer()
-                    StockBadge(stock: viewModel.product?.stock ?? 0)
+                    StockBadge(stock: viewModel.selectedVariant?.stock ?? viewModel.product?.stock ?? 0)
                 }
 
                 // Add to Cart Button
@@ -119,6 +139,24 @@ struct ProductDetails: View {
         }
         .sheet(isPresented: $isPresentingFullScreenImage) {
             FullScreenImageView(imageIds: viewModel.product?.imageids ?? [], currentIndex: $currentImageIndex)
+        }
+    }
+}
+
+struct VariantButton: View {
+    let variant: ProductVariant
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text("\(variant.variant_type ?? "")")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundColor(isSelected ? .white : .black)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(isSelected ? Color.black : Color.gray.opacity(0.2))
+                .cornerRadius(10)
         }
     }
 }
