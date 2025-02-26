@@ -370,10 +370,11 @@ struct TextFieldWithError: View {
                 .foregroundColor(.gray)
             
             if let height = height { // Multi-line TextEditor
-                ZStack(alignment: .topTrailing) {
+                ZStack(alignment: .topLeading) {
                     TextEditor(text: $text)
                         .frame(height: height)
-                        .padding(8)
+                        .padding(.horizontal, 8)
+                        .padding(.top, 8)
                         .background(Color.white)
                         .cornerRadius(8)
                         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
@@ -381,7 +382,7 @@ struct TextFieldWithError: View {
                     if text.isEmpty { // Placeholder
                         Text("Enter \(title)")
                             .foregroundColor(Color(hex: "#C5C5C7"))
-                            .padding(.leading, 14)
+                            .padding(.horizontal, 14)
                             .padding(.top, 14)
                             .allowsHitTesting(false) // Doesn't block typing
                     }
@@ -396,6 +397,7 @@ struct TextFieldWithError: View {
                         }
                         .padding(.trailing, 10)
                         .padding(.top, 10)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 }
             } else { // Single-line TextField with clear button
@@ -432,6 +434,7 @@ struct TextFieldWithError: View {
         }
     }
 }
+
 
 
 
