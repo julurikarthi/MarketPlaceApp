@@ -191,6 +191,8 @@ class CreateProductViewModel: ObservableObject {
         categoryID = product.categoryID
         product_id = product.product_id
         isUpdateProduct = true
+        variants = product.variants ?? []
+        search_tags = product.search_tags ?? []
         downloadProductImages(imageIds: selectedImages_ids)
     }
     
@@ -303,6 +305,8 @@ struct EditProduct: RequestBody {
     let imageids: [String]
     let isPublish: Bool
     let categoryID: Category
+    let variants: [Variant]?
+    let search_tags: [String]?
 }
 
 struct FetchCategoryRequest: Codable, RequestBody {

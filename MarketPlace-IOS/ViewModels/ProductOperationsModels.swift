@@ -65,6 +65,7 @@ struct Product: Codable, Identifiable {
     let isAddToCart: Bool?
     var quantity: Int?
     var variants:[ProductVariant]?
+    var search_tags: [String]?
 }
 
 struct ProductVariant: Codable {
