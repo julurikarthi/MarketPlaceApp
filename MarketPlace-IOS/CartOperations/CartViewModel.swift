@@ -88,10 +88,12 @@ struct CreateCartRequest: Codable, RequestBody {
 struct CartProduct: Codable {
     let productID: String
     let quantity: Int
+    let variant_type: String?
 
     enum CodingKeys: String, CodingKey {
         case productID = "product_id"
         case quantity
+        case variant_type
     }
 }
 

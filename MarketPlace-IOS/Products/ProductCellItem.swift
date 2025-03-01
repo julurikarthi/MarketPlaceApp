@@ -270,7 +270,7 @@ struct CartButtonView: View {
     func updateCart(itemCount: Int) {
         if UserDetails.isLoggedIn {
             isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id ?? "", products: [.init(productID: viewModel.product.product_id, quantity: itemCount)]) { cartCount,quantity, response  in
+            cartViewModel.createCart(storeID: viewModel.product.store_id ?? "", products: [.init(productID: viewModel.product.product_id, quantity: itemCount, variant_type: nil)]) { cartCount,quantity, response  in
                 if let cartCount {
                     viewModel.itemCount = quantity ?? 0
                     cartViewModel.cartItemCount = cartCount

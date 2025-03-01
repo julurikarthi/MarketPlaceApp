@@ -7,81 +7,221 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5CD9F882-CF8D-4451-AD36-CD23CD665647"
-            shouldBeEnabled = "Yes"
+            uuid = "A76DBAF4-B539-43B6-A088-A68292611F9A"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetails.swift"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
-            landmarkName = "productDetailView()"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
+            landmarkName = "updateCart(itemCount:selectedVariant:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C54D2ABA-F40F-450B-956E-FF90300071D0"
-            shouldBeEnabled = "Yes"
+            uuid = "417147E3-A12D-4E23-AB5B-1335E403987B"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetails.swift"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "85"
-            endingLineNumber = "85"
-            landmarkName = "productDetailView()"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
+            landmarkName = "updateCart(itemCount:selectedVariant:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FE0A3211-95CB-4F1E-A28B-7F262D4D68DB"
+            uuid = "11394ACB-285C-4D46-9A43-34C23B59B96D"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetails.swift"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
-            landmarkName = "productDetailView()"
+            startingLineNumber = "269"
+            endingLineNumber = "269"
+            landmarkName = "updateCart(itemCount:selectedVariant:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4D243D4A-6E3F-4796-9734-D8EEE90EDBC8"
+            uuid = "843F9BF0-D920-4A98-B9AF-F89A0D068641"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/LoginOrSignup/Products/ProductDetails/ProductDetails.swift"
+            filePath = "MarketPlace-IOS/CartOperations/CartViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
-            landmarkName = "productDetailView()"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "createCart(storeID:products:completionHandler:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AD438071-B976-4A59-B4EB-F9FDE4639AA0"
+            uuid = "E73AC918-BD56-491C-9F42-C03197AB6675"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MarketPlace-IOS/Products/ProductListViewModel.swift"
+            filePath = "MarketPlace-IOS/CartOperations/CartViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "89"
-            endingLineNumber = "89"
-            landmarkName = "getAllProductbyStore(category_id:page:isCustomer:)"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "createCart(storeID:products:completionHandler:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E83A693E-8F6D-4D3F-9E63-BC4CF0D0952D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/CartOperations/CartViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "createCart(storeID:products:completionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E642244A-C46B-4DE9-8050-15B8B2E6706F"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/CartOperations/CartViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "createCart(storeID:products:completionHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "83C8079A-6227-44EB-AE47-49B143FEB3E9"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/CartOperations/CartViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "createCart(storeID:products:completionHandler:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "83C8079A-6227-44EB-AE47-49B143FEB3E9 - 864872ecc54499e4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (MarketPlace_IOS_Customers.CartResponse) -&gt; () in MarketPlace_IOS_Customers.CartViewModel.createCart(storeID: Swift.String, products: Swift.Array&lt;MarketPlace_IOS_Customers.CartProduct&gt;, completionHandler: (Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;MarketPlace_IOS_Customers.CartResponse&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "MarketPlace-IOS-Customers.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS/CartOperations/CartViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44">
+               </Location>
+               <Location
+                  uuid = "83C8079A-6227-44EB-AE47-49B143FEB3E9 - b88d2d522b8f8998"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (MarketPlace_IOS_Customers.UpdatedCart) -&gt; Swift.Bool in closure #2 (MarketPlace_IOS_Customers.CartResponse) -&gt; () in MarketPlace_IOS_Customers.CartViewModel.createCart(storeID: Swift.String, products: Swift.Array&lt;MarketPlace_IOS_Customers.CartProduct&gt;, completionHandler: (Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;Swift.Int&gt;, Swift.Optional&lt;MarketPlace_IOS_Customers.CartResponse&gt;) -&gt; ()) -&gt; ()"
+                  moduleName = "MarketPlace-IOS-Customers.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS/CartOperations/CartViewModel.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BF2AC3EC-2AAC-42F3-B65F-8D1D4776C964"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "264"
+            endingLineNumber = "264"
+            landmarkName = "updateCart(itemCount:selectedVariant:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E8D48BD2-D10E-48D3-80F1-2925A55D653D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MarketPlace-IOS/Dashboard/DashBoardView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
+            landmarkName = "body"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "E8D48BD2-D10E-48D3-80F1-2925A55D653D - fe852b8d9e03904f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #3 () -&gt; MarketPlace_IOS_Customers.VariantBottomSheet in MarketPlace_IOS_Customers.AddToCartView.body.getter : some"
+                  moduleName = "MarketPlace-IOS-Customers.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS/Dashboard/DashBoardView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "255"
+                  endingLineNumber = "255">
+               </Location>
+               <Location
+                  uuid = "E8D48BD2-D10E-48D3-80F1-2925A55D653D - a5b12065f52ad215"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (MarketPlace_IOS_Customers.ProductVariant, Swift.Int) -&gt; () in closure #3 () -&gt; MarketPlace_IOS_Customers.VariantBottomSheet in MarketPlace_IOS_Customers.AddToCartView.body.getter : some"
+                  moduleName = "MarketPlace-IOS-Customers.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/karthik/Documents/git/MarketPlaceApp/MarketPlaceApp/MarketPlace-IOS/Dashboard/DashBoardView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "256"
+                  endingLineNumber = "256">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

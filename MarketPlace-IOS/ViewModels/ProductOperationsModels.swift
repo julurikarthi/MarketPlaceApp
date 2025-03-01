@@ -88,6 +88,7 @@ struct ProductDashBoard: Codable, Identifiable {
     let isAddToCart: Bool
     let quantity: Int
     let store_type: String
+    let variants: [ProductVariant]?
 }
 
 struct DeleteProductRequest: Codable, RequestBody {

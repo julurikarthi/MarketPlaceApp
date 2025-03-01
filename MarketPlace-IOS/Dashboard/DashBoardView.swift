@@ -206,6 +206,9 @@ struct AddToCartView: View {
     @ObservedObject var viewModel:ProductCardViewModel
     @EnvironmentObject var cartViewModel: CartViewModel
     @State var isLoading: Bool = false
+    @State private var showBottomSheet = false
+    @State private var selectedVariant: ProductVariant?
+   
     var body: some View {
         VStack {
             if viewModel.itemCount == 0 {
@@ -248,20 +251,42 @@ struct AddToCartView: View {
             if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product._id }) {
                 viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
             }
+        }.sheet(isPresented: $showBottomSheet) {
+            VariantBottomSheet(variants: viewModel.product.variants ?? [], itemCount: viewModel.requestCount) { selected, itemCount in
+                self.selectedVariant = selected
+                self.updateCart(itemCount: itemCount, selectedVariant: selected)
+            }
         }
         
     }
     
-    func updateCart(itemCount: Int) {
+    func updateCart(itemCount: Int, selectedVariant: ProductVariant? = nil) {
         if UserDetails.isLoggedIn {
-            isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount)]) { cartCount,quantity, response in
-                if let cartCount {
-                    viewModel.itemCount = quantity ?? 0
-                    cartViewModel.cartItemCount = cartCount
+            viewModel.requestCount = itemCount
+            if selectedVariant != nil {
+                isLoading = true
+                cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount, variant_type: selectedVariant?.variant_type)]) { cartCount,quantity, response in
+                    if let cartCount {
+                        viewModel.itemCount = quantity ?? 0
+                        cartViewModel.cartItemCount = cartCount
+                    }
+                    isLoading = false
                 }
-                isLoading = false
+                return
             }
+            if let variants = viewModel.product.variants, variants.isEmpty {
+                isLoading = true
+                cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount, variant_type: nil)]) { cartCount,quantity, response in
+                    if let cartCount {
+                        viewModel.itemCount = quantity ?? 0
+                        cartViewModel.cartItemCount = cartCount
+                    }
+                    isLoading = false
+                }
+            } else {
+                self.showBottomSheet = true
+            }
+           
         } else {
             showLoginview = true
         }
@@ -291,6 +316,38 @@ struct AddToCartView: View {
     }
 }
 
+
+struct VariantBottomSheet: View {
+    let variants: [ProductVariant]
+    let itemCount: Int
+    let onSelect: (ProductVariant, Int) -> Void
+    @Environment(\.dismiss) private var dismiss
+  
+    var body: some View {
+        VStack {
+            Text("Select a Variant")
+                .font(.headline)
+                .padding()
+
+            List(variants.indices, id: \.self) { index in
+                let variant = variants[index]
+                Button(action: {
+                    onSelect(variant, itemCount)
+                    dismiss()
+                }) {
+                    HStack {
+                        Text("\(variant.variant_type ?? "Unknown")").foregroundColor(.black)
+                        Spacer()
+                        Text("$\(String(format: "%.2f", variant.price ?? 0.0))")
+                            .foregroundColor(.black)
+
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium])
+    }
+}
 
 //struct DashboardView_Previews: PreviewProvider {
 //    static var previews: some View {
