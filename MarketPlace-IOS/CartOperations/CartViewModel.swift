@@ -38,21 +38,19 @@ class CartViewModel: ObservableObject {
                 if response.all_carts.count > 0 {
                     let totalCartItems = response.all_carts.reduce(0) { $0 + $1.products.count }
                     self?.cartItemCount = totalCartItems
+                    
                     if let product = products.first {
-                        let quntity = self?.getQuantity(for: product.id, from: response)
+                        let quantity = self?.getQuantity(for: product.productID, variantType: product.variant_type, from: response) ?? 0
                         
-                        self?.updateCart(id:product.id,
+                        self?.updateCart(id: product.id,
                                          productID: product.productID,
-                                         quantity: quntity ?? 0,
+                                         quantity: quantity,
                                          variant_type: product.variant_type)
                         
-                        if let product = self?.updatedCartdata.first(where: {$0.id == product.id}) {
-                            completionHandler(self?.cartItemCount, quntity, response)
-                        } else {
-                            completionHandler(self?.cartItemCount, quntity, response)
-                        }
+                        completionHandler(self?.cartItemCount, quantity, response)
                     }
                 }
+
             }
         )
         .store(in: &cancellables)
@@ -67,9 +65,11 @@ class CartViewModel: ObservableObject {
         }
     }
     
-    func getQuantity(for id: String, from response: CartResponse) -> Int {
+    func getQuantity(for productID: String, variantType: String?, from response: CartResponse) -> Int {
         return response.all_carts.reduce(0) { total, cart in
-            total + cart.products.filter { $0.id == id }.reduce(0) { $0 + $1.quantity }
+            total + cart.products
+                .filter { $0.product_id == productID && $0.variant_type == variantType }
+                .reduce(0) { $0 + $1.quantity }
         }
     }
     

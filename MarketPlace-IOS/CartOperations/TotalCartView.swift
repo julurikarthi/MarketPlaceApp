@@ -101,6 +101,7 @@ struct CartSectionView: View {
             
             ForEach(viewmodel.cart.products) { product in
                 ProductRowView(product: product,
+                               showLoginview: false,
                                viewModel: .init(store_id: product.store_id,
                                                 product_id: product.product_id,
                                                 variant_type: product.variant_type,
@@ -273,9 +274,21 @@ struct StoreHeaderView: View {
 struct ProductRowView: View {
     let product: GetCartProduct
     @State var showLoginview: Bool = false
-    var viewModel: SharedCartModel
+    @StateObject var viewModel: SharedCartModel
     var cart: TotalCartDataViewModel? = nil
     var cartPubliser: PassthroughSubject<CartResponse, Never>?
+    
+    init(product: GetCartProduct,
+         showLoginview: Bool,
+         viewModel: SharedCartModel,
+         cart: TotalCartDataViewModel? = nil,
+         cartPubliser: PassthroughSubject<CartResponse, Never>? = nil) {
+        self.product = product
+        self.showLoginview = showLoginview
+        self._viewModel = StateObject(wrappedValue: viewModel)
+        self.cart = cart
+        self.cartPubliser = cartPubliser
+    }
     var body: some View {
         HStack(spacing: 15) {
             VStack {
