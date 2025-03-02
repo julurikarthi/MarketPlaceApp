@@ -86,7 +86,7 @@ class CreateProductViewModel: ObservableObject {
                 method: .POST,
                 payload: request,
                 responseType: SuccessResponse.self
-            ).sink(
+            ).receive(on: DispatchQueue.main).sink(
                 receiveCompletion: { completion in
                     DispatchQueue.main.async {
                         self.showProgressIndicator = false
@@ -111,7 +111,8 @@ class CreateProductViewModel: ObservableObject {
                 method: .POST,
                 payload: request,
                 responseType: CreateProductResponse.self
-            ).sink(
+            ).receive(on: DispatchQueue.main)
+                .sink(
                 receiveCompletion: { completion in
                     self.showProgressIndicator = false
                     switch completion {
@@ -162,7 +163,7 @@ class CreateProductViewModel: ObservableObject {
         NetworkManager.shared.performRequest(url: .createCategory(),
                                              method: .POST,
                                              payload: createcategoryRequest,
-                                             responseType: CreateCategoryResponse.self).sink(
+                                             responseType: CreateCategoryResponse.self).receive(on: DispatchQueue.main).sink(
                                                 receiveCompletion: { completion in
                                                     switch completion {
                                                     case .finished:

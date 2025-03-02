@@ -435,7 +435,7 @@ struct ImagePicker: UIViewControllerRepresentable {
                 responseType: UploadResponse.self
             )
             
-            uploadPublisher
+            uploadPublisher.receive(on: DispatchQueue.main)
                 .sink(receiveCompletion: { completion in
                     switch completion {
                     case .finished:

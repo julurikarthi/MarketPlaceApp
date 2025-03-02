@@ -101,7 +101,10 @@ struct CartSectionView: View {
             
             ForEach(viewmodel.cart.products) { product in
                 ProductRowView(product: product,
-                               viewModel: .init(product: product, delegate: viewmodel),
+                               viewModel: .init(store_id: product.store_id,
+                                                product_id: product.product_id,
+                                                variant_type: product.variant_type,
+                                                itemCount: product.quantity),
                                cart: viewmodel.cart,
                                cartPubliser: viewmodel.cartPubliser)
             }
@@ -268,9 +271,9 @@ struct StoreHeaderView: View {
     }
 }
 struct ProductRowView: View {
-    let product: Product
+    let product: GetCartProduct
     @State var showLoginview: Bool = false
-    var viewModel: ProductCellItemViewModel
+    var viewModel: SharedCartModel
     var cart: TotalCartDataViewModel? = nil
     var cartPubliser: PassthroughSubject<CartResponse, Never>?
     var body: some View {
@@ -287,7 +290,7 @@ struct ProductRowView: View {
                     .font(.headline)
                     .lineLimit(2)
                 
-                Text("\(product.price?.formattedPrice)")
+                Text("\(product.price?.formattedPrice ?? "")")
                     .font(.subheadline)
                     .foregroundColor(.black)
                 CartButtonView(showLoginview: $showLoginview,

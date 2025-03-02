@@ -68,10 +68,29 @@ struct Product: Codable, Identifiable {
     var search_tags: [String]?
 }
 
+struct GetCartProduct: Codable, Identifiable {
+    var id: String { product_id + (variant_type?.removingSpaces ?? "") }
+    let product_id: String
+    let variant_type: String?
+    let quantity: Int
+    let price: Double?
+    let imageids: [String]?
+    let store_id: String
+    let product_name: String
+}
+
+extension String {
+    var removingSpaces: String {
+        return replacingOccurrences(of: " ", with: "")
+    }
+}
+
+
 struct ProductVariant: Codable {
     var variant_type: String?
     var price: Double?
     var stock: Int?
+    var cart_quantity: Int?
 }
 
 struct ProductDashBoard: Codable, Identifiable {

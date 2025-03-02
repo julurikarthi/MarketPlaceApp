@@ -9,6 +9,7 @@ struct DashboardView: View {
     @State private var stores: [Store] = []
     @StateObject var viewModel: DashBoardViewViewModel
     @State private var showLoginview: Bool = false
+    @State private var movetoSelectLocation: Bool = false
     init(viewModel: DashBoardViewViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
 
@@ -16,7 +17,7 @@ struct DashboardView: View {
 
     var body: some View {
         CartNavigationView(title: "Stores",
-                           presentLocatonSelector: $viewModel.movetoSelectLocation
+                           presentLocatonSelector: $movetoSelectLocation
                            , selectedPincode: $viewModel.pincode,
                            showlocationSelector: $viewModel.showLocationSelectionView) {
               ScrollView {
@@ -37,7 +38,7 @@ struct DashboardView: View {
                       }
                   }
               }
-          }.sheet(isPresented: $viewModel.movetoSelectLocation) {
+          }.sheet(isPresented: $movetoSelectLocation) {
               if !viewModel.state.isEmpty && !viewModel.pincode.isEmpty {
                   LocationSearchView(onAddressSelected: { address in
                       viewModel.address = address
@@ -274,7 +275,9 @@ struct AddToCartView: View {
                 }
                 return
             }
-            if let variants = viewModel.product.variants, variants.isEmpty {
+            if let variants = viewModel.product.variants, !variants.isEmpty {
+                self.showBottomSheet = true
+            } else {
                 isLoading = true
                 cartViewModel.createCart(storeID: viewModel.product.store_id, products: [.init(productID: viewModel.product._id, quantity: itemCount, variant_type: nil)]) { cartCount,quantity, response in
                     if let cartCount {
@@ -283,8 +286,6 @@ struct AddToCartView: View {
                     }
                     isLoading = false
                 }
-            } else {
-                self.showBottomSheet = true
             }
            
         } else {

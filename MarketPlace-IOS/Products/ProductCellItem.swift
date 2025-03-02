@@ -130,7 +130,7 @@ struct ProductCellItem: View {
                         }
 
                     } else {
-                        CartButtonView(showLoginview: $showLoginview, viewModel: viewModel)
+//                        CartButtonView(showLoginview: $showLoginview, viewModel: .i)
                     }
                 }
                 
@@ -183,13 +183,13 @@ struct CartButtonView: View {
     @Binding var showLoginview: Bool
     @State var isLoading: Bool = false
     @EnvironmentObject var cartViewModel: CartViewModel
-    @StateObject var viewModel: ProductCellItemViewModel
+    @ObservedObject var viewModel: SharedCartModel
     var cartPubliser: PassthroughSubject<CartResponse, Never>?
-    
-    init(showLoginview: Binding<Bool>, viewModel: ProductCellItemViewModel,
+    init(showLoginview: Binding<Bool>,
+         viewModel: SharedCartModel,
          cartPubliser: PassthroughSubject<CartResponse, Never>? = nil) {
         self._showLoginview = showLoginview
-        _viewModel = StateObject(wrappedValue: viewModel)
+        self.viewModel = viewModel
         self.cartPubliser = cartPubliser
     }
     
@@ -261,7 +261,7 @@ struct CartButtonView: View {
             }
         }.background(.white)
             .shimmering(active: isLoading).onViewWillAppear {
-                if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product.product_id }) {
+                if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product_id}) {
                     viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
                 }
             }
@@ -270,7 +270,10 @@ struct CartButtonView: View {
     func updateCart(itemCount: Int) {
         if UserDetails.isLoggedIn {
             isLoading = true
-            cartViewModel.createCart(storeID: viewModel.product.store_id ?? "", products: [.init(productID: viewModel.product.product_id, quantity: itemCount, variant_type: nil)]) { cartCount,quantity, response  in
+            cartViewModel.createCart(storeID: viewModel.store_id,
+                                     products: [.init(productID: viewModel.product_id,
+                                                      quantity: itemCount,
+                                                      variant_type: viewModel.variant_type)]) { cartCount,quantity, response  in
                 if let cartCount {
                     viewModel.itemCount = quantity ?? 0
                     cartViewModel.cartItemCount = cartCount
@@ -286,7 +289,18 @@ struct CartButtonView: View {
     }
 }
 
-
+class SharedCartModel: ObservableObject {
+    var store_id: String
+    var product_id: String
+    @Published var variant_type: String?
+    @Published var itemCount: Int
+    init(store_id: String, product_id: String, variant_type: String? = nil, itemCount: Int) {
+        self.store_id = store_id
+        self.product_id = product_id
+        self.variant_type = variant_type
+        self.itemCount = itemCount
+    }
+}
 
 struct ViewWillAppearModifier: ViewModifier {
     let action: () -> Void

@@ -115,8 +115,17 @@ struct ProductDetails: View {
                 }
 
                 // Add to Cart Button
-                if let product = viewModel.product, !UserDetails.isAppOwners {
-                    CartButtonView(showLoginview: $showLoginView, viewModel: ProductCellItemViewModel(product: product, delegate: viewModel))
+                if let _ = viewModel.product, !UserDetails.isAppOwners {
+                    CartButtonView(
+                        showLoginview: $showLoginView,
+                        viewModel: .init(
+                            store_id: viewModel.product?.store_id ?? "",
+                            product_id: viewModel.product?.product_id ?? "",
+                            variant_type: viewModel.selectedVariant?.variant_type,
+                            itemCount: (viewModel.product?.variants?.isEmpty == false) ? (viewModel.selectedVariant?.cart_quantity ?? 0) : (viewModel.product?.quantity ?? 0)
+                        )
+                    )
+
                 }
 
                 // Product Description

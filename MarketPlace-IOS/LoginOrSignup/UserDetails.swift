@@ -213,12 +213,12 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     
     override init() {
         super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
     }
     
     // MARK: - Request Location Permission
     func requestLocationPermission() {
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         let status = CLLocationManager.authorizationStatus()
         
         switch status {
@@ -243,7 +243,8 @@ class LocationManager: NSObject, CLLocationManagerDelegate {
     // MARK: - Request Current Location
     func requestLocation() {
         let status = CLLocationManager.authorizationStatus()
-        
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
         switch status {
         case .authorizedWhenInUse, .authorizedAlways:
             print("📍 Starting location updates")

@@ -38,10 +38,15 @@ class CartViewModel: ObservableObject {
                 if response.all_carts.count > 0 {
                     let totalCartItems = response.all_carts.reduce(0) { $0 + $1.products.count }
                     self?.cartItemCount = totalCartItems
-                    if let productsFirstID = products.first?.productID {
-                        let quntity = self?.getQuantity(for: productsFirstID, from: response)
-                        self?.updateCart(productID: productsFirstID, quantity: quntity ?? 0)
-                        if let product = self?.updatedCartdata.first(where: {$0.productID == productsFirstID}) {
+                    if let product = products.first {
+                        let quntity = self?.getQuantity(for: product.id, from: response)
+                        
+                        self?.updateCart(id:product.id,
+                                         productID: product.productID,
+                                         quantity: quntity ?? 0,
+                                         variant_type: product.variant_type)
+                        
+                        if let product = self?.updatedCartdata.first(where: {$0.id == product.id}) {
                             completionHandler(self?.cartItemCount, quntity, response)
                         } else {
                             completionHandler(self?.cartItemCount, quntity, response)
@@ -54,17 +59,17 @@ class CartViewModel: ObservableObject {
        
     }
     
-    func updateCart(productID: String, quantity: Int) {
-        if let index = updatedCartdata.firstIndex(where: { $0.productID == productID }) {
+    func updateCart(id: String, productID: String, quantity: Int, variant_type: String?) {
+        if let index = updatedCartdata.firstIndex(where: { $0.id == id }) {
             updatedCartdata[index].quantity = quantity
         } else {
-            updatedCartdata.append(UpdatedCart(productID: productID, quantity: quantity)) // Add new entry
+            updatedCartdata.append(UpdatedCart(productID: productID, quantity: quantity, variant_type: variant_type)) // Add new entry
         }
     }
     
-    func getQuantity(for productId: String, from response: CartResponse) -> Int {
+    func getQuantity(for id: String, from response: CartResponse) -> Int {
         return response.all_carts.reduce(0) { total, cart in
-            total + cart.products.filter { $0.product_id == productId }.reduce(0) { $0 + $1.quantity }
+            total + cart.products.filter { $0.id == id }.reduce(0) { $0 + $1.quantity }
         }
     }
     
@@ -76,8 +81,10 @@ class CartViewModel: ObservableObject {
 }
 
 struct UpdatedCart {
+    var id: String { productID + (variant_type ?? "") }
     let productID: String
     var quantity: Int
+    var variant_type: String?
 }
 
 struct CreateCartRequest: Codable, RequestBody {
@@ -85,7 +92,8 @@ struct CreateCartRequest: Codable, RequestBody {
     let customer_id: String
 }
 
-struct CartProduct: Codable {
+struct CartProduct: Codable, Identifiable {
+    var id: String { productID + (variant_type ?? "") }
     let productID: String
     let quantity: Int
     let variant_type: String?
@@ -112,6 +120,7 @@ struct CartResponse: Codable {
 struct Cart: Codable {
     let cart_id: String
     let store_id: String
+    let variant_type: String?
     let products: [CartProductResponse]
     let total_amount: Double
     let tax_amount: Double
@@ -120,8 +129,10 @@ struct Cart: Codable {
 
 // MARK: - Product
 struct CartProductResponse: Codable {
+    var id: String { product_id + (variant_type?.removingSpaces ?? "") }
     let product_id: String
     let quantity: Int
     let price: Double
+    let variant_type: String?
     let product_name: String
 }

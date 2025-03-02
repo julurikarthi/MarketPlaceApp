@@ -13,7 +13,7 @@ struct CartModel: Identifiable, Codable {
     let store_id: String
     let store_name: String
     let store_image: String
-    var products: [Product]
+    var products: [GetCartProduct]
     var total_amount: Double
     var tax_amount: Double
     var total_amount_with_tax: Double
@@ -25,7 +25,7 @@ class TotalCartDataViewModel: ObservableObject, Identifiable {
     let store_id: String
     let store_name: String
     let store_image: String
-    @Published var products: [Product]
+    @Published var products: [GetCartProduct]
     @Published var total_amount: Double
     @Published var tax_amount: Double
     @Published var total_amount_with_tax: Double
