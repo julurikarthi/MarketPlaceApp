@@ -154,57 +154,13 @@ struct CreateProductView: View {
                         }
                     }
                     .padding(.horizontal)
-                    if isAddingVariant {
-                        VStack(alignment: .leading, spacing: 8) {
-                            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: $newVariantType)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                            
-                            HStack {
-                                TextField("Price", text: $newPrice)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .keyboardType(.decimalPad)
-                                
-                                TextField("Stock", text: $newStock)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .keyboardType(.numberPad)
-                            }
-                            
-                            HStack {
-                                Button(action: {
-                                    isAddingVariant = false
-                                    newVariantType = ""
-                                    newPrice = ""
-                                    newStock = ""
-                                    variantTypeError = ""
-                                }) {
-                                    Text("Cancel")
-                                        .foregroundColor(.red)
-                                }
-                            }
-                        }.padding()
-                    }
                     
                     if let variantTypeError = variantTypeError {
                         Text(variantTypeError).font(.caption)
                                                    .foregroundColor(.red)
                     }
-                    ForEach($viewModel.variants) { $variant in
-                        variantView(variant: $variant)
-                    }
                     Button(action: {
-                        if let price = Double(newPrice), let stock = Int(newStock), !newVariantType.isEmpty {
-                            viewModel.variants.append(Variant(variant_type: newVariantType, price: price, stock: stock))
-                            newVariantType = ""
-                            newPrice = ""
-                            newStock = ""
-                            isAddingVariant = false
-                        } else {
-                            if isAddingVariant {
-                                variantTypeError = "Please enter the variant details"
-                            } else {
-                                isAddingVariant = true
-                            }
-                        }
+                        isAddingVariant = true
                     }) {
                         HStack {
                             Image(systemName: "plus.circle.fill")
@@ -222,6 +178,8 @@ struct CreateProductView: View {
                         .padding(.horizontal)
                 }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                 .padding(.bottom)
+            }.sheet(isPresented: $isAddingVariant) {
+                MultiVariantFormView()
             }.task {
                 viewModel.getstoreCategories()
             }.onTapGesture {
@@ -260,39 +218,6 @@ struct CreateProductView: View {
             .toolbarColorScheme(.light, for: .navigationBar) // Ensures black text
     }
     
-    
-    func variantView(variant: Binding<Variant>) -> some View {
-       
-        VStack(alignment: .leading, spacing: 8) {
-            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variant_type) // ❌ Incorrect
-            // ✅ FIX: Use $variant.wrappedValue
-            TextField("Variant Type (e.g., Size: 9, Color: Red)", text: variant.variant_type)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-
-            HStack {
-                if viewModel.variants.isEmpty {
-                    TextField("Price", value: variant.price, format: .number)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .keyboardType(.decimalPad)
-                }
-                TextField("Stock", value: variant.stock, format: .number)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-            }
-
-            Button(action: {
-                if let index = viewModel.variants.firstIndex(where: { $0.id == variant.wrappedValue.id }) {
-                    viewModel.variants.remove(at: index)
-                }
-            }) {
-                Text("Remove Variant")
-                    .foregroundColor(.red)
-            }
-        }
-        .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-    }
     
 }
 
