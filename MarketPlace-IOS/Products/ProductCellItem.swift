@@ -185,12 +185,15 @@ struct CartButtonView: View {
     @EnvironmentObject var cartViewModel: CartViewModel
     @ObservedObject var viewModel: SharedCartModel
     var cartPubliser: PassthroughSubject<CartResponse, Never>?
+    var cartUpdate = true
     init(showLoginview: Binding<Bool>,
          viewModel: SharedCartModel,
-         cartPubliser: PassthroughSubject<CartResponse, Never>? = nil) {
+         cartPubliser: PassthroughSubject<CartResponse, Never>? = nil,
+         cartUpdate: Bool? = nil) {
         self._showLoginview = showLoginview
         self.viewModel = viewModel
         self.cartPubliser = cartPubliser
+        self.cartUpdate = cartUpdate ?? true
     }
     
     var body: some View {
@@ -261,8 +264,10 @@ struct CartButtonView: View {
             }
         }.background(.white)
             .shimmering(active: isLoading).onViewWillAppear {
-                if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product_id}) {
-                    viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
+                if cartUpdate {
+                    if let index = cartViewModel.updatedCartdata.firstIndex(where: { $0.productID == viewModel.product_id}) {
+                        viewModel.itemCount = cartViewModel.updatedCartdata[index].quantity
+                    }
                 }
             }
     }

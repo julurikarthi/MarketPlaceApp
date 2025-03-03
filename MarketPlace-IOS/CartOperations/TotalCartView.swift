@@ -49,6 +49,9 @@ struct TotalCartView: View {
             }
         }
         .onAppear(perform: viewModel.loadCartData)
+        .onDisappear {
+            viewModel.carts.removeAll()
+        }
     }
 }
 
@@ -308,7 +311,7 @@ struct ProductRowView: View {
                     .foregroundColor(.black)
                 CartButtonView(showLoginview: $showLoginview,
                                viewModel: viewModel,
-                               cartPubliser: cartPubliser)
+                               cartPubliser: cartPubliser, cartUpdate: false)
             }
         }
     }

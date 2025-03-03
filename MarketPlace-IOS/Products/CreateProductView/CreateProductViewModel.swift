@@ -111,8 +111,7 @@ class CreateProductViewModel: ObservableObject {
                 method: .POST,
                 payload: request,
                 responseType: CreateProductResponse.self
-            ).receive(on: DispatchQueue.main)
-                .sink(
+            ).sink(
                 receiveCompletion: { completion in
                     self.showProgressIndicator = false
                     switch completion {
