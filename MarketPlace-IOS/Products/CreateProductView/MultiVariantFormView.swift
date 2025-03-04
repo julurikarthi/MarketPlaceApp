@@ -1,26 +1,9 @@
-//
-//  MultiVariantFormView.swift
-//  MarketPlace-IOS
-//
-//  Created by karthik on 3/3/25.
-//
-
 import SwiftUI
 
-struct NewVariant: Identifiable {
-    var id = UUID()
-    var variantType: String
-    var variantValue: String
-    var price: String
-    var stock: String
-    var customVariantType: String = "" // For custom variant type input
-    var customSizeValue: String = ""   // For custom size input
-    var customColorValue: String = ""  // For custom color input
-}
 
 struct MultiVariantFormView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var variants: [NewVariant] = []
+    @State private var variants: [Variant] = []
     @State private var showSuccessMessage = false
     @State private var showErrorMessage = false
     @State private var errorMessage = ""
@@ -40,7 +23,7 @@ struct MultiVariantFormView: View {
                         ForEach($variants) { $variant in
                             VStack(spacing: 15) {
                                 // Variant Type Picker
-                                Picker("Variant Type", selection: $variant.variantType) {
+                                Picker("Variant Type", selection: $variant.variant_type) {
                                     ForEach(variantTypes, id: \.self) { type in
                                         Text(type).tag(type)
                                     }
@@ -51,17 +34,9 @@ struct MultiVariantFormView: View {
                                 .cornerRadius(8)
                                 .disabled(isSaved) // Disable if saved
                                 
-                                // Custom Variant Type Input (only shown when "Custom" is selected)
-                                if variant.variantType == "Custom" {
-                                    TextField("Enter Custom Variant Type", text: $variant.customVariantType)
-                                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                                        .font(.subheadline)
-                                        .disabled(isSaved) // Disable if saved
-                                }
-                                
                                 // Variant Value Input
-                                if variant.variantType == "Size" {
-                                    Picker("Size", selection: $variant.variantValue) {
+                                if variant.variant_type == "Size" {
+                                    Picker("Size", selection: $variant.value) {
                                         ForEach(sizeOptions, id: \.self) { size in
                                             Text(size).tag(size)
                                         }
@@ -73,14 +48,14 @@ struct MultiVariantFormView: View {
                                     .disabled(isSaved) // Disable if saved
                                     
                                     // Custom Size Input (only shown when "Custom" is selected)
-                                    if variant.variantValue == "Custom" {
-                                        TextField("Enter Custom Size", text: $variant.customSizeValue)
+                                    if variant.value == "Custom" {
+                                        TextField("Enter Custom Size", text: $variant.value)
                                             .textFieldStyle(RoundedBorderTextFieldStyle())
                                             .font(.subheadline)
                                             .disabled(isSaved) // Disable if saved
                                     }
-                                } else if variant.variantType == "Color" {
-                                    Picker("Color", selection: $variant.variantValue) {
+                                } else if variant.variant_type == "Color" {
+                                    Picker("Color", selection: $variant.value) {
                                         ForEach(colorOptions, id: \.self) { color in
                                             Text(color).tag(color)
                                         }
@@ -92,21 +67,21 @@ struct MultiVariantFormView: View {
                                     .disabled(isSaved) // Disable if saved
                                     
                                     // Custom Color Input (only shown when "Custom" is selected)
-                                    if variant.variantValue == "Custom" {
-                                        TextField("Enter Custom Color", text: $variant.customColorValue)
+                                    if variant.value == "Custom" {
+                                        TextField("Enter Custom Color", text: $variant.value)
                                             .textFieldStyle(RoundedBorderTextFieldStyle())
                                             .font(.subheadline)
                                             .disabled(isSaved) // Disable if saved
                                     }
                                 } else {
-                                    TextField("Value (e.g., 1kg)", text: $variant.variantValue)
+                                    TextField("Value (e.g., 1kg)", text: $variant.value)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .font(.subheadline)
                                         .disabled(isSaved) // Disable if saved
                                 }
                                 
                                 // Price Input
-                                TextField("Price ($)", text: $variant.price)
+                                TextField("Price ($)", value: $variant.price, format: .number)
                                     .keyboardType(.decimalPad)
                                     .textFieldStyle(RoundedBorderTextFieldStyle())
                                     .font(.subheadline)
@@ -115,7 +90,7 @@ struct MultiVariantFormView: View {
                                 // Stock Quantity Picker
                                 Picker("Stock Quantity", selection: $variant.stock) {
                                     ForEach(stockOptions, id: \.self) { stock in
-                                        Text(stock).tag(stock)
+                                        Text(stock).tag(Int(stock) ?? 0)
                                     }
                                 }
                                 .pickerStyle(SegmentedPickerStyle())
@@ -123,8 +98,8 @@ struct MultiVariantFormView: View {
                                 .disabled(isSaved) // Disable if saved
                                 
                                 // Custom Stock Input (only shown when "Custom" is selected)
-                                if variant.stock == "Custom" {
-                                    TextField("Enter Custom Stock Quantity", text: $variant.stock)
+                                if variant.stock == 0 { // Assuming "Custom" maps to 0
+                                    TextField("Enter Custom Stock Quantity", value: $variant.stock, format: .number)
                                         .keyboardType(.numberPad)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
                                         .font(.subheadline)
@@ -134,19 +109,25 @@ struct MultiVariantFormView: View {
                                 // Remove Variant Button (always visible, even after saving)
                                 Button(action: {
                                     withAnimation {
-                                        removeVariant(id: variant.id)
+                                        removeVariant(id: variant.id!)
                                     }
                                 }) {
                                     Label("Remove Variant", systemImage: "trash")
                                         .foregroundColor(.red)
                                         .font(.subheadline)
                                 }
-                                .padding(.top, 5)
+                                .padding(.top, 5).onTapGesture {
+                                    removeVariant(id: variant.id!)
+                                }
                             }
                             .padding()
                             .background(Color(.white))
                             .cornerRadius(10)
                             .shadow(radius: 2)
+                            .listRowBackground(Color.clear)
+                            .onTapGesture {
+                                
+                            }
                         }
                         
                         // Add Variant Button (hidden if saved)
@@ -199,22 +180,23 @@ struct MultiVariantFormView: View {
                         .padding()
                         .transition(.opacity)
                 }
-            }.toolbar {
+            }
+            .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                     .foregroundColor(Color.themeRed)
                 }
-            }.navigationTitle("Create Variant")
-                
+            }
+            .navigationTitle("Create Variant")
         }
     }
     
     // Adds a new empty variant
     func addVariant() {
         withAnimation {
-            let newVariant = NewVariant(variantType: "Size", variantValue: "M", price: "", stock: "50")
+            let newVariant = Variant(variant_type: "Size", value: "M", price: 0.0, stock: 50)
             variants.append(newVariant)
         }
     }
@@ -235,34 +217,23 @@ struct MultiVariantFormView: View {
         
         // Validate each variant
         for variant in variants {
-            let finalVariantType = variant.variantType == "Custom" ? variant.customVariantType : variant.variantType
-            let finalVariantValue: String
-            
-            if variant.variantType == "Size" {
-                finalVariantValue = variant.variantValue == "Custom" ? variant.customSizeValue : variant.variantValue
-            } else if variant.variantType == "Color" {
-                finalVariantValue = variant.variantValue == "Custom" ? variant.customColorValue : variant.variantValue
-            } else {
-                finalVariantValue = variant.variantValue
-            }
-            
             // Check if all fields are filled
-            if finalVariantType.isEmpty {
+            if variant.variant_type.isEmpty {
                 errorMessage = "Please enter a variant type for all variants."
                 showErrorMessage = true
                 return
             }
-            if finalVariantValue.isEmpty {
+            if variant.value.isEmpty {
                 errorMessage = "Please enter a variant value for all variants."
                 showErrorMessage = true
                 return
             }
-            if variant.price.isEmpty || Double(variant.price) == nil {
+            if variant.price <= 0 {
                 errorMessage = "Please enter a valid price for all variants."
                 showErrorMessage = true
                 return
             }
-            if variant.stock.isEmpty || Int(variant.stock) == nil {
+            if variant.stock <= 0 {
                 errorMessage = "Please enter a valid stock quantity for all variants."
                 showErrorMessage = true
                 return
@@ -274,6 +245,9 @@ struct MultiVariantFormView: View {
             isSaved = true
             showSuccessMessage = true
         }
+        
+        // Print the saved variants (for debugging or API submission)
+        print("Saved Variants: \(variants)")
     }
 }
 

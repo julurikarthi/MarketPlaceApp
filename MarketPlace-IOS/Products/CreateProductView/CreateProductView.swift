@@ -5,6 +5,7 @@ import PhotosUI
 struct Variant: Identifiable, Codable {
     var id: UUID? = UUID()
     var variant_type: String
+    var value: String
     var price: Double
     var stock: Int
 }

@@ -126,18 +126,18 @@ class ProductCellItemViewModel: ObservableObject {
     func editProduct() {
         if let selectedCategory = selectedCategory {
             
-            let variants: [Variant] = product.variants?.compactMap { productVariant in
-                guard let type = productVariant.variant_type,
-                      let price = productVariant.price,
-                      let stock = productVariant.stock else {
-                    return nil
-                }
-                return Variant(variant_type: type, price: price, stock: stock)
-            } ?? []
-
-            let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description ?? "", price: product.price ?? 0.0, stock: product.stock ?? 0,  imageids: product.imageids ?? [], isPublish: true,
-                                         categoryID: selectedCategory, variants: variants, search_tags: product.search_tags)
-            delegate?.didtapOnEditButton(for: ediProduct)
+//            let variants: [Variant] = product.variants?.compactMap { productVariant in
+//                guard let type = productVariant.variant_type,
+//                      let price = productVariant.price,
+//                      let stock = productVariant.stock else {
+//                    return nil
+//                }
+//                return Variant(variant_type: type, price: price, stock: stock)
+//            } ?? []
+//
+//            let ediProduct = EditProduct(product_id: product.product_id, product_name: product.product_name, description: product.description ?? "", price: product.price ?? 0.0, stock: product.stock ?? 0,  imageids: product.imageids ?? [], isPublish: true,
+//                                         categoryID: selectedCategory, variants: variants, search_tags: product.search_tags)
+//            delegate?.didtapOnEditButton(for: ediProduct)
         }
       
     }
