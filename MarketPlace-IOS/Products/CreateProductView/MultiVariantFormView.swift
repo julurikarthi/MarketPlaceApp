@@ -3,7 +3,7 @@ import SwiftUI
 
 struct MultiVariantFormView: View {
     @Environment(\.dismiss) private var dismiss
-    @State private var variants: [Variant] = []
+    @Binding var variants: [Variant]
     @State private var showSuccessMessage = false
     @State private var showErrorMessage = false
     @State private var errorMessage = ""
@@ -81,11 +81,17 @@ struct MultiVariantFormView: View {
                                 }
                                 
                                 // Price Input
-                                TextField("Price ($)", value: $variant.price, format: .number)
-                                    .keyboardType(.decimalPad)
-                                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                                    .font(.subheadline)
-                                    .disabled(isSaved) // Disable if saved
+                                TextField("Price ($)", text: Binding(
+                                    get: { variant.price == 0.0 ? "" : String(format: "%.2f", variant.price) },
+                                    set: { newValue in
+                                        variant.price = Double(newValue) ?? 0.0
+                                    }
+                                ))
+                                .keyboardType(.decimalPad)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .font(.subheadline)
+                                .disabled(isSaved)
+
                                 
                                 // Stock Quantity Picker
                                 Picker("Stock Quantity", selection: $variant.stock) {
@@ -184,6 +190,9 @@ struct MultiVariantFormView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
+                        if variants.filter({$0.price == 0}).count > 0 {
+                            variants.removeAll()
+                        }
                         dismiss()
                     }
                     .foregroundColor(Color.themeRed)
@@ -196,7 +205,7 @@ struct MultiVariantFormView: View {
     // Adds a new empty variant
     func addVariant() {
         withAnimation {
-            let newVariant = Variant(variant_type: "Size", value: "M", price: 0.0, stock: 50)
+            let newVariant = Variant(variant_type: "Size", value: "", price: 0.0, stock: 50)
             variants.append(newVariant)
         }
     }
@@ -248,11 +257,9 @@ struct MultiVariantFormView: View {
         
         // Print the saved variants (for debugging or API submission)
         print("Saved Variants: \(variants)")
+       
+         
+        dismiss()
     }
 }
 
-struct MultiVariantFormView_Previews: PreviewProvider {
-    static var previews: some View {
-        MultiVariantFormView()
-    }
-}

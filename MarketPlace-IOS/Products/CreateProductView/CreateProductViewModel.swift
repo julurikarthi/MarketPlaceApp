@@ -30,6 +30,8 @@ class CreateProductViewModel: ObservableObject {
     @Published var newCategoryNameError: String = "Please Enter the Category Name"
     @Published var isPublished: Bool = true
     @Published var categories: [Category] = []
+    @Published var newCategories: NewCategoriesResponse?
+    
     @Published var newCategoryName: String = ""
     @Published var isAddingCategory: Bool = false
     @Published var showCetegoryProgressIndicator = false
@@ -46,7 +48,7 @@ class CreateProductViewModel: ObservableObject {
             showErrorMessage = true
             return false
         }
-        if variants.isEmpty ||  price.isEmpty {
+        if variants.isEmpty && price.isEmpty {
             errorMessage = "All fields are required"
             showErrorMessage = true
             return false
@@ -61,7 +63,7 @@ class CreateProductViewModel: ObservableObject {
                                            store_type: UserDetails.store_type,
                                            product_name: productName,
                                            description: description,
-                                           price: Double(price)!,
+                                           price: Double(price) ?? nil,
                                            stock: Int(stock)!,
                                            category_id: categoryID.categoryID,
                                            imageids: selectedImages_ids,
@@ -155,6 +157,32 @@ class CreateProductViewModel: ObservableObject {
                                                 }
                                              ).store(in: &cancellables)
     }
+    
+    
+    func getAllCategories() {
+        showProgressIndicator = true
+        let fetchcategoryRequest: FetchAllCategories = .init()
+        NetworkManager.shared.performRequest(url: .getAllCategories(),
+                                             method: .GET,
+                                             payload: fetchcategoryRequest,
+                                             responseType: NewCategoriesResponse.self).receive(on: DispatchQueue.main).sink(
+                                                receiveCompletion: { completion in
+                                                    switch completion {
+                                                    case .finished:
+                                                        print("Request completed successfully.")
+                                                    case .failure(let error):
+                                                        print("Request failed: \(error.localizedDescription)")
+                                                    }
+                                                },
+                                                receiveValue: { response in
+                                                    DispatchQueue.main.async {
+                                                        self.newCategories = response
+                                                        self.showProgressIndicator = false
+                                                    }
+                                                }
+                                             ).store(in: &cancellables)
+    }
+        
     
     func createCategory(name: String) {
         showCetegoryProgressIndicator = true
@@ -312,6 +340,11 @@ struct EditProduct: RequestBody {
 struct FetchCategoryRequest: Codable, RequestBody {
 
 }
+
+struct FetchAllCategories: Codable, RequestBody {
+
+}
+
 
 struct CategoriesResponse: Codable {
     let categories: [Category]

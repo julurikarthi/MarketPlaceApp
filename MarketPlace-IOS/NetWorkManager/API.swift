@@ -33,6 +33,10 @@ extension String {
     static func getStoreCategories() -> String {
         return "\(baseURL)/getstoreCategories/"
     }
+    
+    static func getAllCategories() -> String {
+        return "\(baseURL)/getAllCategories/"
+    }
 
     static func createProduct() -> String {
         return "\(baseURL)/createProduct/"

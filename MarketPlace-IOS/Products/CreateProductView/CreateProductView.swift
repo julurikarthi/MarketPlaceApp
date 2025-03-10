@@ -160,19 +160,39 @@ struct CreateProductView: View {
                         Text(variantTypeError).font(.caption)
                                                    .foregroundColor(.red)
                     }
-                    Button(action: {
-                        isAddingVariant = true
-                    }) {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                            Text("Add Variant")
-                                .bold()
+                    if viewModel.variants.isEmpty {
+                        Button(action: {
+                            isAddingVariant = true
+                        }) {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                Text("Add Variant")
+                                    .bold()
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(8)
                         }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue.opacity(0.2))
-                        .cornerRadius(8)
-                    }.padding(.horizontal)
+                        .padding(.horizontal)
+                    } else {
+                        Button(action: {
+                            isAddingVariant = true
+                        }) {
+                            HStack {
+                                Text("\(viewModel.variants.count) Variants")
+                                    .bold()
+                                Spacer()
+                                Image(systemName: "chevron.right") // Right arrow indicator
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.blue.opacity(0.2))
+                            .cornerRadius(8)
+                        }
+                        .padding(.horizontal)
+                    }
+
                     HorizontalTextFieldView(savedTexts: $viewModel.search_tags)
                     Divider()
                     Toggle("Publish", isOn: $viewModel.isPublished)
@@ -180,9 +200,9 @@ struct CreateProductView: View {
                 }.loadingIndicator(isLoading: $viewModel.showProgressIndicator)
                 .padding(.bottom)
             }.sheet(isPresented: $isAddingVariant) {
-                MultiVariantFormView()
+                MultiVariantFormView(variants: $viewModel.variants)
             }.task {
-                viewModel.getstoreCategories()
+                viewModel.getAllCategories()
             }.onTapGesture {
                 dismissKeyboard()
             }.onAppear {
@@ -362,98 +382,50 @@ struct TextFieldWithError: View {
 }
 
 
-
-
-
-
 struct CategorySelectionView: View {
     @Binding var selectedCategory: Category
+    @State var selectednewCategory: ChildCategory?
     @State private var showAddCategorySheet = false
     @ObservedObject var viewModel: CreateProductViewModel
-
+    
+ 
     var body: some View {
-        VStack {
+        VStack(spacing: 16) {
+            // Category Selection Button
             HStack {
-                Text("Select Category")
+                Text((selectednewCategory?.name.isEmpty ?? true) ? "Select Category" : selectednewCategory?.name ?? "")
                     .font(.headline)
-                    .foregroundColor(.primary)
-                Spacer()
-                Menu {
-                    ForEach(viewModel.categories, id: \.self) { category in
-                        Button(category.categoryName) {
-                            selectedCategory = category
-                        }
-                    }
-                    Button(action: {
-                        showAddCategorySheet.toggle()
-                    }) {
-                        Text("Add New Category")
-                            .foregroundColor(.blue)
-                    }
-                } label: {
-                    Text(selectedCategory.categoryName.isEmpty ? "Select Category" : selectedCategory.categoryName).bold()
-                        .foregroundColor(.white)
-                        .font(.subheadline)
-                }
-                .padding()
-                .background(.green).cornerRadius(10)
+                    .foregroundColor(.primary) // You can adjust the text color if needed
+                   
+                
+                Spacer() // Pushes the arrow to the right
+                
+                Image(systemName: "arrow.right.circle.fill") // Right arrow icon
+                    .font(.title) // Adjust the size of the arrow
+                    .foregroundColor(.blue) // Adjust the arrow color
             }
-            // Add New Category Sheet
-            .sheet(isPresented: $showAddCategorySheet) {
-                NavigationView {
-                    VStack {
-                        Text("Create a New Category")
-                            .font(.headline)
-                            .padding(.bottom, 10)
-                            .foregroundColor(.primary)
-
-                        // Use the TextFieldWithError for category input
-                        TextFieldWithError(title: "Category Name", text: $viewModel.newCategoryName, errorMessage: $viewModel.newCategoryNameError, showError: false, keyboardType: .default)
-
-                        Button(action: {
-                            if !$viewModel.newCategoryName.wrappedValue.isEmpty {
-                                viewModel.addNewCategory()
-                                showAddCategorySheet = false
-                            }
-                        }) {
-                            Text("Save Category")
-                                .foregroundColor(.white)
-                                .font(.headline)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(viewModel.newCategoryName.isEmpty ? Color.gray : Color.black)
-                                .cornerRadius(8)
-                                .disabled(viewModel.newCategoryName.isEmpty)
-                        }
-                        .padding(.top)
-
-                        Spacer()
-                    }.loadingIndicator(isLoading: $viewModel.showCetegoryProgressIndicator)
-                    .padding()
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button("Cancel") {
-                                showAddCategorySheet = false
-                            }
-                            .foregroundColor(Color.themeRed)
-                        }
-                    }
+            .padding() // Add padding to the HStack to make it look more spacious
+            .background(Color(.systemGray6)) // Background color for the button
+            .cornerRadius(10) // Rounded corners
+        }.onTapGesture {
+            withAnimation(.easeInOut) {
+                showAddCategorySheet = true
+            }
+        }
+        .sheet(isPresented: $showAddCategorySheet) {
+            if let newCategories = viewModel.newCategories {
+                TestContentView(sampleCategories: newCategories.categories) { childCategory in
+                    selectednewCategory = childCategory
+                    showAddCategorySheet = false // Close the sheet after selection
                 }
             }
-        }.onAppear {
+        }
+        .onAppear {
             UserDetails.requestCameraPermission()
             UserDetails.requestPhotoLibraryPermission()
         }
     }
 }
-
-
-
-//struct CreateProduct_Previews: PreviewProvider {
-//    static var previews: some View {
-////        CreateProductView()
-//    }
-//}
 
 
 extension View {

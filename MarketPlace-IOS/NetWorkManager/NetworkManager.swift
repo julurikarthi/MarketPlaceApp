@@ -51,7 +51,7 @@ class NetworkManager {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
         // Encode the payload if provided
-        if var payload = payload {
+        if var payload = payload, request.httpMethod == .GET {
             do {
                 payload.store_id = UserDetails.storeId
                 payload.user_id = UserDetails.userId
